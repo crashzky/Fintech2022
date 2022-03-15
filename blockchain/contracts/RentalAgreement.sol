@@ -20,4 +20,7 @@ contract RentalAgreement {
         return data[ladd];
     }
 
+    function getLandlord() public view returns(address) {
+        return ladd;
+    }
 }
