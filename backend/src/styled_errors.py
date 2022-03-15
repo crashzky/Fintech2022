@@ -1,3 +1,5 @@
+import typing
+
 import fastapi
 import strawberry.fastapi
 import strawberry.http
@@ -7,7 +9,10 @@ import strawberry.types
 
 # Task requires only `message` field in errors
 # and errors field only
-class ChangedErrorStyleGraphQLRouter(strawberry.fastapi.GraphQLRouter):
+from strawberry.asgi import GraphQL
+
+
+class ChangedErrorStyleGraphQLRouter(GraphQL):
     async def process_result(
         self,
         request: fastapi.Request,
@@ -23,3 +28,6 @@ class ChangedErrorStyleGraphQLRouter(strawberry.fastapi.GraphQLRouter):
             del response["data"]
 
         return response
+
+    async def get_context(self, request: typing.Union[fastapi.Request, fastapi.WebSocket], response: typing.Optional[fastapi.Response] = None) -> dict:
+        return {"request": request, "response": response}

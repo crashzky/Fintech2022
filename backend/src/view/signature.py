@@ -7,4 +7,3 @@ class InputSignature:
     r: str
     s: str
 
-
