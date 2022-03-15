@@ -8,6 +8,7 @@ contract RentalAgreement {
 
     uint roomID;
     address ladd;
+    address tadd;
 
     mapping(address => uint) data;
 
@@ -23,4 +24,32 @@ contract RentalAgreement {
     function getLandlord() public view returns(address) {
         return msg.sender;
     }
+
+    struct Sign {
+        uint8 v;
+        bytes32 r;
+        bytes32 s;
+    }
+
+    function RentalPermit(uint256 deadline, address tenant, uint256 rentalRate, 
+        uint256 billingPeriodDuration, uint256 billingsCount) public {
+        
+    }
+
+    function EIP712Domain(string memory name,string memory version,address verifyingContract) public{
+        name = "Rental Agreement";
+        version = "1.0";
+    }
+
+    function rent(uint deadline, address tenant, uint rentalRate, 
+        uint billingPeriodDuration, uint billingsCount, Sign memory landlordSign ) public payable {
+        
+        tadd = tenant;
+
+    }
+
+    function getTenant() view public returns (address) {
+        return tadd;
+    }
 }
+
