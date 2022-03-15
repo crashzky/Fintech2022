@@ -5,6 +5,8 @@ services:
       - "3000:3000"
     build:
       context: frontend
+    volumes:
+      - ./frontend/:/usr/src/app
     environment:
       - LANDLORD_ADDRESS
       - RPC_URL

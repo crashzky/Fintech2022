@@ -1,5 +1,6 @@
 .env
 
+
 ### CUSTOM
 # Folder for notes and drafts
 .drafts/
@@ -147,3 +148,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+/frontend/node_modules/
+

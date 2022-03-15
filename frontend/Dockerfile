@@ -1,7 +1,14 @@
-# Dockerfile example
-FROM python:3.9-alpine
+FROM node:16
+
+COPY package*.json ./
+
+WORKDIR /usr/src/app
+
+RUN npm install -g npm@8.5.4
+RUN npm install
 
 COPY . .
 
-CMD "echo" "Hello, world!"
+EXPOSE 3000
 
+CMD [ "npm", "start" ]
