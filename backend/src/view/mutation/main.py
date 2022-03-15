@@ -1,3 +1,5 @@
+import uuid
+
 import strawberry
 
 from src.view.auth import Authentication
@@ -9,7 +11,7 @@ class Mutation:
     a: str
 
     def request_authentication(self, address: str) -> str:
-        pass
+        return uuid.uuid4().hex
 
     def authenticate(
         self,
