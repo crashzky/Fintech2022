@@ -22,26 +22,24 @@ const MainPage = (): JSX.Element => {
 			<>
 				<button className='authentication__authenticate' onClick={async () => {
 					ethereum.request({ method: 'eth_requestAccounts' }).then((res: any) => {
-						ethereum.request({ method: 'wallet_getPermissions' }).then((res2: any) => {
-							ethereum.request({ method: 'eth_signTypedData', from: res[0], params: [
-								[
-									{
-										type: 'string',
-										name: 'Message',
-										value: 'Подтвердите подписание'
-									},
-								],
-								res[0]
-							] }).then(() => {
-								setAccountAddress(res[0]);
-	
-								let _account = [];
-								if(localStorage.getItem('connected_accounts')) {
-									_account = JSON.parse(localStorage.getItem('connected_accounts') as string);
-								}
-								_account.push(res[0]);
-								localStorage.setItem('connected_accounts', JSON.stringify(_account));
-							});
+						ethereum.request({ method: 'personal_sign', from: res[0], params: [
+							[
+								{
+									type: 'string',
+									name: 'Message',
+									value: 'Подтвердите подписание'
+								},
+							],
+							res[0]
+						] }).then((result: any) => {
+							setAccountAddress(res[0]);
+
+							let _account = [];
+							if(localStorage.getItem('connected_accounts')) {
+								_account = JSON.parse(localStorage.getItem('connected_accounts') as string);
+							}
+							_account.push(res[0]);
+							localStorage.setItem('connected_accounts', JSON.stringify(_account));
 						});
 					});
 				}}>
