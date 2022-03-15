@@ -10,7 +10,7 @@ COPY Makefile poetry.toml pyproject.toml requirements.txt /app/
 WORKDIR /app
 
 # Reserve the port
-EXPOSE 4000
+EXPOSE 8000
 
 RUN /usr/local/bin/python3.9 -m pip install --upgrade setuptools==59.8.0
 
