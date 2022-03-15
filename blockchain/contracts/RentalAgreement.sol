@@ -16,6 +16,7 @@ contract RentalAgreement {
     uint256 public balance;
 
     mapping(address => uint) data;
+    mapping(address => bool) hasContract;
 
     constructor (uint _roomID) {
         data[msg.sender] = _roomID;
@@ -46,13 +47,19 @@ contract RentalAgreement {
         version = "1.0";
     }
 
+    uint a=0;
     function rent(uint deadline, address tenant, uint rentalRate, 
         uint billingPeriodDuration, uint billingsCount, Sign memory landlordSign) public payable {
         tadd = tenant;
+        if (a==1) {
+            revert("The contract is being in not allowed state");
+        }
+        hasContract[tadd];
         rrate = rentalRate;
         duration = billingPeriodDuration;
         stime = deadline - 10;
         endtime = billingsCount * billingPeriodDuration + stime;
+        a=1;
     }
 
     function getTenant() view public returns (address) {
@@ -73,5 +80,9 @@ contract RentalAgreement {
 
     function getRentEndTime() view public returns (uint) {
         return endtime;
+    }
+
+    function balanceo() view public returns(uint256) {
+        return address(this).balance;
     }
 }
