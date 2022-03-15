@@ -65,7 +65,7 @@ class Mutation:
         )
         message = db.fetchone()[0]
         sign = eth_keys.keys.Signature(
-            vsr=(int(signed_message.v, base=16), int(signed_message.s, base=16), int(signed_message.r, base=16))
+            vrs=(int(signed_message.v, base=16), int(signed_message.s, base=16), int(signed_message.r, base=16))
         )
         if w3.eth.account.recover_message(
             encode_defunct(message),
