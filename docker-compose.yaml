@@ -10,7 +10,7 @@ services:
     environment:
       - LANDLORD_ADDRESS
       - RPC_URL
-    container_name: frontend
+    container_name: solution-frontend
 
   backend:
     ports:
@@ -22,7 +22,7 @@ services:
     environment:
       - LANDLORD_ADDRESS
       - RPC_URL
-    container_name: backend
+    container_name: solution-backend
 
   solution-web:
     build:
@@ -34,3 +34,4 @@ services:
     depends_on:
       - backend
       - frontend
+    container_name: solution-web
