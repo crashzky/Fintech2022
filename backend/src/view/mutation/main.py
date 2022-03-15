@@ -1,10 +1,13 @@
 import uuid
 
+import eth_keys
 import fastapi
 import strawberry
 import strawberry.types
+from eth_account.messages import encode_defunct
 
 from src.env import LANDLORD_ADDRESS
+from src.rpc import w3
 from src.view.auth import Authentication
 from src.view.signature import InputSignature
 
@@ -16,7 +19,35 @@ class Mutation:
 
     @strawberry.mutation
     def request_authentication(self, address: str) -> str:
-        return uuid.uuid4().hex
+        db.execute(
+            """
+            SELECT count(*) FROM renter
+            WHERE address=?
+            """,
+            [address]
+        )
+        such_exists = db.fetchone()
+        message = uuid.uuid4().hex
+        if not such_exists:
+            db.execute(
+                """
+                INSERT INTO renter(address, message)
+                VALUES (:address, :message)
+                """,
+                {"address": address, "message": message}
+            )
+            conn.commit()
+        else:
+            db.execute(
+                """
+                UPDATE renter
+                SET message = :message
+                WHERE address = :address
+                """,
+                {"address": address, "message": message}
+            )
+            conn.commit()
+        return message
 
     @strawberry.mutation
     def authenticate(
@@ -25,8 +56,26 @@ class Mutation:
         signed_message: InputSignature,
         info: strawberry.types.Info
     ) -> Authentication:
-        info.context["response"].set_cookie(key="access_token_cookie", value=address)
-        return Authentication(
-            address=address,
-            is_landlord=address == LANDLORD_ADDRESS
+        db.execute(
+            """
+            SELECT message
+            FROM renter
+            WHERE address = ?
+            """, [address]
         )
+        message = db.fetchone()[0]
+        sign = eth_keys.keys.Signature(
+            vsr=(int(signed_message.v, base=16), int(signed_message.s, base=16), int(signed_message.r, base=16))
+        )
+        if w3.eth.account.recover_message(
+            encode_defunct(message),
+            signature=sign.to_hex()
+        ) == address:
+            info.context["response"].set_cookie(key="access_token_cookie", value="token-" + address)
+            return Authentication(
+                address=address,
+                is_landlord=address == LANDLORD_ADDRESS
+            )
+        else:
+            raise Exception("Authentication failed")
+
