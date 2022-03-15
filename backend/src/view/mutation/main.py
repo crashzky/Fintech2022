@@ -26,7 +26,7 @@ class Mutation:
             """,
             [address]
         )
-        such_exists = db.fetchone()
+        such_exists = db.fetchone()[0]
         message = uuid.uuid4().hex
         if not such_exists:
             db.execute(
