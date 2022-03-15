@@ -1,30 +1,58 @@
-import { useEffect } from 'react';
-import { useWeb3Context } from 'web3-react';
+import { useEffect, useState } from 'react';
 
 const MainPage = (): JSX.Element => {
-	const context = useWeb3Context()
- 
+	const { ethereum } = window as any;
+	const [accountAddress, setAccountAddress] = useState(null);
+	const [isConnected, setIsConnected] = useState(false);
+
 	useEffect(() => {
-	  context.setFirstValidConnector(['MetaMask'])
-	}, [])
-   
-	if (!context.active && !context.error) {
+		if(localStorage.getItem('connected_account')) {
+			ethereum.request({ method: 'eth_requestAccounts' }).then((res: any) => {
+				console.log(res);
+				if(localStorage.getItem('connected_account') !== res[0]) {
+					setIsConnected(true);
+				}
+				else
+					setAccountAddress(localStorage.getItem('connected_account') as any);
+			});
+		}
+	}, []);
+
+	if(!accountAddress) {
 		return (
-			<h1>
-				loading
-			</h1>
+			<>
+				<button className='authentication__authenticate' onClick={async () => {
+					ethereum.request({ method: 'eth_requestAccounts' }).then((res: any) => {
+						ethereum.request({ method: 'personal_sign', from: res[0], params: [
+							[
+								{
+									type: 'string',
+									name: 'Message',
+									value: 'Подтвердите подписание'
+								},
+							],
+							res[0]
+						] }).then((result: any) => {
+							setAccountAddress(res[0]);
+							localStorage.setItem('connected_account', res[0]);
+						});
+					});
+				}}>
+	
+				</button>
+				{isConnected && (
+					<p className='authentication__warning'>
+						Your MetaMask account is different from the one you authenticated with before
+					</p>
+				)}
+			</>
 		);
-	} else if (context.error) {
+	}
+	else {
 		return (
-			<h1>
-				error
-			</h1>
-		);
-	} else {
-		return (
-			<h1>
-				Hello world
-			</h1>
+			<p className='account__address'>
+				{accountAddress}
+			</p>
 		);
 	}
 };
