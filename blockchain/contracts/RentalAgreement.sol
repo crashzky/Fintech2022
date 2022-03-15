@@ -16,11 +16,11 @@ contract RentalAgreement {
         ladd = msg.sender;
     }
 
-    function getRoomInternalId(address) public view returns(uint) {
-        return data[ladd];
+    function getRoomInternalId() public view returns(uint) {
+        return data[msg.sender];
     }
 
-    function getLandlord(address) public view returns(address) {
-        return ladd;
+    function getLandlord() public view returns(address) {
+        return msg.sender;
     }
 }
