@@ -5,4 +5,4 @@ from src.view.mutation.main import Mutation
 from src.view.query.main import Query
 
 schema = strawberry.Schema(Query, Mutation, extensions=[])
-graphql_app = ChangedErrorStyleGraphQLRouter(schema, path="/graphql")
+graphql_app = ChangedErrorStyleGraphQLRouter(schema)

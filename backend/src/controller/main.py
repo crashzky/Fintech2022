@@ -5,7 +5,9 @@ from src.controller.graphql import graphql_app
 from src.event.startup import add_startup
 
 main_app = fastapi.FastAPI()
-main_app.include_router(graphql_app)
+main_app.add_route("/graphql", graphql_app)
+main_app.add_websocket_route("/graphql", graphql_app)
+
 
 add_startup(main_app)
 
