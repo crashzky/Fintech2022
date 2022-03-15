@@ -1,8 +1,8 @@
 import strawberry
 
-from src.view.query.product import QueryProductMixin
+from src.view.auth import Authentication
 
 
 @strawberry.type
-class Query(QueryProductMixin,):
-    field: str
+class Query:
+    authentication: Authentication
