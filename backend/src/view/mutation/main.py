@@ -8,11 +8,12 @@ from src.view.signature import InputSignature
 
 @strawberry.type
 class Mutation:
-    a: str
 
+    @strawberry.field
     def request_authentication(self, address: str) -> str:
         return uuid.uuid4().hex
 
+    @strawberry.field
     def authenticate(
         self,
         address: str,
