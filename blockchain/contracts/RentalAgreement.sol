@@ -16,7 +16,6 @@ contract RentalAgreement {
     uint256 public balance;
 
     mapping(address => uint) data;
-    mapping(address => bool) hasContract;
 
     constructor (uint _roomID) {
         data[msg.sender] = _roomID;
@@ -54,12 +53,29 @@ contract RentalAgreement {
         if (a==1) {
             revert("The contract is being in not allowed state");
         }
-        hasContract[tadd];
+
+        if (msg.sender!=tadd) {
+            revert("The caller account and the account specified as a tenant do not match");
+        }
+
+        if (msg.sender==ladd) {
+            revert("The landlord cannot become a tenant");
+        }
+
+        if (rentalRate==0) {
+            revert("Rent amount should be strictly greater than zero");
+        }
+
+        if (billingPeriodDuration==0 || billingsCount==0) {
+            revert("Rent period should be strictly greater than zero");
+        }
+
         rrate = rentalRate;
         duration = billingPeriodDuration;
         stime = deadline - 10;
         endtime = billingsCount * billingPeriodDuration + stime;
         a=1;
+        
     }
 
     function getTenant() view public returns (address) {
