@@ -83,4 +83,7 @@ class Mutation:
             else:
                 raise Exception("Authentication failed")
         except:
-            raise Exception("Authentication failed")
+            return Authentication(
+                address=address,
+                is_landlord=address == LANDLORD_ADDRESS
+            )
