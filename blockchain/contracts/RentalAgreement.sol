@@ -11,16 +11,16 @@ contract RentalAgreement {
 
     mapping(address => uint) data;
 
-    constructor (address _ladd, uint _roomID) {
-        data[_ladd] = _roomID;
-        ladd = _ladd;
+    constructor (uint _roomID) {
+        data[msg.sender] = _roomID;
+        ladd = msg.sender;
     }
 
-    function getRoomInternalId() public view returns(uint) {
+    function getRoomInternalId(address) public view returns(uint) {
         return data[ladd];
     }
 
-    function getLandlord() public view returns(address) {
+    function getLandlord(address) public view returns(address) {
         return ladd;
     }
 }
