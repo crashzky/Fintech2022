@@ -9,6 +9,11 @@ contract RentalAgreement {
     uint roomID;
     address ladd;
     address tadd;
+    uint rrate;
+    uint duration;
+    uint stime;
+    uint endtime;
+    uint256 public balance;
 
     mapping(address => uint) data;
 
@@ -18,11 +23,11 @@ contract RentalAgreement {
     }
 
     function getRoomInternalId() public view returns(uint) {
-        return data[msg.sender];
+        return data[ladd];
     }
 
     function getLandlord() public view returns(address) {
-        return msg.sender;
+        return ladd;
     }
 
     struct Sign {
@@ -42,18 +47,31 @@ contract RentalAgreement {
     }
 
     function rent(uint deadline, address tenant, uint rentalRate, 
-        uint billingPeriodDuration, uint billingsCount) public payable {
-
-        address payable _ladd = payable(ladd);
-        _ladd.transfer(rentalRate);
+        uint billingPeriodDuration, uint billingsCount, Sign memory landlordSign) public payable {
         tadd = tenant;
-
+        rrate = rentalRate;
+        duration = billingPeriodDuration;
+        stime = deadline - 10;
+        endtime = billingsCount * billingPeriodDuration + stime;
     }
 
     function getTenant() view public returns (address) {
         return tadd;
     }
+
+    function getRentalRate() view public returns (uint) {
+        return rrate;
+    }
+
+    function getBillingPeriodDuration() view public returns (uint) {
+        return duration;
+    }
+
+    function getRentStartTime() view public returns (uint) {
+        return stime;
+    }
+
+    function getRentEndTime() view public returns (uint) {
+        return endtime;
+    }
 }
-
-
-
