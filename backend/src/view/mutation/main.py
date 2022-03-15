@@ -56,25 +56,31 @@ class Mutation:
         signed_message: InputSignature,
         info: strawberry.types.Info
     ) -> Authentication:
-        db.execute(
-            """
-            SELECT message
-            FROM renter
-            WHERE address = ?
-            """, [address]
-        )
-        message = db.fetchone()[0]
-        sign = eth_keys.keys.Signature(
-            vrs=(int(signed_message.v, base=16), int(signed_message.s, base=16), int(signed_message.r, base=16))
-        )
-        if w3.eth.account.recover_message(
-            encode_defunct(message),
-            signature=sign.to_hex()
-        ) == address:
-            info.context["response"].set_cookie(key="access_token_cookie", value="token-" + address)
-            return Authentication(
-                address=address,
-                is_landlord=address == LANDLORD_ADDRESS
+
+        try:
+            db.execute(
+                """
+                SELECT message
+                FROM renter
+                WHERE address = ?
+                """, [address]
             )
-        else:
+            message = db.fetchone()[0]
+
+            sign = eth_keys.keys.Signature(
+                vrs=(int(signed_message.v, base=16), int(signed_message.s, base=16), int(signed_message.r, base=16))
+            )
+
+            if w3.eth.account.recover_message(
+                encode_defunct(message),
+                signature=sign.to_hex()
+            ) == address:
+                info.context["response"].set_cookie(key="access_token_cookie", value="token-" + address)
+                return Authentication(
+                    address=address,
+                    is_landlord=address == LANDLORD_ADDRESS
+                )
+            else:
+                raise Exception("Authentication failed")
+        except:
             raise Exception("Authentication failed")
