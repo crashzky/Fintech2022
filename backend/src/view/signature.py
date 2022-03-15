@@ -6,5 +6,3 @@ class InputSignature:
     v: str
     r: str
     s: str
-
-
