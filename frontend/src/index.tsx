@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App2 from './App2';
+import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
-	<App2 />,
+	<App />,
  	document.querySelector('body')
 );
 
