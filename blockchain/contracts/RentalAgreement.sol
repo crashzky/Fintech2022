@@ -42,8 +42,10 @@ contract RentalAgreement {
     }
 
     function rent(uint deadline, address tenant, uint rentalRate, 
-        uint billingPeriodDuration, uint billingsCount, Sign memory landlordSign ) public payable {
-        
+        uint billingPeriodDuration, uint billingsCount) public payable {
+
+        address payable _ladd = payable(ladd);
+        _ladd.transfer(rentalRate);
         tadd = tenant;
 
     }
@@ -52,4 +54,6 @@ contract RentalAgreement {
         return tadd;
     }
 }
+
+
 
