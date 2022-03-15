@@ -6,15 +6,15 @@ const MainPage = (): JSX.Element => {
 	const [isConnected, setIsConnected] = useState(false);
 
 	useEffect(() => {
-		ethereum.request({ method: 'eth_requestAccounts' }).then((res: any) => {
-			if(localStorage.getItem('connected_accounts')) {
+		if(localStorage.getItem('connected_accounts')) {
+			ethereum.request({ method: 'eth_requestAccounts' }).then((res: any) => {
 				let _account = JSON.parse(localStorage.getItem('connected_accounts') as string);
 				res.forEach((i: string) => {
 					if(_account.includes(i))
 						setIsConnected(true);
 				});
-			}
-		});
+			});
+		}
 	}, []);
 
 	if(!accountAddress) {
@@ -22,26 +22,26 @@ const MainPage = (): JSX.Element => {
 			<>
 				<button className='authentication__authenticate' onClick={async () => {
 					ethereum.request({ method: 'eth_requestAccounts' }).then((res: any) => {
-						console.log('================');
-						console.log(res);
-						ethereum.request({ method: 'eth_signTypedData', from: res[0], params: [
-							[
-								{
-									type: 'string',
-									name: 'Message',
-									value: 'Подтвердите подписание'
-								},
-							],
-							res[0]
-						] }).then(() => {
-							setAccountAddress(res[0]);
-
-							let _account = [];
-							if(localStorage.getItem('connected_accounts')) {
-								_account = JSON.parse(localStorage.getItem('connected_accounts') as string);
-							}
-							_account.push(res[0]);
-							localStorage.setItem('connected_accounts', JSON.stringify(_account));
+						ethereum.request({ method: 'wallet_getPermissions' }).then((res2: any) => {
+							ethereum.request({ method: 'eth_signTypedData', from: res[0], params: [
+								[
+									{
+										type: 'string',
+										name: 'Message',
+										value: 'Подтвердите подписание'
+									},
+								],
+								res[0]
+							] }).then(() => {
+								setAccountAddress(res[0]);
+	
+								let _account = [];
+								if(localStorage.getItem('connected_accounts')) {
+									_account = JSON.parse(localStorage.getItem('connected_accounts') as string);
+								}
+								_account.push(res[0]);
+								localStorage.setItem('connected_accounts', JSON.stringify(_account));
+							});
 						});
 					});
 				}}>
@@ -49,7 +49,7 @@ const MainPage = (): JSX.Element => {
 				</button>
 				{isConnected && (
 					<p className='authentication__warning'>
-						Your MetaMask account is different from the one you authenticated with before.
+						Your MetaMask account is different from the one you authenticated with before
 					</p>
 				)}
 			</>
