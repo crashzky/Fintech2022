@@ -18,14 +18,14 @@ class Mutation:
     def request_authentication(self, address: str) -> str:
         db.execute(
             """
-            SELECT message FROM renter
+            SELECT count(*) FROM renter
             WHERE address=?
             """,
             [address]
         )
         such_exists = db.fetchone()
+        message = uuid.uuid4().hex
         if not such_exists:
-            message = uuid.uuid4().hex
             db.execute(
                 """
                 INSERT INTO renter(address, message)
@@ -35,7 +35,15 @@ class Mutation:
             )
             conn.commit()
         else:
-            message = such_exists[0]
+            db.execute(
+                """
+                UPDATE renter
+                SET message = :message
+                WHERE address = :address
+                """,
+                {"address": address, "message": message}
+            )
+            conn.commit()
         return message
 
     @strawberry.mutation
