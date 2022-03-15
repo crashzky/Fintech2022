@@ -9,6 +9,9 @@ RUN npm install
 
 COPY . .
 
+RUN npm run build
+RUN npm i serve
+
 EXPOSE 3000
 
-CMD [ "npm", "start" ]
+CMD [ "npx", "serve", "-s", "build"]
