@@ -13,7 +13,7 @@ class Query:
     @strawberry.field
     def authentication(self, info: strawberry.types.Info) -> typing.Optional[Authentication]:
         try:
-            address = info.context["request"].cookies["address"]
+            address = info.context["request"].cookies["access_token_cookie"]
         except KeyError:
             return None
         else:
