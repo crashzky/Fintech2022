@@ -55,5 +55,4 @@ webencodings==0.5.1
 websockets==10.1
 zipp==3.6.0
 web3
-eth-account
 eth-keys

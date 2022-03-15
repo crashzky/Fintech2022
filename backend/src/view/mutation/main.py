@@ -1,13 +1,13 @@
 import uuid
 
 import eth_keys
+from web3.auto import w3
 import fastapi
 import strawberry
 import strawberry.types
-from eth_account.messages import encode_defunct
+from src.vendor.eth_account.messages import encode_defunct
 
 from src.env import LANDLORD_ADDRESS
-from src.rpc import w3
 from src.view.auth import Authentication
 from src.view.signature import InputSignature
 
