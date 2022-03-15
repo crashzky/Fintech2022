@@ -6,15 +6,14 @@ const MainPage = (): JSX.Element => {
 	const [isConnected, setIsConnected] = useState(false);
 
 	useEffect(() => {
-		if(localStorage.getItem('connected_accounts')) {
+		if(localStorage.getItem('connected_account')) {
 			ethereum.request({ method: 'eth_requestAccounts' }).then((res: any) => {
-				let _account = JSON.parse(localStorage.getItem('connected_accounts') as string);
-				res.forEach((i: string) => {
-					if(_account.includes(i)) {
-						setIsConnected(true);
-						setAccountAddress(i as any);
-					}
-				});
+				console.log(res);
+				if(localStorage.getItem('connected_account') !== res[0]) {
+					setIsConnected(true);
+				}
+				else
+					setAccountAddress(localStorage.getItem('connected_account') as any);
 			});
 		}
 	}, []);
@@ -35,13 +34,7 @@ const MainPage = (): JSX.Element => {
 							res[0]
 						] }).then((result: any) => {
 							setAccountAddress(res[0]);
-
-							let _account = [];
-							if(localStorage.getItem('connected_accounts')) {
-								_account = JSON.parse(localStorage.getItem('connected_accounts') as string);
-							}
-							_account.push(res[0]);
-							localStorage.setItem('connected_accounts', JSON.stringify(_account));
+							localStorage.setItem('connected_account', res[0]);
 						});
 					});
 				}}>
