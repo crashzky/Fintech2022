@@ -10,8 +10,10 @@ const MainPage = (): JSX.Element => {
 			ethereum.request({ method: 'eth_requestAccounts' }).then((res: any) => {
 				let _account = JSON.parse(localStorage.getItem('connected_accounts') as string);
 				res.forEach((i: string) => {
-					if(_account.includes(i))
+					if(_account.includes(i)) {
 						setIsConnected(true);
+						setAccountAddress(i as any);
+					}
 				});
 			});
 		}
