@@ -5,7 +5,7 @@ from web3.auto import w3
 import fastapi
 import strawberry
 import strawberry.types
-from src.vendor.eth_account.messages import encode_defunct
+from eth_account.messages import encode_defunct
 
 from src.env import LANDLORD_ADDRESS
 from src.view.auth import Authentication
