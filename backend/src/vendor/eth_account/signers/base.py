@@ -3,7 +3,7 @@ from abc import (
     abstractmethod,
 )
 
-from eth_account.messages import (
+from src.vendor.eth_account.messages import (
     SignableMessage,
 )
 
@@ -33,7 +33,7 @@ class BaseAccount(ABC):
         Sign the EIP-191_ message.
 
         This uses the same structure
-        as in :meth:`~eth_account.account.Account.sign_message`
+        as in :meth:`~src.vendor.eth_account.account.Account.sign_message`
         but without specifying the private key.
 
         :param signable_message: The encoded message, ready for signing
@@ -48,10 +48,10 @@ class BaseAccount(ABC):
         Sign the hash of a message.
 
         This uses the same structure
-        as in :meth:`~eth_account.account.Account.signHash`
+        as in :meth:`~src.vendor.eth_account.account.Account.signHash`
         but without specifying the private key.
 
-        .. CAUTION:: Deprecated for :meth:`~eth_account.signers.base.BaseAccount.sign_message`.
+        .. CAUTION:: Deprecated for :meth:`~src.vendor.eth_account.signers.base.BaseAccount.sign_message`.
             To be removed in v0.6
 
         :param bytes message_hash: 32 byte hash of the message to sign
@@ -64,10 +64,10 @@ class BaseAccount(ABC):
         Sign a transaction dict.
 
         This uses the same structure as in
-        :meth:`~eth_account.account.Account.sign_transaction`
+        :meth:`~src.vendor.eth_account.account.Account.sign_transaction`
         but without specifying the private key.
 
-        .. CAUTION:: Deprecated for :meth:`~eth_account.account.signers.local.sign_transaction`.
+        .. CAUTION:: Deprecated for :meth:`~src.vendor.eth_account.account.signers.local.sign_transaction`.
             This method will be removed in v0.6
 
         :param dict transaction_dict: transaction with all fields specified
@@ -80,7 +80,7 @@ class BaseAccount(ABC):
         Sign a transaction dict.
 
         This uses the same structure as in
-        :meth:`~eth_account.account.Account.sign_transaction`
+        :meth:`~src.vendor.eth_account.account.Account.sign_transaction`
         but without specifying the private key.
 
         :param dict transaction_dict: transaction with all fields specified

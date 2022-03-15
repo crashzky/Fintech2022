@@ -1,4 +1,4 @@
-from eth_account.account import (
+from src.vendor.eth_account.account import (
     Account,
 )
 

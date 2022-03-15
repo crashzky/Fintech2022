@@ -6,7 +6,7 @@ from eth_utils import (
     to_int,
 )
 
-from eth_account._utils.legacy_transactions import (
+from src.vendor.eth_account._utils.legacy_transactions import (
     ChainAwareUnsignedTransaction,
     Transaction,
     UnsignedTransaction,
@@ -14,7 +14,7 @@ from eth_account._utils.legacy_transactions import (
     serializable_unsigned_transaction_from_dict,
     strip_signature,
 )
-from eth_account._utils.typed_transactions import (
+from src.vendor.eth_account._utils.typed_transactions import (
     TypedTransaction,
 )
 
