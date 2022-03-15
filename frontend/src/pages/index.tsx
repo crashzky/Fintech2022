@@ -22,6 +22,8 @@ const MainPage = (): JSX.Element => {
 			<>
 				<button className='authentication__authenticate' onClick={async () => {
 					ethereum.request({ method: 'eth_requestAccounts' }).then((res: any) => {
+						console.log('================');
+						console.log(res);
 						ethereum.request({ method: 'eth_signTypedData', from: res[0], params: [
 							[
 								{
