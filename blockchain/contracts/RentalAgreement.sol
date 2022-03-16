@@ -21,10 +21,16 @@ contract RentalAgreement {
     uint globalRentEndTime;
     bool globalIsRented = false;
 
+    /// Cashiers
+    mapping(address => uint) cashiers;
+    uint cashierIncrement = 1;
+
     constructor (uint roomInternalId) {
         globalRoomInternalID = roomInternalId;
         globalLandlord = msg.sender;
     }
+
+    event PurchasePayment(uint amount);
 
     function getRoomInternalId() public view returns(uint) {
         return globalRoomInternalID;
@@ -125,16 +131,36 @@ contract RentalAgreement {
         return globalRentEndTime;
     }
 
-    address[] cashier;
-
-    function addCashier(address addr) view public {
-        if (msg.sender!=globalTenant) {
+    function addCashier(address addr) public {
+        if (msg.sender != globalTenant) {
             revert("You are not a tenant");
-        } else if (addr == globalLandlord) { 
+        } else if (addr == globalLandlord) {
             revert("The landlord cannot become a cashier");
         } else if (addr == address(0)) {
             revert("Zero address cannot become a cashier");
         }
-
+        // Commit it
+        cashiers[addr] = cashierIncrement++;
     }
+
+    // Check if cashier exists
+    function getCashierNonce(address cashierAddr) view public returns (uint) {
+        return cashiers[cashierAddr];
+    }
+
+    function removeCashier(address cashierAddr) public {
+        if (msg.sender != globalTenant) {
+            revert("You are not a tenant");
+        } else if (cashiers[cashierAddr] == 0) {
+            revert("Unknown cashier");
+        }
+
+        delete cashiers[cashierAddr];
+    }
+
+
+    function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) payable public {
+        emit PurchasePayment(value);
+    }
+
 }
