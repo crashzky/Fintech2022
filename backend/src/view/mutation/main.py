@@ -142,7 +142,7 @@ class Mutation:
     def set_room_contract_address(
         self, id: strawberry.ID, info: strawberry.types.Info, contract_address: typing.Optional[str] = None
     ) -> Room:
-        print("Set room to:", id, contract_address, w3.eth.contract().address)
+        print("Set room to:", id, contract_address, w3.eth.getCode(contract_address) == "0x")
         check_landlord_auth(info)
         db.execute(
             """
@@ -151,7 +151,7 @@ class Mutation:
             WHERE address = ?
             """, [contract_address]
         )
-        if contract_address is not None and w3.isAddress(contract_address) and w3.eth.getCode(contract_address) != "0x":
+        if contract_address is not None and (not w3.isAddress(contract_address) or w3.eth.getCode(contract_address) == "0x"):
             raise BadRequest("Contract with such address not found")
         db.execute(
             """
