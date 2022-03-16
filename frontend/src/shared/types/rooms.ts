@@ -25,11 +25,18 @@ interface IGetRoomResponse {
 	}
 }
 
+interface IGetRoomsResponse {
+	data: {
+		rooms: IRoom[];
+	}
+}
+
 interface IUpdateRoomRequest extends IRoom {
 	id: number;
 }
 
 interface IRoom {
+	id: number;
 	internalName: string;
 	area: number;
 	location: string
@@ -43,4 +50,6 @@ export type {
 	IGetRoomRequest, 
 	IGetRoomResponse,
 	IUpdateRoomRequest,
+	IGetRoomsResponse,
+	IRoom,
 };

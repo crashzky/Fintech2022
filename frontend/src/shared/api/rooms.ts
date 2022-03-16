@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { API_URL } from '../consts/api';
-import { ICreateRoomRequest, ICreateRoomResponse, IGetRoomRequest, IGetRoomResponse, IUpdateRoomRequest } from '../types/rooms';
+import { ICreateRoomRequest, ICreateRoomResponse, IGetRoomRequest, IGetRoomResponse, IGetRoomsResponse, IUpdateRoomRequest } from '../types/rooms';
 
 axios.defaults.baseURL = API_URL;
 
@@ -18,6 +18,22 @@ const createRoom = (data: ICreateRoomRequest): Promise<ICreateRoomResponse> => {
 			}
 		`,
 	})
+};
+
+const getRooms = (): Promise<IGetRoomsResponse> => {
+	return axios.post('', {
+		query: `
+			query {
+				rooms {
+					id,
+					internalName,
+					area,
+					location,
+					contractAddress
+				}
+			}
+		`
+	}).then((res) => res.data);
 };
 
 const getRoom = (data: IGetRoomRequest): Promise<IGetRoomResponse> => {
@@ -55,4 +71,5 @@ export {
 	createRoom,
 	getRoom,
 	updateRoom,
+	getRooms,
 };

@@ -11,7 +11,7 @@ const CreateRoom = (): JSX.Element => {
 
 	useEffect(() => {
 		if(isSuccess) 
-			navigate('/room/2');
+			navigate('/room/' + data.data.createRoom.id);
 	}, [isSuccess]);
 
 	const formik = useFormik({
