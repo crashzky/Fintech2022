@@ -39,6 +39,9 @@ contract RentalAgreement {
 
     function rent(uint deadline, address tenant, uint rentalRate,
         uint billingPeriodDuration, uint billingsCount, Sign memory landlordSign) public payable {
+        // Save last settings to global scope
+        tadd = tenant;
+        
         payable(ladd).transfer(rentalRate);
     }
 
