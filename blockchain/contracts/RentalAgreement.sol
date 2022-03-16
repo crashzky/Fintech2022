@@ -145,7 +145,7 @@ contract RentalAgreement {
 
     // Check if cashier exists
     function getCashierNonce(address cashierAddr) view public returns (uint) {
-        return cashiers[cashierAddr]++;
+        return cashiers[cashierAddr];
     }
 
     function removeCashier(address cashierAddr) public {
@@ -157,10 +157,3 @@ contract RentalAgreement {
 
         delete cashiers[cashierAddr];
     }
-
-    function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) payable public {
-        payable(globalTenant).transfer(value);
-        emit PurchasePayment(value);
-    }
-
-}
