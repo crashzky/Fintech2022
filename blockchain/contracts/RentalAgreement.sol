@@ -75,7 +75,6 @@ contract RentalAgreement {
         endtime = billingsCount * billingPeriodDuration + stime;
         a=1;
 
-        bytes32 A=RentalPermit(deadline, tenant, rentalRate, billingPeriodDuration, billingsCount);
         bytes memory prefix = "\x19Ethereum Signed Message:\n32";
         bytes32 prefixedHashMessage = keccak256(abi.encodePacked(prefix, A));
         address signer = ecrecover(prefixedHashMessage, landlordSign.v, landlordSign.r, landlordSign.s);
