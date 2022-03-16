@@ -48,13 +48,42 @@ contract RentalAgreement {
     function rent(uint deadline, address tenant, uint rentalRate, 
         uint billingPeriodDuration, uint billingsCount, Sign memory landlordSign) public payable {
         tadd = tenant;
-        
-        rrate = rentalRate;
-        duration = billingPeriodDuration;
-        stime = deadline - 10;
-        endtime = billingsCount * billingPeriodDuration + stime;
-        a=1;
-        payable(ladd).transfer(rentalRate);
+
+        if (a==1 && block.timestamp<=deadline) {
+            revert("The contract is being in not allowed state");
+        }
+
+        if (msg.sender==tadd) {
+            rrate = rentalRate;
+            duration = billingPeriodDuration;
+            stime = deadline - 10;
+            endtime = billingsCount * billingPeriodDuration + stime;
+            a=1;
+            payable(ladd).transfer(rentalRate);
+        }
+
+        if (msg.sender!=tadd) {
+            revert("The caller account and the account specified as a tenant do not match");
+        }
+
+        if (msg.sender==ladd) {
+            revert("The landlord cannot become a tenant");
+        }
+
+        if (rentalRate==0) {
+            revert("Rent amount should be strictly greater than zero");
+        }
+
+        if (billingPeriodDuration==0 || billingsCount==0) {
+            revert("Rent period should be strictly greater than zero");
+        }
+
+        bytes32 message = keccak256(abi.encode(deadline, tenant, rentalRate, billingPeriodDuration, billingsCount));
+        address signer = ecrecover(message, landlordSign.v, landlordSign.r, landlordSign.s);
+
+        if (signer != ladd) {
+            revert("Invalid landlord sign");
+        }
     }
     
     function getTenant() view public returns (address) {
