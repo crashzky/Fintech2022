@@ -73,12 +73,12 @@ class Mutation:
         message = db.fetchone()[0]
 
         try:
-            if (
-                Account.recover_message(
-                    encode_defunct(text=message),
-                    vrs=(signed_message.v, signed_message.r, signed_message.s)
-                ) == address
-            ):
+            root_address = Account.recover_message(
+                encode_defunct(text=message),
+                vrs=(signed_message.v, signed_message.r, signed_message.s)
+            )
+            print(message, root_address, address)
+            if root_address == address:
                 info.context["response"].set_cookie(
                     key="access_token_cookie", value="token-" + address
                 )
