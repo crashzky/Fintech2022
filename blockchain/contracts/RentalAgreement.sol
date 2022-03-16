@@ -144,6 +144,16 @@ contract RentalAgreement {
     function getCashierNonce(address cashierAddr) view public returns (uint) {
         return cashiers[cashierAddr];
     }
+
+    function emoveCashier(address cashierAddr) public {
+        if (msg.sender != globalTenant) {
+            revert("You are not a tenant");
+        } else if (cashiers[cashierAddr] == 0) {
+            revert("Unknown cashier");
+        }
+
+        delete cashiers[cashierAddr];
+    }
 //    address[] cashiers;
 //    uint i=0;
 //    function addCashier(address addr) public {
