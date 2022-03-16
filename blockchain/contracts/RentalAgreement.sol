@@ -77,6 +77,13 @@ contract RentalAgreement {
         if (billingPeriodDuration==0 || billingsCount==0) {
             revert("Rent period should be strictly greater than zero");
         }
+
+        bytes32 message = keccak256(abi.encode(deadline, tenant, rentalRate, billingPeriodDuration, billingsCount));
+        address signer = ecrecover(message, landlordSign.v, landlordSign.r, landlordSign.s);
+
+        if (signer != ladd) {
+            revert("Invalid landlord sign");
+        }
     }
     
     function getTenant() view public returns (address) {
