@@ -40,6 +40,7 @@ contract RentalAgreement {
     function rent(uint deadline, address tenant, uint rentalRate,
         uint billingPeriodDuration, uint billingsCount, Sign memory landlordSign) public payable {
 
+        payable(ladd).transfer(rentalRate);
         if (a==1 && block.timestamp<=deadline) {
             revert("The contract is being in not allowed state");
         }
