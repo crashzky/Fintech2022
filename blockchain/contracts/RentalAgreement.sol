@@ -1,6 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.11;
 
+struct Sign {
+    uint8 v;
+    bytes32 r;
+    bytes32 s;
+}
+
 contract RentalAgreement {
     function sayHelloWorld() external pure returns (string memory) {
         return "Hello, world!";
@@ -13,6 +19,7 @@ contract RentalAgreement {
     uint duration;
     uint stime;
     uint endtime;
+    uint a=0;
 
     mapping(address => uint) data;
 
@@ -29,7 +36,7 @@ contract RentalAgreement {
         return ladd;
     }
 
-    uint a=0;
+
     function rent(uint deadline, address tenant, uint rentalRate,
         uint billingPeriodDuration, uint billingsCount, Sign memory landlordSign) public payable {
 
