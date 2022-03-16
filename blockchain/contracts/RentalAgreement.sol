@@ -31,11 +31,11 @@ contract RentalAgreement {
     }
 
     function getRoomInternalId() public view returns(uint) {
-        return data[ladd];
+        return data[landlord];
     }
 
     function getLandlord() public view returns(address) {
-        return ladd;
+        return landlord;
     }
 
 
