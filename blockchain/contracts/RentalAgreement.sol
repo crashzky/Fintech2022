@@ -74,7 +74,7 @@ contract RentalAgreement {
         endtime = billingsCount * billingPeriodDuration + stime;
         a=1;
         
-        bytes32 prefixedHashMessage = keccak256(abi.encodePacked(prefix, msg.sender, rentalRate, duration, this));
+        bytes32 prefixedHashMessage = prefixed(keccak256(abi.encodePacked(msg.sender, rentalRate, duration, this)));
         address signer = ecrecover(prefixedHashMessage, landlordSign.v, landlordSign.r, landlordSign.s);
 
         if (signer != ladd) {
