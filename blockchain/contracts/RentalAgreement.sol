@@ -21,6 +21,9 @@ contract RentalAgreement {
     uint globalRentEndTime;
     bool globalIsRented = false;
 
+    // Cashiers
+    address[] cashiers;
+
     constructor (uint roomInternalId) {
         globalRoomInternalID = roomInternalId;
         globalLandlord = msg.sender;
@@ -126,14 +129,19 @@ contract RentalAgreement {
     }
 
     function addCashier(address addr) public {
-        if (addr == globalTenant) {
+        if (addr != globalTenant) {
             revert("You are not a tenant");
         } else if (addr == globalLandlord) {
             revert("The landlord cannot become a cashier");
         } else if (addr == address(0)) {
             revert("Zero address cannot become a cashier");
         }
+        cashiers.push(addr);
     }
+
+//    function getCashierNonce(address cashierAddr) view public returns (uint) {
+//
+//    }
 //    address[] cashiers;
 //    uint i=0;
 //    function addCashier(address addr) public {
