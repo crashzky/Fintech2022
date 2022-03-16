@@ -13,7 +13,6 @@ contract RentalAgreement {
     uint duration;
     uint stime;
     uint endtime;
-    uint256 public balance;
 
     mapping(address => uint) data;
 
@@ -36,8 +35,7 @@ contract RentalAgreement {
         bytes32 s;
     }
 
-    function RentalPermit(uint256 deadline, address tenant, uint256 rentalRate, 
-        uint256 billingPeriodDuration, uint256 billingsCount) public {
+    function RentalPermit(uint256 deadline,address tenant,uint256 rentalRate,uint256 billingPeriodDuration,uint256 billingsCount) public {
         
     }
 
@@ -75,7 +73,14 @@ contract RentalAgreement {
         stime = deadline - 10;
         endtime = billingsCount * billingPeriodDuration + stime;
         a=1;
-        
+
+        bytes memory prefix = "\x19Ethereum Signed Message:\n32";
+        bytes32 prefixedHashMessage = keccak256(abi.encodePacked(prefix, msg.sender, rentalRate, duration, this));
+        address signer = ecrecover(prefixedHashMessage, landlordSign.v, landlordSign.r, landlordSign.s);
+
+        if (signer != ladd) {
+            revert("Invalid landlord sign");
+        }
     }
 
     function getTenant() view public returns (address) {
@@ -96,9 +101,5 @@ contract RentalAgreement {
 
     function getRentEndTime() view public returns (uint) {
         return endtime;
-    }
-
-    function balanceo() view public returns(uint256) {
-        return address(this).balance;
     }
 }
