@@ -116,6 +116,7 @@ class Mutation:
 
     @strawberry.mutation
     def edit_room(self, id: strawberry.ID, room: InputRoom, info: strawberry.types.Info) -> Room:
+        Room.get_by_id(id)
         check_landlord_auth(info)
         if room.area <= 0:
             raise BadRequest("The room area must be greater than zero")
