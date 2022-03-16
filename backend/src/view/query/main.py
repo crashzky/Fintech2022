@@ -32,11 +32,4 @@ class Query:
 
     @strawberry.field
     def room(self, id: strawberry.ID) -> Room:
-        db.execute(
-            """
-            SELECT id, internal_name, area, location
-            FROM room
-            WHERE id = ?
-            """, [id]
-        )
-        return Room(**db.fetchone())
+        return Room.get_by_id(id)

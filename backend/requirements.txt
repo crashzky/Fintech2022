@@ -26,8 +26,6 @@ msgpack==1.0.3
 packaging==20.9
 pexpect==4.8.0
 pkginfo==1.8.2
-poetry==1.2.0a2
-poetry-core==1.1.0a6
 ptyprocess==0.7.0
 pydantic==1.8.2
 Pygments==2.10.0

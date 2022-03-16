@@ -17,8 +17,8 @@ services:
       - "8000:8000"
     build:
       context: backend
-#    volumes:
-#      - ./backend/src/:/app/src/
+    volumes:
+      - ./backend/src/:/app/src/
     environment:
       - LANDLORD_ADDRESS
       - RPC_URL

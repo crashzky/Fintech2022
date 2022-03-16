@@ -68,16 +68,19 @@ class Mutation:
         )
         message = db.fetchone()[0]
 
+        real_v = 0
+        if int(signed_message.v, base=16) == 28:
+            real_v = 1
         sign = eth_keys.keys.Signature(
             vrs=(
-                int(signed_message.v, base=16),
+                real_v,
                 int(signed_message.r, base=16),
                 int(signed_message.s, base=16),
             ),
         )
         if (
             w3.eth.account.recover_message(
-                encode_defunct(message), signature=sign.to_hex()
+                encode_defunct(text=message), signature=sign.to_hex()
             )
             == address
         ):
@@ -108,14 +111,7 @@ class Mutation:
             }
         )
         conn.commit()
-        db.execute(
-            """
-            SELECT id, internal_name, area, location
-            FROM room
-            WHERE id = ?
-            """, [room_id]
-        )
-        return Room(**db.fetchone())
+        return Room.get_by_id(room_id)
 
     @strawberry.mutation
     def edit_room(self, id: strawberry.ID, room: InputRoom) -> Room:
@@ -123,9 +119,22 @@ class Mutation:
 
     @strawberry.mutation
     def set_room_contract_address(
-        self, id: strawberry.ID, contract_address: typing.Optional[str]
+        self, id: strawberry.ID, contract_address: typing.Optional[str],
+        info: strawberry.types.Info
     ) -> Room:
-        pass
+        check_landlord_auth(info)
+        db.execute(
+            """
+            UPDATE room
+            SET contract_address = :contract_address
+            WHERE id = :room_id
+            """, {
+                "room_id": id,
+                "contract_address": contract_address
+            }
+        )
+        return Room.get_by_id(id)
+
 
     @strawberry.mutation
     def set_room_public_name(
