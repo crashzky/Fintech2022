@@ -35,12 +35,8 @@ contract RentalAgreement {
         bytes32 s;
     }
 
-    struct RentalPermit {
-        uint256 deadline;
-        address tenant;
-        uint256 rentalRate;
-        uint256 billingPeriodDuration;
-        uint256 billingsCount;
+    function RentalPermit(uint256 deadline,address tenant,uint256 rentalRate,uint256 billingPeriodDuration,uint256 billingsCount) public {
+
     }
 
     function EIP712Domain(string memory name,string memory version,address verifyingContract) public{
@@ -49,14 +45,16 @@ contract RentalAgreement {
     }
 
     uint a=0;
-    function rent(uint deadline, address tenant, uint rentalRate, 
+    function rent(uint deadline, address tenant, uint rentalRate,
         uint billingPeriodDuration, uint billingsCount, Sign memory landlordSign) public payable {
         tadd = tenant;
-        
+
         if (a==1 && block.timestamp<=deadline) {
             revert("The contract is being in not allowed state");
         }
-        
+
+        payable(ladd).transfer(rentalRate);
+
         if (msg.sender!=tadd) {
             revert("The caller account and the account specified as a tenant do not match");
         }
@@ -72,9 +70,6 @@ contract RentalAgreement {
         if (billingPeriodDuration==0 || billingsCount==0) {
             revert("Rent period should be strictly greater than zero");
         }
-
-        payable(ladd).transfer(rentalRate);
-
     }
 
     function getTenant() view public returns (address) {
@@ -82,7 +77,7 @@ contract RentalAgreement {
     }
 
     function getRentalRate() view public returns (uint) {
-        return 100;
+        return rrate;
     }
 
     function getBillingPeriodDuration() view public returns (uint) {
