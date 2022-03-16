@@ -3,8 +3,9 @@ services:
   frontend:
     ports:
       - "3000:3000"
-    build:
-      context: frontend
+#    build:
+#      context: frontend
+    image: crashzy/azsamlkslmkalmkadslkasdlkdaadsads
 #    volumes:
 #      - ./frontend/:/usr/src/app
     environment:
@@ -15,8 +16,9 @@ services:
   backend:
     ports:
       - "8000:8000"
-    build:
-      context: backend
+#    build:
+#      context: backend
+    image: crashzy/adasdjiojeoioenjoqnoasnoasdonnoads
 #    volumes:
 #      - ./backend/src/:/app/src/
     environment:
@@ -25,8 +27,9 @@ services:
     container_name: solution-backend
 
   solution-web:
-    build:
-      context: reverseproxy
+#    build:
+#      context: reverseproxy
+    image: crashzy/aaskdaslkdalkdalmdasklkdaldkdaddkkadskdakdaads
 #    volumes:
 #      - ./reverseproxy/nginx.conf:/etc/nginx/conf.d/default.conf
     ports:
