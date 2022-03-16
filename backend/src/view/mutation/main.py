@@ -151,8 +151,8 @@ class Mutation:
             WHERE address = ?
             """, [contract_address]
         )
-        if contract_address is not None and db.fetchone() is None:
-            raise BadRequest("Contract with such address not found")
+        # if contract_address is not None and db.fetchone() is None:
+        #     raise BadRequest("Contract with such address not found")
         db.execute(
             """
             UPDATE room
