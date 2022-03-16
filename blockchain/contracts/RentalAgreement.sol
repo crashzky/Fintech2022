@@ -84,6 +84,18 @@ contract RentalAgreement {
 
         if (signer != globalLandlord) {
             revert("Invalid landlord sign");
+        } else if (block.timestamp > deadline) {
+            revert("The operation is outdated");
+        } else if (msg.sender != tenant) {
+            revert("The caller account and the account specified as a tenant do not match");
+        } else if (msg.sender == globalLandlord) {
+            revert("The landlord cannot become a tenant");
+        } else if (billingPeriodDuration <= 0) {
+            revert("Rent period should be strictly greater than zero");
+        } else if (billingsCount <= 0) {
+            revert("Rent period repeats should be strictly greater than zero");
+        } else if (msg.value != rentalRate) {
+            revert("Incorrect deposit");
         }
         // Complete transaction and pay for the renting
         payable(globalLandlord).transfer(rentalRate);
