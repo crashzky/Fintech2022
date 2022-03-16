@@ -25,7 +25,8 @@ class Room:
             SELECT id, internal_name, area, location, contract_address, public_name
             FROM room
             WHERE id = ?
-            """, [id]
+            """,
+            [id],
         )
         room = db.fetchone()
         if room is None:
