@@ -22,7 +22,7 @@ contract RentalAgreement {
     bool globalIsRented = false;
 
     constructor (uint roomInternalId) {
-        globalRoomInternalID = roomInternalId;
+        globalRoomInternalID = roomInternalId();
         globalLandlord = msg.sender;
     }
 
