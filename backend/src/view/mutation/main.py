@@ -194,7 +194,7 @@ class Mutation:
         db.execute(
             """
             UPDATE room
-            SET public_name := :public_name
+            SET public_name = :public_name
             WHERE id = :room_id
             """,
             {"room_id": id, "public_name": public_name},
