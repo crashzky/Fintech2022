@@ -9,9 +9,8 @@ const RoomsPage = (): JSX.Element => {
 	const { data } = useQuery('auth', checkAuntefication);
 
 	useEffect(() => {
-		if(!data?.data.authentication.isLandlord)
-			setIsLandlord(false);
-
+		if(data?.data.authentication.isLandlord) 
+			setIsLandlord(true);
 	}, [data]);
 
 	if(isLandlord) {
