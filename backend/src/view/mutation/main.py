@@ -1,13 +1,9 @@
 import typing
 import uuid
 
-import eth_keys
-import fastapi
-import strawberry
 import strawberry.types
 from eth_account.messages import encode_defunct
 from eth_account import Account
-from web3.auto import w3
 
 from src.checks import check_landlord_auth
 from src.env import LANDLORD_ADDRESS
