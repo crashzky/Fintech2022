@@ -5,7 +5,7 @@ import strawberry.types
 from eth_account.messages import encode_defunct
 from eth_account import Account
 
-from src.checks import check_landlord_auth
+from src.checks import check_landlord_auth, someone_auth
 from src.env import LANDLORD_ADDRESS
 from src.exceptions import BadRequest
 from src.storage import addresses_messages, conn, db
@@ -166,8 +166,22 @@ class Mutation:
 
     @strawberry.mutation
     def set_room_public_name(
-        self, id: strawberry.ID, public_name: typing.Optional[str]
+        self, id: strawberry.ID, public_name: typing.Optional[str],
+        info: strawberry.types.Info
     ) -> Room:
+        address = someone_auth(info)
+        db.execute(
+            """
+            SELECT contract_address
+            FROM room
+            WHERE id = ?
+            """, [id]
+        )
+        such_room = db.fetchone()
+        if such_room is None:
+            raise BadRequest("Room with such ID not found")
+        elif such_room["contract_address"] != address:
+            raise BadRequest("This room is not rented by you")
         db.execute(
             """
             UPDATE room
