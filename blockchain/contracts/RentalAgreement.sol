@@ -90,9 +90,9 @@ contract RentalAgreement {
             revert("The caller account and the account specified as a tenant do not match");
         } else if (msg.sender == globalLandlord) {
             revert("The landlord cannot become a tenant");
+        } else if (rentalRate <= 0) {
+            revert("Rent amount should be strictly greater than zero");
         } else if (billingPeriodDuration <= 0) {
-            revert("Rent period should be strictly greater than zero");
-        } else if (billingsCount <= 0) {
             revert("Rent period repeats should be strictly greater than zero");
         } else if (msg.value != rentalRate) {
             revert("Incorrect deposit");
