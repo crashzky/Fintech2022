@@ -151,7 +151,7 @@ class Mutation:
             WHERE address = ?
             """, [contract_address]
         )
-        if contract_address is not None and w3.eth.contract().address != contract_address:
+        if contract_address is not None and w3.isAddress(contract_address) and w3.eth.getCode(contract_address) != "0x":
             raise BadRequest("Contract with such address not found")
         db.execute(
             """
@@ -163,7 +163,7 @@ class Mutation:
                 "contract_address": contract_address
             }
         )
-        
+
         conn.commit()
         return Room.get_by_id(id)
 
