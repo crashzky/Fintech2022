@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
 import { authenticate, requestAuthentication } from '../../shared/api/auth';
-import { vrs } from 'eth-crypto';
+import { deserializeSignature, exportRecoveryParam } from 'rsv-signature';
 
 const MainPage = (): JSX.Element => {
 	const { ethereum } = window as any;
@@ -40,7 +40,11 @@ const MainPage = (): JSX.Element => {
 			] }).then((result: any) => {				
 				authenticateMutation.mutate({
 					address: accountAddressRequest,
-					signedMessage: vrs.fromString(result),
+					signedMessage: {
+						r: '0x' + result.substring(2).substring(0, 64),
+						s: '0x' + result.substring(2).substring(64, 128),
+						v: '0x' + result.substring(2).substring(128, 130),
+					},
 				});
 				setAccountAddress(accountAddressRequest as any);
 				localStorage.setItem('connected_account', accountAddressRequest);
