@@ -155,8 +155,8 @@ class Mutation:
         check_landlord_auth(info)
         if contract_address is not None and (
             contract_address == ""
-            or not w3.isAddress(contract_address)
-            or w3.eth.getCode(w3.toChecksumAddress(contract_address)) == "0x"
+            or not w3.isChecksumAddress(contract_address)
+            or w3.eth.getCode(contract_address) == "0x"
         ):
             raise BadRequest("Contract with such address not found")
         db.execute(
