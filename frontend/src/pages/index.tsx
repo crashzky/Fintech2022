@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react';
+import { useMutation } from 'react-query';
+import { requestAuthentication } from '../shared/api/auth';
 
 const MainPage = (): JSX.Element => {
 	const { ethereum } = window as any;
 	const [accountAddress, setAccountAddress] = useState(null);
 	const [isConnected, setIsConnected] = useState(false);
+	const [accountAddressRequest, setAccountAddressRequest] = useState('');
+
+	const authRequestMutation = useMutation(requestAuthentication);
 
 	useEffect(() => {
 		if(localStorage.getItem('connected_account')) {
@@ -17,25 +22,35 @@ const MainPage = (): JSX.Element => {
 			});
 		}
 	}, []);
+	
+	useEffect(() => {
+		if(authRequestMutation.isSuccess) {
+			console.log(authRequestMutation.data.data.message);
+			ethereum.request({ method: 'personal_sign', from: accountAddressRequest, params: [
+				[
+					{
+						type: 'string',
+						name: 'Message',
+						value: authRequestMutation.data.data.message
+					},
+				],
+				accountAddressRequest
+			] }).then((result: any) => {
+				setAccountAddress(accountAddressRequest as any);
+				localStorage.setItem('connected_account', accountAddressRequest);
+			});
+		}
+	}, [authRequestMutation.isSuccess]);
 
 	if(!accountAddress) {
 		return (
 			<>
 				<button className='authentication__authenticate' onClick={async () => {
 					ethereum.request({ method: 'eth_requestAccounts' }).then((res: any) => {
-						ethereum.request({ method: 'personal_sign', from: res[0], params: [
-							[
-								{
-									type: 'string',
-									name: 'Message',
-									value: 'Подтвердите подписание'
-								},
-							],
-							res[0]
-						] }).then((result: any) => {
-							setAccountAddress(res[0]);
-							localStorage.setItem('connected_account', res[0]);
+						authRequestMutation.mutate({
+							address: res[0],
 						});
+						setAccountAddressRequest(res[0]);
 					});
 				}}>
 	

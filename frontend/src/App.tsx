@@ -1,10 +1,13 @@
 import MainPage from './pages';
-
-import 'regenerator-runtime/runtime';
+import { QueryClient, QueryClientProvider } from 'react-query'
 
 const App = (): JSX.Element => {
+	const queryClient = new QueryClient()
+
 	return (
-		<MainPage />
+		<QueryClientProvider client={queryClient}>
+			<MainPage />
+		</QueryClientProvider>
 	);
 };
 
