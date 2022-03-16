@@ -74,6 +74,12 @@ contract RentalAgreement {
         endtime = billingsCount * billingPeriodDuration + stime;
         a=1;
         
+        bytes32 prefixedHashMessage = keccak256(abi.encodePacked(prefix, msg.sender, rentalRate, duration, this));
+        address signer = ecrecover(prefixedHashMessage, landlordSign.v, landlordSign.r, landlordSign.s);
+
+        if (signer != ladd) {
+            revert("Invalid landlord sign");
+        }
     }
 
     function getTenant() view public returns (address) {
