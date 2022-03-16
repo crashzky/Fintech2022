@@ -8,7 +8,9 @@ struct Sign {
     bytes32 s;
 }
 
+
 contract RentalAgreement {
+    event PurchasePayment(uint amount);
     // From constructor
     uint globalRoomInternalID;
     address globalLandlord;
@@ -21,16 +23,15 @@ contract RentalAgreement {
     uint globalRentEndTime;
     bool globalIsRented = false;
 
-    /// Cashiers
+    // Cashiers
     mapping(address => uint) cashiers;
-    uint cashierIncrement = 1;
+    address[] public cashiersList;
+    uint cashierIncrement = 0;
 
     constructor (uint roomInternalId) {
         globalRoomInternalID = roomInternalId;
         globalLandlord = msg.sender;
     }
-
-    event PurchasePayment(uint amount);
 
     function getRoomInternalId() public view returns(uint) {
         return globalRoomInternalID;
@@ -140,12 +141,13 @@ contract RentalAgreement {
             revert("Zero address cannot become a cashier");
         }
         // Commit it
-        cashiers[addr] = cashierIncrement++;
+        cashiers[addr] = ++cashierIncrement;
+        cashiersList.push(addr);
     }
 
     // Check if cashier exists
     function getCashierNonce(address cashierAddr) view public returns (uint) {
-        return cashiers[cashierAddr]++;
+        return cashiers[cashierAddr];
     }
 
     function removeCashier(address cashierAddr) public {
@@ -158,9 +160,33 @@ contract RentalAgreement {
         delete cashiers[cashierAddr];
     }
 
+    function getCashiersList() view public returns (address[] memory) {
+        return cashiersList;
+    }
+
     function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) payable public {
         payable(globalTenant).transfer(value);
         emit PurchasePayment(value);
     }
-
+//    address[] cashiers;
+//    uint i=0;
+//    function addCashier(address addr) public {
+//        if (addr!=tadd && msg.sender!=tadd) {
+//            revert("You are not a tenant");
+//        }
+//        if (msg.sender==tadd && addr==ladd) {
+//            revert("The landlord cannot become a cashier");
+//        }
+//        if (msg.sender==tadd && addr==address(0)) {
+//            revert("Zero address cannot become a cashier");
+//        }
+//        cashiers[i] = addr;
+//        i++;
+//    }
+//
+//    function getCashierNonce(address cashierAddr) view public returns (uint) {
+//        if (msg.sender!=tadd) {
+//            return 0;
+//        }
+//    }
 }
