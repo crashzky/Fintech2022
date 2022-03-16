@@ -6,6 +6,7 @@ from eth_account.messages import encode_defunct
 from eth_account import Account
 
 from src.checks import check_landlord_auth, someone_auth
+from src.client import w3
 from src.env import LANDLORD_ADDRESS
 from src.exceptions import BadRequest
 from src.storage import addresses_messages, conn, db
@@ -141,7 +142,7 @@ class Mutation:
     def set_room_contract_address(
         self, id: strawberry.ID, info: strawberry.types.Info, contract_address: typing.Optional[str] = None
     ) -> Room:
-        print("Set room to:", id, contract_address)
+        print("Set room to:", id, contract_address, w3.eth.contract().address)
         check_landlord_auth(info)
         db.execute(
             """
@@ -150,8 +151,8 @@ class Mutation:
             WHERE address = ?
             """, [contract_address]
         )
-        # if contract_address is not None and db.fetchone() is None:
-        #     raise BadRequest("Contract with such address not found")
+        if contract_address is not None and w3.eth.contract().address != contract_address:
+            raise BadRequest("Contract with such address not found")
         db.execute(
             """
             UPDATE room
