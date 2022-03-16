@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
-import { requestAuthentication } from '../../shared/api/auth';
+import { authenticate, requestAuthentication } from '../../shared/api/auth';
 
 const MainPage = (): JSX.Element => {
 	const { ethereum } = window as any;
@@ -9,6 +9,7 @@ const MainPage = (): JSX.Element => {
 	const [accountAddressRequest, setAccountAddressRequest] = useState('');
 
 	const authRequestMutation = useMutation(requestAuthentication);
+	const authenticateMutation = useMutation(authenticate);
 
 	useEffect(() => {
 		if(localStorage.getItem('connected_account')) {
@@ -36,12 +37,28 @@ const MainPage = (): JSX.Element => {
 				],
 				accountAddressRequest
 			] }).then((result: any) => {
-				console.log(result);
-				setAccountAddress(accountAddressRequest as any);
-				localStorage.setItem('connected_account', accountAddressRequest);
+				const r = '0x' + result.substring(2).substring(0, 64);
+				const s = '0x' + result.substring(2).substring(64, 128);
+				const v = '0x' + result.substring(2).substring(128, 130);
+				
+				authenticateMutation.mutate({
+					address: accountAddressRequest,
+					signedMessage: {
+						r,
+						s,
+						v,
+					}
+				});
 			});
 		}
 	}, [authRequestMutation.isSuccess]);
+
+	useEffect(() => {
+		if(authenticateMutation.isSuccess) {
+			setAccountAddress(authenticateMutation.data.data.authentication.address as any);
+			localStorage.setItem('connected_account', authenticateMutation.data.data.authentication.address);
+		}
+	}, [authenticateMutation.isSuccess]);
 
 	if(!accountAddress) {
 		return (
