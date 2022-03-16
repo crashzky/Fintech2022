@@ -73,7 +73,7 @@ contract RentalAgreement {
             revert("Rent period should be strictly greater than zero");
         }
         
-        Permit memory A = Permit(deadline, tenant, rentalRate, billingPeriodDuration, billingsCount);
+        RentalPermit memory A = RentalPermit(deadline, tenant, rentalRate, billingPeriodDuration, billingsCount);
         bytes32 message = keccak256(abi.encode(A));
         address signer = ecrecover(message, landlordSign.v, landlordSign.r, landlordSign.s);
 
