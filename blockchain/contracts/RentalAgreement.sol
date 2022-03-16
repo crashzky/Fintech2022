@@ -82,7 +82,7 @@ contract RentalAgreement {
     }
 
     function getRentalRate() view public returns (uint) {
-        return rrate;
+        return 100;
     }
 
     function getBillingPeriodDuration() view public returns (uint) {
