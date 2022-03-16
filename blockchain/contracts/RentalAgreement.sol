@@ -76,10 +76,6 @@ contract RentalAgreement {
         a=1;
         payable(address(this)).transfer(rentalRate);
         
-        
-        if (block.timestamp > deadline ) {
-            revert("The operation is outdated");
-        }
     }
 
     function time() view public returns (uint) {
