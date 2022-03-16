@@ -13,7 +13,7 @@ const RoomsPage = (): JSX.Element => {
 
 	useEffect(() => {
 		web3.eth.requestAccounts().then((res: any) => {
-			if(res[0]=== data?.data.authentication.address) 
+			if(data?.data.authentication.isLandlord) 
 				setIsLandlord(true);
 		});
 	}, [data]);
