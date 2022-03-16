@@ -113,7 +113,7 @@ class Mutation:
                 "internal_name": room.internal_name,
                 "area": room.area,
                 "location": room.location,
-            },
+            }
         )
         conn.commit()
         return Room.get_by_id(room_id)
