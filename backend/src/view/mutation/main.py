@@ -153,6 +153,10 @@ class Mutation:
     ) -> Room:
         print("Set room to:", id, contract_address)
         check_landlord_auth(info)
+        try:
+            print(w3.eth.getCode(contract_address))
+        except:
+            pass
         if contract_address is not None and (
             contract_address == ""
             or not w3.isChecksumAddress(contract_address)
