@@ -57,7 +57,7 @@ contract RentalAgreement {
         globalIsRented = true;
 
         // Verify sign
-        bytes32 eip712DomainHash = keccak256(
+        bytes32 EIP712Domain = keccak256(
             abi.encode(
                 keccak256(
                     "EIP712Domain(string name,string version,address verifyingContract)"
@@ -68,7 +68,7 @@ contract RentalAgreement {
             )
         );
 
-        bytes32 hashStruct = keccak256(
+        bytes32 RentalPermit = keccak256(
             abi.encode(
                 keccak256("RentalPermit(uint256 deadline,address tenant,uint256 rentalRate,uint256 billingPeriodDuration,uint256 billingsCount)"),
                 deadline,
@@ -79,8 +79,8 @@ contract RentalAgreement {
             )
         );
 
-        bytes32 hash = keccak256(abi.encodePacked("\x19\x01", eip712DomainHash, hashStruct));
-        address signer = ecrecover(hash, v, r, s);
+        bytes32 messageHash = keccak256(abi.encodePacked("\x19\x01", EIP712Domain, RentalPermit));
+        address signer = ecrecover(messageHash, landlordSign.v, landlordSign.r, landlordSign.s);
 
         if (signer != globalLandlord) {
             revert("Invalid landlord sign");
