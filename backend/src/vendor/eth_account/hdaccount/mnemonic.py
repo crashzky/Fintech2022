@@ -22,31 +22,15 @@
 #
 
 import os
-from pathlib import (
-    Path,
-)
 import secrets
-from typing import (
-    Dict,
-    List,
-)
+from pathlib import Path
+from typing import Dict, List
 
-from bitarray import (
-    bitarray,
-)
-from bitarray.util import (
-    ba2int,
-    int2ba,
-)
-from eth_utils import (
-    ValidationError,
-)
+from bitarray import bitarray
+from bitarray.util import ba2int, int2ba
+from eth_utils import ValidationError
 
-from ._utils import (
-    normalize_string,
-    pbkdf2_hmac_sha512,
-    sha256,
-)
+from ._utils import normalize_string, pbkdf2_hmac_sha512, sha256
 
 VALID_ENTROPY_SIZES = [16, 20, 24, 28, 32]
 VALID_WORD_COUNTS = [12, 15, 18, 21, 24]
@@ -72,7 +56,7 @@ def get_wordlist(language):
 
 class Mnemonic:
     def __init__(self, raw_language="english"):
-        language = raw_language.lower().replace(' ', '_')
+        language = raw_language.lower().replace(" ", "_")
         languages = Mnemonic.list_languages()
         if language not in languages:
             raise ValidationError(
@@ -98,17 +82,23 @@ class Mnemonic:
 
         # No language had all words match it, so the language can't be fully determined
         if len(matching_languages) < 1:
-            raise ValidationError(f"Language not detected for word(s): {raw_mnemonic}")
+            raise ValidationError(
+                f"Language not detected for word(s): {raw_mnemonic}"
+            )
 
         # If both chinese simplified and chinese traditional match (because one is a subset of the
         # other) then return simplified. This doesn't hold for other languages.
-        if len(matching_languages) == 2 and all("chinese" in lang for lang in matching_languages):
+        if len(matching_languages) == 2 and all(
+            "chinese" in lang for lang in matching_languages
+        ):
             return "chinese_simplified"
 
         # Because certain wordlists share some similar words, if we detect multiple languages
         # that the provided mnemonic word(s) could be valid in, we have to throw
         if len(matching_languages) > 1:
-            raise ValidationError(f"Word(s) are valid in multiple languages: {raw_mnemonic}")
+            raise ValidationError(
+                f"Word(s) are valid in multiple languages: {raw_mnemonic}"
+            )
 
         (language,) = matching_languages
         return language
@@ -119,7 +109,9 @@ class Mnemonic:
                 f"Invalid choice for number of words: {num_words}, should be one of "
                 f"{VALID_WORD_COUNTS}"
             )
-        return self.to_mnemonic(os.urandom(4 * num_words // 3))  # 4/3 bytes per word
+        return self.to_mnemonic(
+            os.urandom(4 * num_words // 3)
+        )  # 4/3 bytes per word
 
     def to_mnemonic(self, entropy) -> str:
         entropy_size = len(entropy)
@@ -136,12 +128,17 @@ class Mnemonic:
         checksum.frombytes(sha256(entropy))
 
         # Add enough bits from the checksum to make it modulo 11 (2**11 = 2048)
-        bits.extend(checksum[:entropy_size // 4])
-        indices = tuple(ba2int(bits[i * 11: (i + 1) * 11]) for i in range(len(bits) // 11))
+        bits.extend(checksum[: entropy_size // 4])
+        indices = tuple(
+            ba2int(bits[i * 11 : (i + 1) * 11])
+            for i in range(len(bits) // 11)
+        )
         words = tuple(self.wordlist[idx] for idx in indices)
 
-        if self.language == "japanese":  # Japanese must be joined by ideographic space.
-            phrase = u"\u3000".join(words)
+        if (
+            self.language == "japanese"
+        ):  # Japanese must be joined by ideographic space.
+            phrase = "\u3000".join(words)
         else:
             phrase = " ".join(words)
         return phrase
@@ -167,11 +164,13 @@ class Mnemonic:
 
         # Checksum the raw entropy bits
         checksum = bitarray()
-        checksum.frombytes(sha256(encoded_seed[:entropy_size * 8].tobytes()))
-        computed_checksum = checksum[:len(encoded_seed) - entropy_size * 8].tobytes()
+        checksum.frombytes(sha256(encoded_seed[: entropy_size * 8].tobytes()))
+        computed_checksum = checksum[
+            : len(encoded_seed) - entropy_size * 8
+        ].tobytes()
 
         # Extract the stored checksum bits
-        stored_checksum = encoded_seed[entropy_size * 8:].tobytes()
+        stored_checksum = encoded_seed[entropy_size * 8 :].tobytes()
 
         # Check that the stored matches the relevant slice of the actual checksum
         # NOTE: Use secrets.compare_digest for protection again timing attacks
@@ -181,7 +180,9 @@ class Mnemonic:
         if prefix in self.wordlist:
             return prefix
         else:
-            matches = [word for word in self.wordlist if word.startswith(prefix)]
+            matches = [
+                word for word in self.wordlist if word.startswith(prefix)
+            ]
             if len(matches) == 1:  # matched exactly one word in the wordlist
                 return matches[0]
             else:

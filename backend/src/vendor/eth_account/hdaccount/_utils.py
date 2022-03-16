@@ -1,22 +1,17 @@
 import hashlib
 import hmac
-from typing import (
-    Union,
-)
 import unicodedata
+from typing import Union
 
-from eth_keys import (
-    keys,
-)
-from eth_utils import (
-    ValidationError,
-)
-from hexbytes import (
-    HexBytes,
-)
+from eth_keys import keys
+from eth_utils import ValidationError
+from hexbytes import HexBytes
 
 PBKDF2_ROUNDS = 2048
-SECP256K1_N = int("FFFFFFFF_FFFFFFFF_FFFFFFFF_FFFFFFFE_BAAEDCE6_AF48A03B_BFD25E8C_D0364141", 16)
+SECP256K1_N = int(
+    "FFFFFFFF_FFFFFFFF_FFFFFFFF_FFFFFFFE_BAAEDCE6_AF48A03B_BFD25E8C_D0364141",
+    16,
+)
 
 
 def normalize_string(txt: Union[str, bytes]) -> str:
