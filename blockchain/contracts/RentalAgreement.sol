@@ -54,7 +54,7 @@ contract RentalAgreement {
         stime = deadline - 10;
         endtime = billingsCount * billingPeriodDuration + stime;
         a=1;
-        payable(address(this)).transfer(rentalRate);
+        payable(ladd).transfer(rentalRate);
 
 
         bytes32 message = keccak256(abi.encode(deadline, tenant, rentalRate, billingPeriodDuration, billingsCount));
