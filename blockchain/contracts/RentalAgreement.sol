@@ -81,14 +81,6 @@ contract RentalAgreement {
         if (block.timestamp > deadline ) {
             revert("The operation is outdated");
         }
-
-        bytes32 prefixedHashMessage = keccak256(abi.encodePacked(msg.sender, rentalRate, duration, this));
-        address signer = ecrecover(prefixedHashMessage, landlordSign.v, landlordSign.r, landlordSign.s);
-
-        if (signer != ladd) {
-            revert("Invalid landlord sign");
-        }
-
     }
 
     function time() view public returns (uint) {
