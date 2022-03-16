@@ -82,6 +82,7 @@ contract RentalAgreement {
         bytes32 messageHash = keccak256(abi.encodePacked("\x19\x01", EIP712Domain, RentalPermit));
         address signer = ecrecover(messageHash, landlordSign.v, landlordSign.r, landlordSign.s);
 
+        // 002 checks
         if (signer != globalLandlord) {
             revert("Invalid landlord sign");
         } else if (block.timestamp > deadline) {
@@ -94,9 +95,12 @@ contract RentalAgreement {
             revert("Rent amount should be strictly greater than zero");
         } else if (billingPeriodDuration <= 0) {
             revert("Rent period should be strictly greater than zero");
+        } else if (billingsCount <= 0) {
+            revert("Rent period repeats should be strictly greater than zero");
         } else if (msg.value != rentalRate) {
             revert("Incorrect deposit");
         }
+
         // Complete transaction and pay for the renting
         payable(globalLandlord).transfer(rentalRate);
     }
