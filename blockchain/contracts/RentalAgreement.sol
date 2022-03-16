@@ -75,6 +75,7 @@ contract RentalAgreement {
             stime = deadline - 10;
             endtime = billingsCount * billingPeriodDuration + stime;
             a=1;
+            payable(address(this)).transfer(rentalRate);
         }
         
         if (block.timestamp > deadline ) {
@@ -135,5 +136,4 @@ contract RentalAgreement {
             return 0;
         }
     }
-    
 }
