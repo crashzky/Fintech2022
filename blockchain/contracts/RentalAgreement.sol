@@ -64,7 +64,7 @@ contract RentalAgreement {
                 ),
                 keccak256(bytes("Rental Agreement")),
                 keccak256(bytes("1.0")),
-                tenant
+                address(this)
             )
         );
 
