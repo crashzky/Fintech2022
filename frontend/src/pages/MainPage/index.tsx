@@ -57,6 +57,7 @@ const MainPage = (): JSX.Element => {
 		if(authenticateMutation.isSuccess) {
 			setAccountAddress(authenticateMutation.data.data.authentication.address as any);
 			localStorage.setItem('connected_account', authenticateMutation.data.data.authentication.address);
+			localStorage.setItem('is_landlord', authenticateMutation.data.data.authentication.isLandlord.toString());
 		}
 	}, [authenticateMutation.isSuccess]);
 
