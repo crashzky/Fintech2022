@@ -30,7 +30,7 @@ const CreateRoom = (): JSX.Element => {
 	});
 	
 	return (
-		<form onSubmit={formik.handleSubmit}>
+		<form onSubmit={formik.handleSubmit} className='room-form'>
 			<input
 				type='text'
 				name='name'

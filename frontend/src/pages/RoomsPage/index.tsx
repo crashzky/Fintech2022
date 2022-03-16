@@ -12,7 +12,7 @@ const RoomsPage = (): JSX.Element => {
 			setIsLandlord(true);
 	}, [data]);
 
-	if(true) {
+	if(isLandlord) {
 		return (
 			<a href='/rooms/create' className='rooms__create'>
 				click me
