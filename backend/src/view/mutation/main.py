@@ -199,7 +199,7 @@ class Mutation:
             """,
             {"room_id": id, "public_name": public_name},
         )
-        db.commit()
+        conn.commit()
         return Room.get_by_id(id)
 
     @strawberry.mutation
