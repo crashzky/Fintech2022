@@ -69,14 +69,13 @@ contract RentalAgreement {
             revert("Rent period should be strictly greater than zero");
         }
 
-        if (block.timestamp <= deadline) {
-            rrate = rentalRate;
-            duration = billingPeriodDuration;
-            stime = deadline - 10;
-            endtime = billingsCount * billingPeriodDuration + stime;
-            a=1;
-            payable(address(this)).transfer(rentalRate);
-        }
+        rrate = rentalRate;
+        duration = billingPeriodDuration;
+        stime = deadline - 10;
+        endtime = billingsCount * billingPeriodDuration + stime;
+        a=1;
+        payable(address(this)).transfer(rentalRate);
+        
         
         if (block.timestamp > deadline ) {
             revert("The operation is outdated");
