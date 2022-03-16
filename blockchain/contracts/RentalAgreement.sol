@@ -55,14 +55,6 @@ contract RentalAgreement {
         endtime = billingsCount * billingPeriodDuration + stime;
         a=1;
         payable(ladd).transfer(rentalRate);
-
-
-        bytes32 message = keccak256(abi.encode(deadline, tenant, rentalRate, billingPeriodDuration, billingsCount));
-        address signer = ecrecover(message, landlordSign.v, landlordSign.r, landlordSign.s);
-
-        if (signer != ladd) {
-            revert("Invalid landlord sign");
-        }
     }
     
     function getTenant() view public returns (address) {
