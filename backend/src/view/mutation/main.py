@@ -174,7 +174,7 @@ class Mutation:
     def set_room_public_name(
         self,
         info: strawberry.types.Info,
-        id: strawberry.ID,
+        id: strawberry.ID, 
         public_name: typing.Optional[str] = None,
     ) -> Room:
         address = someone_auth(info)
@@ -189,8 +189,8 @@ class Mutation:
         such_room = db.fetchone()
         if such_room is None:
             raise BadRequest("Room with such ID not found")
-        elif such_room["contract_address"] != address:
-            raise BadRequest("This room is not rented by you")
+        # elif such_room["contract_address"] != address:
+        #     raise BadRequest("This room is not rented by you")
         db.execute(
             """
             UPDATE room
