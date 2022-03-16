@@ -151,7 +151,7 @@ class Mutation:
             WHERE address = ?
             """, [contract_address]
         )
-        if contract_address is not None and (not w3.isAddress(contract_address) or w3.eth.getCode(contract_address) == "0x"):
+        if contract_address is not None and contract_address != "" and (not w3.isAddress(contract_address) or w3.eth.getCode(contract_address) == "0x"):
             raise BadRequest("Contract with such address not found")
         db.execute(
             """
