@@ -49,6 +49,8 @@ const MainPage = (): JSX.Element => {
 						v,
 					}
 				});
+				setAccountAddress(accountAddressRequest as any);
+				localStorage.setItem('connected_account', accountAddressRequest);
 			});
 		}
 	}, [authRequestMutation.isSuccess]);

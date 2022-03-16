@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useMutation } from 'react-query';
 import { getRoom } from '../../shared/api/rooms';
 
@@ -8,7 +8,7 @@ const RoomPage = (): JSX.Element => {
 	const { mutate, data } = useMutation(getRoom);
 
 	return (
-		<div>
+		<>
 			<p className='room__name'>
 				{data && data.data.room.internalName}
 			</p>
@@ -22,7 +22,8 @@ const RoomPage = (): JSX.Element => {
 			<p className='room__status'>
 				
 			</p>
-		</div>
+			<Link to={`/room/${params.id}/edit`} className='room__edit' />
+		</>
 	);
 };
 
