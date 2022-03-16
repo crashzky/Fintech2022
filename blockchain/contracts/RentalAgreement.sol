@@ -93,7 +93,7 @@ contract RentalAgreement {
         } else if (rentalRate <= 0) {
             revert("Rent amount should be strictly greater than zero");
         } else if (billingPeriodDuration <= 0) {
-            revert("Rent period repeats should be strictly greater than zero");
+            revert("Rent period should be strictly greater than zero");
         } else if (msg.value != rentalRate) {
             revert("Incorrect deposit");
         }
