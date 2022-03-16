@@ -23,7 +23,8 @@ contract RentalAgreement {
 
     // Cashiers
     mapping(address => uint) cashiers;
-    uint cashierIncrement = 1;
+    address[] cashiersList;
+    uint cashierIncrement = 0;
 
     constructor (uint roomInternalId) {
         globalRoomInternalID = roomInternalId;
@@ -138,7 +139,8 @@ contract RentalAgreement {
             revert("Zero address cannot become a cashier");
         }
         // Commit it
-        cashiers[addr] = cashierIncrement++;
+        cashiers[addr] = ++cashierIncrement;
+        cashiersList.push(addr);
     }
 
     // Check if cashier exists
@@ -154,6 +156,17 @@ contract RentalAgreement {
         }
 
         delete cashiers[cashierAddr];
+
+        address[] newCashiersList;
+        for (uint i = 0; i < cashiersList.length; i++) {
+            if (cashiersList[i] != cashierAddr)
+                newCashiersList.push(cashiersList[i]);
+        }
+        cashiersList = newCashiersList;
+    }
+
+    function getCashiersList() view returns (address[]) {
+        return cashiersList;
     }
 //    address[] cashiers;
 //    uint i=0;
