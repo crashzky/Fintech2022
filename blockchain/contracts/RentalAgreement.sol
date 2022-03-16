@@ -36,7 +36,7 @@ contract RentalAgreement {
     }
 
     function RentalPermit(uint256 deadline,address tenant,uint256 rentalRate,uint256 billingPeriodDuration,uint256 billingsCount) public {
-        return deadline, tenant, rentalRate, billingPeriodDuration, billingsCount;
+        
     }
 
     function EIP712Domain(string memory name,string memory version,address verifyingContract) public{
