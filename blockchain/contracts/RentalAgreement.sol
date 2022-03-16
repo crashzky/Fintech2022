@@ -1,139 +1,167 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.11;
 
+// VRS Signature
+struct Sign {
+    uint8 v;
+    bytes32 r;
+    bytes32 s;
+}
+
 contract RentalAgreement {
-    function sayHelloWorld() external pure returns (string memory) {
-        return "Hello, world!";
-    }
+    // From constructor
+    uint globalRoomInternalID;
+    address globalLandlord;
 
-    uint roomID;
-    address ladd;
-    address tadd;
-    uint rrate;
-    uint duration;
-    uint stime;
-    uint endtime;
+    // From rent
+    address globalTenant;
+    uint globalRentalRate;
+    uint globalBillingPeriodDuration;
+    uint globalRentStartTime;
+    uint globalRentEndTime;
+    bool globalIsRented = false;
 
-    mapping(address => uint) data;
+    // Cashiers
+    mapping(address => uint) cashiers;
 
-    constructor (uint _roomID) {
-        data[msg.sender] = _roomID;
-        ladd = msg.sender;
+    constructor (uint roomInternalId) {
+        globalRoomInternalID = roomInternalId;
+        globalLandlord = msg.sender;
     }
 
     function getRoomInternalId() public view returns(uint) {
-        return data[ladd];
+        return globalRoomInternalID;
     }
 
     function getLandlord() public view returns(address) {
-        return ladd;
+        return globalLandlord;
     }
 
-    struct Sign {
-        uint8 v;
-        bytes32 r;
-        bytes32 s;
-    }
+    function rent(
+        uint deadline,
+        address tenant,
+        uint rentalRate,
+        uint billingPeriodDuration,
+        uint billingsCount,
+        Sign memory landlordSign
+    ) public payable {
 
-    struct Permit {
-        uint256 deadline;
-        address tenant;
-        uint256 rentalRate;
-        uint256 billingPeriodDuration;
-        uint256 billingsCount;
-    }
-
-    function RentalPermit(uint256 deadline,address tenant,uint256 rentalRate,uint256 billingPeriodDuration,uint256 billingsCount) public {
-        
-    }
-
-    function EIP712Domain(string memory name,string memory version,address verifyingContract) public{
-        name = "Rental Agreement";
-        version = "1.0";
-    }
-
-    uint a=0;
-    function rent(uint deadline, address tenant, uint rentalRate, 
-        uint billingPeriodDuration, uint billingsCount, Sign memory landlordSign) public payable {
-        tadd = tenant;
-        
-        if (a==1 && block.timestamp<=deadline) {
+        // Check it's still free
+        if (globalIsRented) {
             revert("The contract is being in not allowed state");
         }
 
-        if (msg.sender==tadd) {
-            rrate = rentalRate;
-            duration = billingPeriodDuration;
-            stime = deadline - 10;
-            endtime = billingsCount * billingPeriodDuration + stime;
-            a=1;
-            payable(ladd).transfer(rentalRate);
-        }
-        
-        if (msg.sender!=tadd) {
-            revert("The caller account and the account specified as a tenant do not match");
-        }
+        // Save last settings to global scope
+        globalTenant = tenant;
+        globalRentalRate = rentalRate;
+        globalBillingPeriodDuration = billingPeriodDuration;
+        globalRentStartTime = block.timestamp;
+        globalRentEndTime = globalRentStartTime + billingsCount * billingPeriodDuration;
+        globalIsRented = true;
 
-        if (msg.sender==ladd) {
-            revert("The landlord cannot become a tenant");
-        }
+        // Verify sign
+        bytes32 EIP712Domain = keccak256(
+            abi.encode(
+                keccak256(
+                    "EIP712Domain(string name,string version,address verifyingContract)"
+                ),
+                keccak256(bytes("Rental Agreement")),
+                keccak256(bytes("1.0")),
+                address(this)
+            )
+        );
 
-        if (rentalRate==0) {
-            revert("Rent amount should be strictly greater than zero");
-        }
+        bytes32 RentalPermit = keccak256(
+            abi.encode(
+                keccak256("RentalPermit(uint256 deadline,address tenant,uint256 rentalRate,uint256 billingPeriodDuration,uint256 billingsCount)"),
+                deadline,
+                tenant,
+                rentalRate,
+                billingPeriodDuration,
+                billingsCount
+            )
+        );
 
-        if (billingPeriodDuration==0 || billingsCount==0) {
-            revert("Rent period should be strictly greater than zero");
-        }
-        
-        Permit memory A = Permit(deadline, tenant, rentalRate, billingPeriodDuration, billingsCount);
-        bytes32 message = keccak256(abi.encode(A));
-        address signer = ecrecover(message, landlordSign.v, landlordSign.r, landlordSign.s);
+        bytes32 messageHash = keccak256(abi.encodePacked("\x19\x01", EIP712Domain, RentalPermit));
+        address signer = ecrecover(messageHash, landlordSign.v, landlordSign.r, landlordSign.s);
 
-        if (signer != ladd) {
+        // 002 checks
+        if (signer != globalLandlord) {
             revert("Invalid landlord sign");
+        } else if (block.timestamp > deadline) {
+            revert("The operation is outdated");
+        } else if (msg.sender != tenant) {
+            revert("The caller account and the account specified as a tenant do not match");
+        } else if (msg.sender == globalLandlord) {
+            revert("The landlord cannot become a tenant");
+        } else if (rentalRate <= 0) {
+            revert("Rent amount should be strictly greater than zero");
+        } else if (billingPeriodDuration <= 0) {
+            revert("Rent period should be strictly greater than zero");
+        } else if (billingsCount <= 0) {
+            revert("Rent period repeats should be strictly greater than zero");
+        } else if (msg.value != rentalRate) {
+            revert("Incorrect deposit");
         }
+
+        // Complete transaction and pay for the renting
+        payable(globalLandlord).transfer(rentalRate);
     }
 
     function getTenant() view public returns (address) {
-        return tadd;
+        return globalTenant;
     }
 
     function getRentalRate() view public returns (uint) {
-        return rrate;
+        return globalRentalRate;
     }
 
     function getBillingPeriodDuration() view public returns (uint) {
-        return duration;
+        return globalBillingPeriodDuration;
     }
 
     function getRentStartTime() view public returns (uint) {
-        return stime;
+        return globalRentStartTime;
     }
 
     function getRentEndTime() view public returns (uint) {
-        return endtime;
+        return globalRentEndTime;
     }
 
-    address[] cashiers;
-    uint i=0;
     function addCashier(address addr) public {
-        if (addr!=tadd && msg.sender!=tadd) {
-            revert("You are not a tenant");
-        }
-        if (msg.sender==tadd && addr==ladd) {
+        if (addr == globalLandlord) {
             revert("The landlord cannot become a cashier");
-        }
-        if (msg.sender==tadd && addr==address(0)) {
+        } else if (addr != globalTenant) {
+            revert("You are not a tenant");
+        } else if (addr == address(0)) {
             revert("Zero address cannot become a cashier");
         }
-        cashiers[i] = addr;
-        i++;
+        // Commit them
+        cashiers[addr] = 1;
     }
 
     function getCashierNonce(address cashierAddr) view public returns (uint) {
-        if (msg.sender!=tadd) {
-            return 0;
-        }
+        return cashiers[cashierAddr];
     }
+//    address[] cashiers;
+//    uint i=0;
+//    function addCashier(address addr) public {
+//        if (addr!=tadd && msg.sender!=tadd) {
+//            revert("You are not a tenant");
+//        }
+//        if (msg.sender==tadd && addr==ladd) {
+//            revert("The landlord cannot become a cashier");
+//        }
+//        if (msg.sender==tadd && addr==address(0)) {
+//            revert("Zero address cannot become a cashier");
+//        }
+//        cashiers[i] = addr;
+//        i++;
+//    }
+//
+//    function getCashierNonce(address cashierAddr) view public returns (uint) {
+//        if (msg.sender!=tadd) {
+//            return 0;
+//        }
+//    }
 }

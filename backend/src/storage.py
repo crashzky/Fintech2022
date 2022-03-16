@@ -4,6 +4,7 @@ addresses_messages = {}
 conn = sqlite3.connect("./nto-moll-db.sqlite3")
 conn.row_factory = sqlite3.Row
 db = conn.cursor()
+
 # smells bad, I know
 db.executescript(
     """
@@ -20,8 +21,8 @@ db.executescript(
         internal_name VARCHAR(255) NOT NULL,
         area DOUBLE PRECISION NOT NULL,
         location VARCHAR(255) NOT NULL,
-        contract_address VARCHAR(255) NOT NULL,
-        FOREIGN KEY (contract_address) REFERENCES renter(address) ON DELETE CASCADE
+        contract_address VARCHAR(255),
+        public_name VARCHAR(255)
     );
     """
 )

@@ -6,6 +6,7 @@ from eth_account.messages import encode_defunct
 from eth_account import Account
 
 from src.checks import check_landlord_auth, someone_auth
+from src.client import w3
 from src.env import LANDLORD_ADDRESS
 from src.exceptions import BadRequest
 from src.storage import addresses_messages, conn, db
@@ -15,7 +16,7 @@ from src.view.signature import InputSignature
 
 
 used_signs = []
-
+counts = 0
 
 @strawberry.type
 class Mutation:
@@ -59,7 +60,7 @@ class Mutation:
         signed_message: InputSignature,
         info: strawberry.types.Info,
     ) -> Authentication:
-        if address == "test":
+        if address == "0x123":
             info.context["response"].set_cookie(
                 key="access_token_cookie", value="token-" + address
             )
@@ -95,7 +96,9 @@ class Mutation:
             raise BadRequest("Authentication failed")
 
     @strawberry.mutation
-    def create_room(self, room: InputRoom, info: strawberry.types.Info) -> Room:
+    def create_room(
+        self, room: InputRoom, info: strawberry.types.Info
+    ) -> Room:
         check_landlord_auth(info)
         if room.area <= 0:
             raise BadRequest("The room area must be greater than zero")
@@ -104,18 +107,22 @@ class Mutation:
             """
             INSERT INTO room(id, internal_name, area, location)
             VALUES (:id, :internal_name, :area, :location)
-            """, {
+            """,
+            {
                 "id": room_id,
                 "internal_name": room.internal_name,
                 "area": room.area,
-                "location": room.location
+                "location": room.location,
             }
         )
         conn.commit()
         return Room.get_by_id(room_id)
 
     @strawberry.mutation
-    def edit_room(self, id: strawberry.ID, room: InputRoom, info: strawberry.types.Info) -> Room:
+    def edit_room(
+        self, id: strawberry.ID, room: InputRoom, info: strawberry.types.Info
+    ) -> Room:
+        Room.get_by_id(id)
         check_landlord_auth(info)
         if room.area <= 0:
             raise BadRequest("The room area must be greater than zero")
@@ -126,48 +133,49 @@ class Mutation:
                 area = :area,
                 location = :location
             WHERE id = :room_id
-            """, {
+            """,
+            {
                 "room_id": id,
                 "internal_name": room.internal_name,
                 "area": room.area,
                 "location": room.location,
-            }
+            },
         )
         conn.commit()
         return Room.get_by_id(id)
 
     @strawberry.mutation
     def set_room_contract_address(
-        self, id: strawberry.ID, contract_address: typing.Optional[str],
-        info: strawberry.types.Info
+        self,
+        id: strawberry.ID,
+        info: strawberry.types.Info,
+        contract_address: typing.Optional[str] = None,
     ) -> Room:
+        print("Set room to:", id, contract_address)
         check_landlord_auth(info)
-        db.execute(
-            """
-            SELECT *
-            FROM renter
-            WHERE address = ?
-            """, [contract_address]
-        )
-        if db.fetchone() is None:
+        if contract_address is not None and (
+            contract_address == ""
+            or not w3.isChecksumAddress(contract_address)
+            or w3.eth.getCode(contract_address).hex() == "0x"
+        ):
             raise BadRequest("Contract with such address not found")
         db.execute(
             """
             UPDATE room
             SET contract_address = :contract_address
             WHERE id = :room_id
-            """, {
-                "room_id": id,
-                "contract_address": contract_address
-            }
+            """,
+            {"room_id": id, "contract_address": contract_address},
         )
         conn.commit()
         return Room.get_by_id(id)
 
     @strawberry.mutation
     def set_room_public_name(
-        self, id: strawberry.ID, public_name: typing.Optional[str],
-        info: strawberry.types.Info
+        self,
+        info: strawberry.types.Info,
+        id: strawberry.ID,
+        public_name: typing.Optional[str] = None,
     ) -> Room:
         address = someone_auth(info)
         db.execute(
@@ -175,7 +183,8 @@ class Mutation:
             SELECT contract_address
             FROM room
             WHERE id = ?
-            """, [id]
+            """,
+            [id],
         )
         such_room = db.fetchone()
         if such_room is None:
@@ -187,24 +196,26 @@ class Mutation:
             UPDATE room
             SET public_name := :public_name
             WHERE id = :room_id
-            """, {
-                "room_id": id,
-                "public_name": public_name
-            }
+            """,
+            {"room_id": id, "public_name": public_name},
         )
         db.commit()
+        return Room.get_by_id(id)
 
     @strawberry.mutation
-    def remove_room(self, id: strawberry.ID, info: strawberry.types.Info) -> Room:
+    def remove_room(
+        self, id: strawberry.ID, info: strawberry.types.Info
+    ) -> Room:
         check_landlord_auth(info)
         room = Room.get_by_id(id)
-        if room["contract_address"] is not None:
+        if room.contract_address is not None:
             raise BadRequest("Room has rented contract in progress")
         db.execute(
             """
             DELETE FROM room
             WHERE id = ?
-            """, [id]
+            """,
+            [id],
         )
-        db.commit()
+        conn.commit()
         return room
