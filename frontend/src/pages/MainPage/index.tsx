@@ -1,21 +1,21 @@
+import Web3 from 'web3';
 import { useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
 import { authenticate, requestAuthentication } from '../../shared/api/auth';
-import { deserializeSignature, exportRecoveryParam } from 'rsv-signature';
 
 const MainPage = (): JSX.Element => {
-	const { ethereum } = window as any;
 	const [accountAddress, setAccountAddress] = useState(null);
 	const [isConnected, setIsConnected] = useState(false);
 	const [accountAddressRequest, setAccountAddressRequest] = useState('');
 
 	const authRequestMutation = useMutation(requestAuthentication);
 	const authenticateMutation = useMutation(authenticate);
+	
+	const web3 = new Web3((window as any).ethereum);
 
 	useEffect(() => {
 		if(localStorage.getItem('connected_account')) {
-			ethereum.request({ method: 'eth_requestAccounts' }).then((res: any) => {
-				console.log(res);
+			web3.eth.requestAccounts().then((res: any) => {
 				if(localStorage.getItem('connected_account') !== res[0]) {
 					setIsConnected(true);
 				}
@@ -27,17 +27,7 @@ const MainPage = (): JSX.Element => {
 	
 	useEffect(() => {
 		if(authRequestMutation.isSuccess) {
-			console.log(authRequestMutation.data.data.message);
-			ethereum.request({ method: 'personal_sign', from: accountAddressRequest, params: [
-				[
-					{
-						type: 'string',
-						name: 'Message',
-						value: authRequestMutation.data.data.message
-					},
-				],
-				accountAddressRequest
-			] }).then((result: any) => {				
+			web3.eth.personal.sign(authRequestMutation.data.data.message, accountAddressRequest, '').then((result) => {
 				authenticateMutation.mutate({
 					address: accountAddressRequest,
 					signedMessage: {
@@ -48,7 +38,7 @@ const MainPage = (): JSX.Element => {
 				});
 				setAccountAddress(accountAddressRequest as any);
 				localStorage.setItem('connected_account', accountAddressRequest);
-			});
+			})
 		}
 	}, [authRequestMutation.isSuccess]);
 
@@ -64,9 +54,9 @@ const MainPage = (): JSX.Element => {
 		return (
 			<>
 				<button className='authentication__authenticate' onClick={async () => {
-					ethereum.request({ method: 'eth_requestAccounts' }).then((res: any) => {
+					web3.eth.requestAccounts().then((res: any) => {
 						authRequestMutation.mutate({
-							address: res[0],
+							address: res[0]
 						});
 						setAccountAddressRequest(res[0]);
 					});
