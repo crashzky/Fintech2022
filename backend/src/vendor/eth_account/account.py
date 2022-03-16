@@ -1,24 +1,12 @@
-from collections.abc import (
-    Mapping,
-)
 import json
 import os
 import warnings
+from collections.abc import Mapping
 
-from cytoolz import (
-    dissoc,
-)
-from eth_keyfile import (
-    create_keyfile_json,
-    decode_keyfile_json,
-)
-from eth_keys import (
-    KeyAPI,
-    keys,
-)
-from eth_keys.exceptions import (
-    ValidationError,
-)
+from cytoolz import dissoc
+from eth_keyfile import create_keyfile_json, decode_keyfile_json
+from eth_keys import KeyAPI, keys
+from eth_keys.exceptions import ValidationError
 from eth_utils.curried import (
     combomethod,
     hexstr_if_str,
@@ -28,9 +16,7 @@ from eth_utils.curried import (
     to_bytes,
     to_int,
 )
-from hexbytes import (
-    HexBytes,
-)
+from hexbytes import HexBytes
 
 from src.vendor.eth_account._utils.legacy_transactions import (
     Transaction,
@@ -43,9 +29,7 @@ from src.vendor.eth_account._utils.signing import (
     to_standard_signature_bytes,
     to_standard_v,
 )
-from src.vendor.eth_account._utils.typed_transactions import (
-    TypedTransaction,
-)
+from src.vendor.eth_account._utils.typed_transactions import TypedTransaction
 from src.vendor.eth_account.datastructures import (
     SignedMessage,
     SignedTransaction,
@@ -60,9 +44,7 @@ from src.vendor.eth_account.messages import (
     SignableMessage,
     _hash_eip191_message,
 )
-from src.vendor.eth_account.signers.local import (
-    LocalAccount,
-)
+from src.vendor.eth_account.signers.local import LocalAccount
 
 
 class Account(object):
@@ -71,9 +53,10 @@ class Account(object):
 
     It does **not** require a connection to an Ethereum node.
     """
+
     _keys = keys
 
-    _default_kdf = os.getenv('ETH_ACCOUNT_KDF', 'scrypt')
+    _default_kdf = os.getenv("ETH_ACCOUNT_KDF", "scrypt")
 
     # Enable unaudited features (off by default)
     _use_unaudited_hdwallet_features = False
@@ -86,7 +69,7 @@ class Account(object):
         cls._use_unaudited_hdwallet_features = True
 
     @combomethod
-    def create(self, extra_entropy=''):
+    def create(self, extra_entropy=""):
         r"""
         Creates a new private key, and returns it as a :class:`~src.vendor.eth_account.local.LocalAccount`.
 
@@ -150,7 +133,9 @@ class Account(object):
         elif is_dict(keyfile_json):
             keyfile = keyfile_json
         else:
-            raise TypeError("The keyfile should be supplied as a JSON string, or a dictionary.")
+            raise TypeError(
+                "The keyfile should be supplied as a JSON string, or a dictionary."
+            )
         password_bytes = text_if_str(to_bytes, password)
         return HexBytes(decode_keyfile_json(keyfile, password_bytes))
 
@@ -210,7 +195,9 @@ class Account(object):
         password_bytes = text_if_str(to_bytes, password)
         assert len(key_bytes) == 32
 
-        return create_keyfile_json(key_bytes, password_bytes, kdf=kdf, iterations=iterations)
+        return create_keyfile_json(
+            key_bytes, password_bytes, kdf=kdf, iterations=iterations
+        )
 
     @combomethod
     def privateKeyToAccount(self, private_key):
@@ -251,10 +238,12 @@ class Account(object):
         return LocalAccount(key, self)
 
     @combomethod
-    def from_mnemonic(self,
-                      mnemonic: str,
-                      passphrase: str = "",
-                      account_path: str = ETHEREUM_DEFAULT_PATH):
+    def from_mnemonic(
+        self,
+        mnemonic: str,
+        passphrase: str = "",
+        account_path: str = ETHEREUM_DEFAULT_PATH,
+    ):
         """
         Generate an account from a mnemonic.
 
@@ -293,11 +282,13 @@ class Account(object):
         return LocalAccount(key, self)
 
     @combomethod
-    def create_with_mnemonic(self,
-                             passphrase: str = "",
-                             num_words: int = 12,
-                             language: str = "english",
-                             account_path: str = ETHEREUM_DEFAULT_PATH):
+    def create_with_mnemonic(
+        self,
+        passphrase: str = "",
+        num_words: int = 12,
+        language: str = "english",
+        account_path: str = ETHEREUM_DEFAULT_PATH,
+    ):
         r"""
         Create a new private key and related mnemonic.
 
@@ -337,10 +328,15 @@ class Account(object):
                 "`Account.enable_unaudited_hdwallet_features()` and try again."
             )
         mnemonic = generate_mnemonic(num_words, language)
-        return self.from_mnemonic(mnemonic, passphrase, account_path), mnemonic
+        return (
+            self.from_mnemonic(mnemonic, passphrase, account_path),
+            mnemonic,
+        )
 
     @combomethod
-    def recover_message(self, signable_message: SignableMessage, vrs=None, signature=None):
+    def recover_message(
+        self, signable_message: SignableMessage, vrs=None, signature=None
+    ):
         r"""
         Get the address of the account that signed the given message.
         You must specify exactly one of: vrs or signature
@@ -441,10 +437,16 @@ class Account(object):
             signature_obj = self._keys.Signature(vrs=(v_standard, r, s))
         elif signature is not None:
             signature_bytes = HexBytes(signature)
-            signature_bytes_standard = to_standard_signature_bytes(signature_bytes)
-            signature_obj = self._keys.Signature(signature_bytes=signature_bytes_standard)
+            signature_bytes_standard = to_standard_signature_bytes(
+                signature_bytes
+            )
+            signature_obj = self._keys.Signature(
+                signature_bytes=signature_bytes_standard
+            )
         else:
-            raise TypeError("You must supply the vrs tuple or the signature bytes")
+            raise TypeError(
+                "You must supply the vrs tuple or the signature bytes"
+            )
         pubkey = signature_obj.recover_public_key_from_msg_hash(hash_bytes)
         return pubkey.to_checksum_address()
 
@@ -477,7 +479,7 @@ class Account(object):
             '0x2c7536E3605D9C16a7a3D7b1898e529396a65c23'
         """
         txn_bytes = HexBytes(serialized_transaction)
-        if len(txn_bytes) > 0 and txn_bytes[0] <= 0x7f:
+        if len(txn_bytes) > 0 and txn_bytes[0] <= 0x7F:
             # We are dealing with a typed transaction.
             typed_transaction = TypedTransaction.from_bytes(txn_bytes)
             msg_hash = typed_transaction.hash()
@@ -594,7 +596,9 @@ class Account(object):
 
         key = self._parsePrivateKey(private_key)
 
-        (v, r, s, eth_signature_bytes) = sign_message_hash(key, msg_hash_bytes)
+        (v, r, s, eth_signature_bytes) = sign_message_hash(
+            key, msg_hash_bytes
+        )
         return SignedMessage(
             messageHash=msg_hash_bytes,
             r=r,
@@ -722,19 +726,25 @@ class Account(object):
             >>> w3.eth.sendRawTransaction(signed.rawTransaction)
         """
         if not isinstance(transaction_dict, Mapping):
-            raise TypeError("transaction_dict must be dict-like, got %r" % transaction_dict)
+            raise TypeError(
+                "transaction_dict must be dict-like, got %r"
+                % transaction_dict
+            )
 
         account = self.from_key(private_key)
 
         # allow from field, *only* if it matches the private key
-        if 'from' in transaction_dict:
-            if transaction_dict['from'] == account.address:
-                sanitized_transaction = dissoc(transaction_dict, 'from')
+        if "from" in transaction_dict:
+            if transaction_dict["from"] == account.address:
+                sanitized_transaction = dissoc(transaction_dict, "from")
             else:
-                raise TypeError("from field must match key's %s, but it was %s" % (
-                    account.address,
-                    transaction_dict['from'],
-                ))
+                raise TypeError(
+                    "from field must match key's %s, but it was %s"
+                    % (
+                        account.address,
+                        transaction_dict["from"],
+                    )
+                )
         else:
             sanitized_transaction = transaction_dict
 

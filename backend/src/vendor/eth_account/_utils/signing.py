@@ -1,10 +1,5 @@
-from cytoolz import (
-    pipe,
-)
-from eth_utils import (
-    to_bytes,
-    to_int,
-)
+from cytoolz import pipe
+from eth_utils import to_bytes, to_int
 
 from src.vendor.eth_account._utils.legacy_transactions import (
     ChainAwareUnsignedTransaction,
@@ -14,22 +9,22 @@ from src.vendor.eth_account._utils.legacy_transactions import (
     serializable_unsigned_transaction_from_dict,
     strip_signature,
 )
-from src.vendor.eth_account._utils.typed_transactions import (
-    TypedTransaction,
-)
+from src.vendor.eth_account._utils.typed_transactions import TypedTransaction
 
 CHAIN_ID_OFFSET = 35
 V_OFFSET = 27
 
 # signature versions
-PERSONAL_SIGN_VERSION = b'E'  # Hex value 0x45
-INTENDED_VALIDATOR_SIGN_VERSION = b'\x00'  # Hex value 0x00
-STRUCTURED_DATA_SIGN_VERSION = b'\x01'  # Hex value 0x01
+PERSONAL_SIGN_VERSION = b"E"  # Hex value 0x45
+INTENDED_VALIDATOR_SIGN_VERSION = b"\x00"  # Hex value 0x00
+STRUCTURED_DATA_SIGN_VERSION = b"\x01"  # Hex value 0x01
 
 
 def sign_transaction_dict(eth_key, transaction_dict):
     # generate RLP-serializable transaction, with defaults filled
-    unsigned_transaction = serializable_unsigned_transaction_from_dict(transaction_dict)
+    unsigned_transaction = serializable_unsigned_transaction_from_dict(
+        transaction_dict
+    )
 
     transaction_hash = unsigned_transaction.hash()
 
@@ -47,10 +42,14 @@ def sign_transaction_dict(eth_key, transaction_dict):
         (v, r, s) = eth_key.sign_msg_hash(transaction_hash).vrs
     else:
         # Cannot happen, but better for code to be defensive + self-documenting.
-        raise TypeError("unknown Transaction object: %s" % type(unsigned_transaction))
+        raise TypeError(
+            "unknown Transaction object: %s" % type(unsigned_transaction)
+        )
 
     # serialize transaction with rlp
-    encoded_transaction = encode_transaction(unsigned_transaction, vrs=(v, r, s))
+    encoded_transaction = encode_transaction(
+        unsigned_transaction, vrs=(v, r, s)
+    )
 
     return (v, r, s, encoded_transaction)
 
@@ -75,7 +74,9 @@ def hash_of_signed_transaction(txn_obj):
         signable_transaction = UnsignedTransaction(*unsigned_parts)
     else:
         extended_transaction = unsigned_parts + [chain_id, 0, 0]
-        signable_transaction = ChainAwareUnsignedTransaction(*extended_transaction)
+        signable_transaction = ChainAwareUnsignedTransaction(
+            *extended_transaction
+        )
     return signable_transaction.hash()
 
 
@@ -92,7 +93,9 @@ def extract_chain_id(raw_v):
         elif raw_v in {27, 28}:
             return (None, raw_v)
         else:
-            raise ValueError("v %r is invalid, must be one of: 0, 1, 27, 28, 35+")
+            raise ValueError(
+                "v %r is invalid, must be one of: 0, 1, 27, 28, 35+"
+            )
     else:
         (chain_id, v_bit) = divmod(above_id_offset, 2)
         return (chain_id, v_bit + V_OFFSET)
@@ -128,7 +131,7 @@ def sign_transaction_hash(account, transaction_hash, chain_id):
 
 
 def _pad_to_eth_word(bytes_val):
-    return bytes_val.rjust(32, b'\0')
+    return bytes_val.rjust(32, b"\0")
 
 
 def to_bytes32(val):
