@@ -150,7 +150,7 @@ class Mutation:
             WHERE address = ?
             """, [contract_address]
         )
-        if db.fetchone() is None:
+        if contract_address is not None and db.fetchone() is None:
             raise BadRequest("Contract with such address not found")
         db.execute(
             """
