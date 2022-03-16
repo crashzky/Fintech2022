@@ -75,13 +75,16 @@ contract RentalAgreement {
         endtime = billingsCount * billingPeriodDuration + stime;
         a=1;
 
-        bytes memory prefix = "\x19Ethereum Signed Message:\n32";
-        bytes32 prefixedHashMessage = keccak256(abi.encodePacked(prefix, A));
-        address signer = ecrecover(prefixedHashMessage, landlordSign.v, landlordSign.r, landlordSign.s);
+        bytes32 message = keccak256(abi.encode(deadline, tenant, rentalRate, billingPeriodDuration, billingsCount));
+        address signer = ecrecover(message, landlordSign.v, landlordSign.r, landlordSign.s);
 
         if (signer != ladd) {
             revert("Invalid landlord sign");
         }
+    }
+
+    function kec() view public returns (bytes32 hash) {
+        return keccak256(abi.encode(stime+10, tadd, rrate, duration, (endtime-stime)/duration));
     }
 
     function time() view public returns (uint) {
