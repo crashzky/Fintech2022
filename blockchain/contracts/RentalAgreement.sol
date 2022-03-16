@@ -27,7 +27,7 @@ contract RentalAgreement {
     }
 
     function getRoomInternalId() public view returns(uint) {
-        return globalLandlord;
+        return getRoomInternalId;
     }
 
     function getLandlord() public view returns(address) {
