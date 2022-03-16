@@ -167,12 +167,16 @@ class Mutation:
         pass
 
     @strawberry.mutation
-    def remove_room(self, id: strawberry.ID) -> Room:
+    def remove_room(self, id: strawberry.ID, info: strawberry.types.Info) -> Room:
+        check_landlord_auth(info)
         room = Room.get_by_id(id)
+        if room["contract_address"] is not None:
+            raise BadRequest("Room has rented contract in progress")
         db.execute(
             """
             DELETE FROM room
             WHERE id = ?
             """, [id]
         )
+        db.commit()
         return room

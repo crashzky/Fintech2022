@@ -28,7 +28,15 @@ class Query:
 
     @strawberry.field
     def rooms(self) -> typing.List[Room]:
-        pass
+        db.execute(
+            """
+            SELECT id, internal_name, area, location, contract_address, public_name
+            FROM room
+            """
+        )
+        rooms = db.fetchall()
+        rooms = [Room(**room) for room in rooms]
+        return rooms
 
     @strawberry.field
     def room(self, id: strawberry.ID) -> Room:
