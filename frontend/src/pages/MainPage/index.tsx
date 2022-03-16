@@ -17,6 +17,7 @@ const MainPage = (): JSX.Element => {
 	useEffect(() => {
 		if(localStorage.getItem('connected_account')) {
 			web3.eth.requestAccounts().then((res: any) => {
+				setAccountAddressRequest(res[0]);
 				checkAuth.mutate();
 			});
 		}
@@ -24,7 +25,7 @@ const MainPage = (): JSX.Element => {
 
 	useEffect(() => {
 		if(checkAuth.isSuccess) {
-			if(localStorage.getItem('connected_account') !== checkAuth.data.data.authentication.address)
+			if(accountAddressRequest !== checkAuth.data.data.authentication.address)
 				setIsAnotherAccount(true);
 			else
 				setAccountAddress(localStorage.getItem('connected_account') as any);
