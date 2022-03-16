@@ -4,6 +4,7 @@ addresses_messages = {}
 conn = sqlite3.connect("./nto-moll-db.sqlite3")
 conn.row_factory = sqlite3.Row
 db = conn.cursor()
+
 # smells bad, I know
 db.executescript(
     """
