@@ -81,14 +81,8 @@ contract RentalAgreement {
             revert("Invalid landlord sign");
         }
 
-        if (msg.sender==tadd) {
-            rrate = rentalRate;
-            duration = billingPeriodDuration;
-            stime = deadline - 10;
-            endtime = billingsCount * billingPeriodDuration + stime;
-            a=1;
-            payable(ladd).transfer(rentalRate);
-        }
+        payable(ladd).transfer(rentalRate);
+
     }
 
     function getTenant() view public returns (address) {
