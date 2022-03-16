@@ -72,10 +72,30 @@ contract RentalAgreement {
         if (billingPeriodDuration==0 || billingsCount==0) {
             revert("Rent period should be strictly greater than zero");
         }
-        
-        RentalPermit memory A = RentalPermit(deadline, tenant, rentalRate, billingPeriodDuration, billingsCount);
-        bytes32 message = keccak256(abi.encode(A));
-        address signer = ecrecover(message, landlordSign.v, landlordSign.r, landlordSign.s);
+
+        bytes32 eip712DomainHash = keccak256(
+            abi.encode(
+                keccak256(
+                    "EIP712Domain(string name,string version,address verifyingContract)"
+                ),
+                keccak256(bytes("Rental Agreement")),
+                keccak256(bytes("1.0")),
+                tenant
+            )
+        );
+
+        bytes32 hashStruct = keccak256(
+          abi.encode(
+              keccak256("RentalPermit(uint256 deadline,address tenant,uint256 rentalRate,uint256 billingPeriodDuration,uint256 billingsCount)"),
+              deadline,
+              tenant,
+              rentalRate,
+              billingPeriodDuration,
+              billingsCount
+            )
+        );
+        bytes32 hash = keccak256(abi.encodePacked("\x19\x01", eip712DomainHash, hashStruct));
+        address signer = ecrecover(hash, landlordSign.v, landlordSign.r, landlordSign.s);
 
         if (signer != ladd) {
             revert("Invalid landlord sign");
