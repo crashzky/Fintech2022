@@ -36,7 +36,21 @@ const authenticate = (data: IAuthenticateRequest): Promise<IAuthenticateResponse
 	}).then((res) => res.data);
 };
 
+const checkAuntefication = (): Promise<IAuthenticateResponse> => {
+	return axios.post('', {
+		query: `
+			query {
+				authentication: authentication {
+					address,
+					isLandlord
+				}
+			}
+		`
+	}).then((res) => res.data);
+};
+
 export {
 	requestAuthentication,
 	authenticate,
+	checkAuntefication,
 };

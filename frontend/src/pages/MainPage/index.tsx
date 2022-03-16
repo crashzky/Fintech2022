@@ -1,29 +1,35 @@
 import Web3 from 'web3';
 import { useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
-import { authenticate, requestAuthentication } from '../../shared/api/auth';
+import { authenticate, checkAuntefication, requestAuthentication } from '../../shared/api/auth';
 
 const MainPage = (): JSX.Element => {
 	const [accountAddress, setAccountAddress] = useState(null);
-	const [isConnected, setIsConnected] = useState(false);
+	const [isAnotherAccount, setIsAnotherAccount] = useState(false);
 	const [accountAddressRequest, setAccountAddressRequest] = useState('');
 
 	const authRequestMutation = useMutation(requestAuthentication);
 	const authenticateMutation = useMutation(authenticate);
+	const checkAuth = useMutation(checkAuntefication);
 	
 	const web3 = new Web3((window as any).ethereum);
 
 	useEffect(() => {
 		if(localStorage.getItem('connected_account')) {
 			web3.eth.requestAccounts().then((res: any) => {
-				if(localStorage.getItem('connected_account') !== res[0]) {
-					setIsConnected(true);
-				}
-				else
-					setAccountAddress(localStorage.getItem('connected_account') as any);
+				checkAuth.mutate();
 			});
 		}
 	}, []);
+
+	useEffect(() => {
+		if(checkAuth.isSuccess) {
+			if(localStorage.getItem('connected_account') !== checkAuth.data.data.authentication.address)
+				setIsAnotherAccount(true);
+			else
+				setAccountAddress(localStorage.getItem('connected_account') as any);
+		}
+	}, [checkAuth.isSuccess]);
 	
 	useEffect(() => {
 		if(authRequestMutation.isSuccess) {
@@ -63,7 +69,7 @@ const MainPage = (): JSX.Element => {
 				}}>
 	
 				</button>
-				{isConnected && (
+				{isAnotherAccount && (
 					<p className='authentication__warning'>
 						Your MetaMask account is different from the one you authenticated with before
 					</p>
