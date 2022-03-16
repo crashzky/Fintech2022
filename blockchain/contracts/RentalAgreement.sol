@@ -22,12 +22,12 @@ contract RentalAgreement {
     bool globalIsRented = false;
 
     constructor (uint roomInternalId) {
-        globalRoomInternalID = roomInternalId();
+        globalRoomInternalID = roomInternalId;
         globalLandlord = msg.sender;
     }
 
     function getRoomInternalId() public view returns(uint) {
-        return getRoomInternalId;
+        return getRoomInternalId();
     }
 
     function getLandlord() public view returns(address) {
