@@ -124,7 +124,15 @@ class Mutation:
         info: strawberry.types.Info
     ) -> Room:
         check_landlord_auth(info)
-
+        db.execute(
+            """
+            SELECT *
+            FROM renter
+            WHERE address = ?
+            """, [contract_address]
+        )
+        if db.fetchone() is None:
+            raise BadRequest("Contract with such address not found")
         db.execute(
             """
             UPDATE room
