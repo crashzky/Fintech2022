@@ -15,7 +15,24 @@ interface ICreateRoomResponse {
 	}
 }
 
+interface IGetRoomRequest {
+	id: string;
+}
+
+interface IGetRoomResponse {
+	data: {
+		room: {
+			internalName: string;
+			area: number;
+			location: string
+			contractAddress: string | null;
+		}
+	}
+}
+
 export type {
 	ICreateRoomRequest,
 	ICreateRoomResponse,
+	IGetRoomRequest, 
+	IGetRoomResponse,
 };

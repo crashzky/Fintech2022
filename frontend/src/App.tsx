@@ -7,6 +7,7 @@ import {
   } from 'react-router-dom';
 import RoomsPage from './pages/RoomsPage';
 import CreateRoom from './pages/RoomsPage/create';
+import RoomPage from './pages/RoomPage/[id]';
 
 const App = (): JSX.Element => {
 	const queryClient = new QueryClient()
@@ -17,6 +18,7 @@ const App = (): JSX.Element => {
 				<Routes>
 					<Route path='/rooms/create' element={<CreateRoom />} />
 					<Route path='/rooms' element={<RoomsPage />} />
+					<Route path='/room/:id' element={<RoomPage />} />
 					<Route path='/' element={<MainPage />} />
 				</Routes>
 			</Router>
