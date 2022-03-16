@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
-import { requestAuthentication } from '../shared/api/auth';
+import { requestAuthentication } from '../../shared/api/auth';
 
 const MainPage = (): JSX.Element => {
 	const { ethereum } = window as any;
@@ -36,6 +36,7 @@ const MainPage = (): JSX.Element => {
 				],
 				accountAddressRequest
 			] }).then((result: any) => {
+				console.log(result);
 				setAccountAddress(accountAddressRequest as any);
 				localStorage.setItem('connected_account', accountAddressRequest);
 			});

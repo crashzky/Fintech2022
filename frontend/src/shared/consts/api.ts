@@ -1,4 +1,4 @@
-const API_URL = 'http://solution-web/graphql';
+const API_URL = 'http://localhost/graphql';
 
 export {
 	API_URL,
