@@ -125,6 +125,15 @@ contract RentalAgreement {
         return globalRentEndTime;
     }
 
+    function addCashier(address addr) public {
+        if (addr == globalTenant) {
+            revert("You are not a tenant");
+        } else if (addr == globalLandlord) {
+            revert("The landlord cannot become a cashier");
+        } else if (addr == address(0)) {
+            revert("Zero address cannot become a cashier");
+        }
+    }
 //    address[] cashiers;
 //    uint i=0;
 //    function addCashier(address addr) public {
