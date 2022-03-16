@@ -8,7 +8,7 @@ const createRoom = (data: ICreateRoomRequest): Promise<ICreateRoomResponse> => {
 	return axios.post('', {
 		query: `
 			mutation {
-				createRoom: createRoom(room: {
+				rooms: createRoom(room: {
 						internalName: "${data.internalName}",
 						area: ${data.area},
 						location: "${data.location}"
