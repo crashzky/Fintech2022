@@ -167,7 +167,6 @@ class Mutation:
             """,
             {"room_id": id, "contract_address": contract_address},
         )
-
         conn.commit()
         return Room.get_by_id(id)
 
