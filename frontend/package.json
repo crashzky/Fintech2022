@@ -13,6 +13,7 @@
     "@types/react-dom": "^17.0.13",
     "add": "^2.0.6",
     "axios": "^0.26.1",
+    "eth-crypto": "^2.2.0",
     "formik": "^2.2.9",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
