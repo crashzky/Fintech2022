@@ -8,6 +8,7 @@ import strawberry.types
 from eth_account.messages import encode_defunct
 from web3.auto import w3
 
+from src.checks import check_landlord_auth
 from src.env import LANDLORD_ADDRESS
 from src.exceptions import BadRequest
 from src.storage import addresses_messages, conn, db
@@ -90,7 +91,10 @@ class Mutation:
             raise BadRequest("Authentication failed")
 
     @strawberry.mutation
-    def create_room(self, room: InputRoom) -> Room:
+    def create_room(self, room: InputRoom, info: strawberry.types.Info) -> Room:
+        check_landlord_auth(info)
+        if room.area <= 0:
+            raise BadRequest("The room area must be greater than zero")
         room_id = uuid.uuid4().hex
         db.execute(
             """
