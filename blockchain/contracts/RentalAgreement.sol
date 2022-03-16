@@ -136,10 +136,11 @@ contract RentalAgreement {
         } else if (addr == address(0)) {
             revert("Zero address cannot become a cashier");
         }
-        // Commit them
+        // Commit it
         cashiers[addr] = 1;
     }
 
+    // Check if cashier exists
     function getCashierNonce(address cashierAddr) view public returns (uint) {
         return cashiers[cashierAddr];
     }
