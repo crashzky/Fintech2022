@@ -22,7 +22,7 @@ contract RentalAgreement {
     bool globalIsRented = false;
 
     // Cashiers
-    address[] cashiers;
+    mapping(address => uint) cashiers;
 
     constructor (uint roomInternalId) {
         globalRoomInternalID = roomInternalId;
@@ -136,11 +136,12 @@ contract RentalAgreement {
         } else if (addr == address(0)) {
             revert("Zero address cannot become a cashier");
         }
-        cashiers.push(addr);
+        // Commit them
+        cashiers[addr] = 1;
     }
 
     function getCashierNonce(address cashierAddr) view public returns (uint) {
-        return cashiers[cashierAddr].exists ? 1 : 0;
+        return cashiers[cashierAddr];
     }
 //    address[] cashiers;
 //    uint i=0;
