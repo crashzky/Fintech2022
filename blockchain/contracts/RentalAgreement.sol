@@ -36,7 +36,7 @@ contract RentalAgreement {
     }
 
     function RentalPermit(uint256 deadline,address tenant,uint256 rentalRate,uint256 billingPeriodDuration,uint256 billingsCount) public {
-        
+        return deadline, tenant, rentalRate, billingPeriodDuration, billingsCount;
     }
 
     function EIP712Domain(string memory name,string memory version,address verifyingContract) public{
@@ -74,6 +74,15 @@ contract RentalAgreement {
         stime = deadline - 10;
         endtime = billingsCount * billingPeriodDuration + stime;
         a=1;
+
+        bytes32 A=RentalPermit(deadline, tenant, rentalRate, billingPeriodDuration, billingsCount);
+        bytes memory prefix = "\x19Ethereum Signed Message:\n32";
+        bytes32 prefixedHashMessage = keccak256(abi.encodePacked(prefix, A));
+        address signer = ecrecover(prefixedHashMessage, landlordSign.v, landlordSign.r, landlordSign.s);
+
+        if (signer != ladd) {
+            revert("Invalid landlord sign");
+        }
     }
 
     function time() view public returns (uint) {
