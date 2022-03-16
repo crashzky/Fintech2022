@@ -4,6 +4,7 @@ import { getRoom } from '../../shared/api/rooms';
 import { useEffect, useState } from 'react';
 import { getRentEndTime, getRentStartTime } from '../../shared/api/contract';
 import fromUnixTime from 'date-fns/fromUnixTime';
+import { format } from 'date-fns';
 
 const RoomPage = (): JSX.Element => {
 	const params = useParams();
@@ -66,7 +67,14 @@ const RoomPage = (): JSX.Element => {
 			)}
 			{(data && (getStatus() === 'Rented' || getStatus() === 'Rent ended')) && (
 				<>
-					
+					<p className='room__rent-start'>
+						{format(rentStartTime as Date, 'iii, d LLL yyyy kk:mm:ss ')}
+						{' GMT'}
+					</p>
+					<p className='room__rent-end'>
+						{format(rentEndTime as Date, 'iii, d LLL yyyy kk:mm:ss ')}
+						{' GMT'}
+					</p>
 				</>
 			)}
 			<Link to={`/room/${params.id}/edit`} className='room__edit' />
