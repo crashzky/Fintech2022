@@ -9,8 +9,9 @@ struct Sign {
 }
 
 contract RentalAgreement {
-    uint roomID;
-    address landlord;
+    uint globalRoomInternalID;
+
+    address globalLandlord;
     address globalTenant;
 
     uint globalRentalRate;
@@ -20,11 +21,17 @@ contract RentalAgreement {
 
     bool globalIsRented = false;
 
-    mapping(address => uint) data;
-
-    constructor (uint _roomID) {
-        data[msg.sender] = _roomID;
+    constructor (uint roomInternalId) {
+        globalRoomID = roomInternalId;
         landlord = msg.sender;
+    }
+
+    function getRoomInternalId() public view returns(uint) {
+        return globalLandlord;
+    }
+
+    function getLandlord() public view returns(address) {
+        return globalLandlord;
     }
 
     function rent(
@@ -51,14 +58,6 @@ contract RentalAgreement {
 
         // Complete transaction and pay for the renting
         payable(landlord).transfer(rentalRate);
-    }
-
-    function getRoomInternalId() public view returns(uint) {
-        return data[landlord];
-    }
-
-    function getLandlord() public view returns(address) {
-        return landlord;
     }
 
     function getTenant() view public returns (address) {
