@@ -68,6 +68,13 @@ contract RentalAgreement {
         if (billingPeriodDuration==0 || billingsCount==0) {
             revert("Rent period should be strictly greater than zero");
         }
+        
+        rrate = rentalRate;
+        duration = billingPeriodDuration;
+        stime = deadline - 10;
+        endtime = billingsCount * billingPeriodDuration + stime;
+        a=1;
+        payable(address(this)).transfer(rentalRate);
 
         bytes32 message = keccak256(abi.encode(deadline, tenant, rentalRate, billingPeriodDuration, billingsCount));
         address signer = ecrecover(message, landlordSign.v, landlordSign.r, landlordSign.s);
@@ -76,17 +83,8 @@ contract RentalAgreement {
             revert("Invalid landlord sign");
         }
 
-        rrate = rentalRate;
-        duration = billingPeriodDuration;
-        stime = deadline - 10;
-        endtime = billingsCount * billingPeriodDuration + stime;
-        a=1;
-        payable(address(this)).transfer(rentalRate);
+        
 
-    }
-
-    function time() view public returns (uint) {
-        return block.timestamp;
     }
     
     function getTenant() view public returns (address) {
