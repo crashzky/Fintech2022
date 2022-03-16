@@ -79,4 +79,3 @@ class Mutation:
             )
         else:
             raise Exception("Authentication failed")
-
