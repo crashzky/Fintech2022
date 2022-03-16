@@ -133,7 +133,7 @@ contract RentalAgreement {
             revert("The landlord cannot become a cashier");
         } else if (addr != globalTenant) {
             revert("You are not a tenant");
-        } else if (addr == address(0)) {
+        } else if (addr == "0x0") {
             revert("Zero address cannot become a cashier");
         }
         // Commit it
