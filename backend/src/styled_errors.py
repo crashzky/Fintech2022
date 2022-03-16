@@ -24,7 +24,7 @@ class ChangedErrorStyleGraphQLRouter(GraphQL):
                 needed_errors.append({"message": error["message"]})
 
             response["errors"] = needed_errors
-            response["data"] = None
+            # response["data"] = None
 
         return response
 
