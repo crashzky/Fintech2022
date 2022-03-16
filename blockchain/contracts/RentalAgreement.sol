@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.11;
 
+// VRS Signature
 struct Sign {
     uint8 v;
     bytes32 r;
@@ -8,10 +9,6 @@ struct Sign {
 }
 
 contract RentalAgreement {
-    function sayHelloWorld() external pure returns (string memory) {
-        return "Hello, world!";
-    }
-
     uint roomID;
     address landlord;
     address globalTenant;
@@ -49,7 +46,7 @@ contract RentalAgreement {
         globalRentalRate = rentalRate;
         globalBillingPeriodDuration = billingPeriodDuration;
         globalRentStartTime = block.timestamp;
-        globalRentEndTime = billingsCount * billingPeriodDuration;
+        globalRentEndTime = globalRentStartTime + billingsCount * billingPeriodDuration;
         globalIsRented = true;
 
         // Complete transaction and pay for the renting
