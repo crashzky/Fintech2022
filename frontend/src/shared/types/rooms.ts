@@ -34,6 +34,7 @@ interface IRoom {
 	area: number;
 	location: string
 	contractAddress: string | null;
+	publicName: string | null;
 }
 
 export type {

@@ -1,143 +1,100 @@
-const CONTRACT_CODE = `
-	// SPDX-License-Identifier: MIT
-	pragma solidity ^0.8.11;
-
-	contract RentalAgreement {
-		function sayHelloWorld() external pure returns (string memory) {
-			return "Hello, world!";
-		}
-
-		uint roomID;
-		address ladd;
-		address tadd;
-		uint rrate;
-		uint duration;
-		uint stime;
-		uint endtime;
-
-		mapping(address => uint) data;
-
-		constructor (uint _roomID) {
-			data[msg.sender] = _roomID;
-			ladd = msg.sender;
-		}
-
-		function getRoomInternalId() public view returns(uint) {
-			return data[ladd];
-		}
-
-		function getLandlord() public view returns(address) {
-			return ladd;
-		}
-
-		struct Sign {
-			uint8 v;
-			bytes32 r;
-			bytes32 s;
-		}
-
-		struct Permit {
-			uint256 deadline;
-			address tenant;
-			uint256 rentalRate;
-			uint256 billingPeriodDuration;
-			uint256 billingsCount;
-		}
-
-		function RentalPermit(uint256 deadline,address tenant,uint256 rentalRate,uint256 billingPeriodDuration,uint256 billingsCount) public {
-			
-		}
-
-		function EIP712Domain(string memory name,string memory version,address verifyingContract) public{
-			name = "Rental Agreement";
-			version = "1.0";
-		}
-
-		uint a=0;
-		function rent(uint deadline, address tenant, uint rentalRate, 
-			uint billingPeriodDuration, uint billingsCount, Sign memory landlordSign) public payable {
-			tadd = tenant;
-			
-			if (a==1 && block.timestamp<=deadline) {
-				revert("The contract is being in not allowed state");
-			}
-
-			if (msg.sender==tadd) {
-				rrate = rentalRate;
-				duration = billingPeriodDuration;
-				stime = deadline - 10;
-				endtime = billingsCount * billingPeriodDuration + stime;
-				a=1;
-				payable(ladd).transfer(rentalRate);
-			}
-			
-			if (msg.sender!=tadd) {
-				revert("The caller account and the account specified as a tenant do not match");
-			}
-
-			if (msg.sender==ladd) {
-				revert("The landlord cannot become a tenant");
-			}
-
-			if (rentalRate==0) {
-				revert("Rent amount should be strictly greater than zero");
-			}
-
-			if (billingPeriodDuration==0 || billingsCount==0) {
-				revert("Rent period should be strictly greater than zero");
-			}
-			
-			Permit memory A = Permit(deadline, tenant, rentalRate, billingPeriodDuration, billingsCount);
-			bytes32 message = keccak256(abi.encode(A));
-			address signer = ecrecover(message, landlordSign.v, landlordSign.r, landlordSign.s);
-
-			if (signer != ladd) {
-				revert("Invalid landlord sign");
-			}
-		}
-
-		function getTenant() view public returns (address) {
-			return tadd;
-		}
-
-		function getRentalRate() view public returns (uint) {
-			return rrate;
-		}
-
-		function getBillingPeriodDuration() view public returns (uint) {
-			return duration;
-		}
-
-		function getRentStartTime() view public returns (uint) {
-			return stime;
-		}
-
-		function getRentEndTime() view public returns (uint) {
-			return endtime;
-		}
-
-		address[] cashiers;
-		uint i=0;
-		function addCashier(address addr) public {
-			if (addr!=tadd && msg.sender!=tadd) {
-				revert("You are not a tenant");
-			}
-			if (msg.sender==tadd && addr==ladd) {
-				revert("The landlord cannot become a cashier");
-			}
-			if (msg.sender==tadd && addr==address(0)) {
-				revert("Zero address cannot become a cashier");
-			}
-			cashiers[i] = addr;
-			i++;
-		}
-
-		function getCashierNonce(address cashierAddr) view public returns (uint) {
-			if (msg.sender!=tadd) {
-				return 0;
-			}
-		}
+const CONTRACT_ABI = [
+	{
+	  inputs: [ [Object] ],
+	  stateMutability: 'nonpayable',
+	  type: 'constructor'
+	},
+	{
+	  inputs: [ [Object], [Object], [Object] ],
+	  name: 'EIP712Domain',
+	  outputs: [],
+	  stateMutability: 'nonpayable',
+	  type: 'function'
+	},
+	{
+	  inputs: [ [Object], [Object], [Object], [Object], [Object] ],
+	  name: 'RentalPermit',
+	  outputs: [],
+	  stateMutability: 'nonpayable',
+	  type: 'function'
+	},
+	{
+	  inputs: [ [Object] ],
+	  name: 'addCashier',
+	  outputs: [],
+	  stateMutability: 'nonpayable',
+	  type: 'function'
+	},
+	{
+	  inputs: [],
+	  name: 'getBillingPeriodDuration',
+	  outputs: [ [Object] ],
+	  stateMutability: 'view',
+	  type: 'function'
+	},
+	{
+	  inputs: [ [Object] ],
+	  name: 'getCashierNonce',
+	  outputs: [ [Object] ],
+	  stateMutability: 'view',
+	  type: 'function'
+	},
+	{
+	  inputs: [],
+	  name: 'getLandlord',
+	  outputs: [ [Object] ],
+	  stateMutability: 'view',
+	  type: 'function'
+	},
+	{
+	  inputs: [],
+	  name: 'getRentEndTime',
+	  outputs: [ [Object] ],
+	  stateMutability: 'view',
+	  type: 'function'
+	},
+	{
+	  inputs: [],
+	  name: 'getRentStartTime',
+	  outputs: [ [Object] ],
+	  stateMutability: 'view',
+	  type: 'function'
+	},
+	{
+	  inputs: [],
+	  name: 'getRentalRate',
+	  outputs: [ [Object] ],
+	  stateMutability: 'view',
+	  type: 'function'
+	},
+	{
+	  inputs: [],
+	  name: 'getRoomInternalId',
+	  outputs: [ [Object] ],
+	  stateMutability: 'view',
+	  type: 'function'
+	},
+	{
+	  inputs: [],
+	  name: 'getTenant',
+	  outputs: [ [Object] ],
+	  stateMutability: 'view',
+	  type: 'function'
+	},
+	{
+	  inputs: [ [Object], [Object], [Object], [Object], [Object], [Object] ],
+	  name: 'rent',
+	  outputs: [],
+	  stateMutability: 'payable',
+	  type: 'function'
+	},
+	{
+	  inputs: [],
+	  name: 'sayHelloWorld',
+	  outputs: [ [Object] ],
+	  stateMutability: 'pure',
+	  type: 'function'
 	}
-`;
+];
 
-export default CONTRACT_CODE;
+export default CONTRACT_ABI;
