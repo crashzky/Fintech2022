@@ -23,6 +23,8 @@ contract RentalAgreement {
 
     // Cashiers
     mapping(address => uint) cashiers;
+    address[] cashiersList;
+    uint cashierIncrement = 0;
 
     constructor (uint roomInternalId) {
         globalRoomInternalID = roomInternalId;
@@ -129,19 +131,42 @@ contract RentalAgreement {
     }
 
     function addCashier(address addr) public {
-        if (addr == globalLandlord) {
-            revert("The landlord cannot become a cashier");
-        } else if (addr != globalTenant) {
+        if (msg.sender != globalTenant) {
             revert("You are not a tenant");
+        } else if (addr == globalLandlord) {
+            revert("The landlord cannot become a cashier");
         } else if (addr == address(0)) {
             revert("Zero address cannot become a cashier");
         }
-        // Commit them
-        cashiers[addr] = 1;
+        // Commit it
+        cashiers[addr] = ++cashierIncrement;
+        cashiersList.push(addr);
     }
 
+    // Check if cashier exists
     function getCashierNonce(address cashierAddr) view public returns (uint) {
         return cashiers[cashierAddr];
+    }
+
+    function removeCashier(address cashierAddr) public {
+        if (msg.sender != globalTenant) {
+            revert("You are not a tenant");
+        } else if (cashiers[cashierAddr] == 0) {
+            revert("Unknown cashier");
+        }
+
+        delete cashiers[cashierAddr];
+
+        address[] newCashiersList;
+        for (uint i = 0; i < cashiersList.length; i++) {
+            if (cashiersList[i] != cashierAddr)
+                newCashiersList.push(cashiersList[i]);
+        }
+        cashiersList = newCashiersList;
+    }
+
+    function getCashiersList() view returns (address[]) {
+        return cashiersList;
     }
 //    address[] cashiers;
 //    uint i=0;
