@@ -139,8 +139,7 @@ class Mutation:
 
     @strawberry.mutation
     def set_room_contract_address(
-        self, id: strawberry.ID, contract_address: typing.Optional[str],
-        info: strawberry.types.Info
+        self, id: strawberry.ID, info: strawberry.types.Info, contract_address: typing.Optional[str] = None
     ) -> Room:
         print("Set room to:", id, contract_address)
         check_landlord_auth(info)
@@ -168,8 +167,7 @@ class Mutation:
 
     @strawberry.mutation
     def set_room_public_name(
-        self, id: strawberry.ID, public_name: typing.Optional[str],
-        info: strawberry.types.Info
+        self, info: strawberry.types.Info, id: strawberry.ID, public_name: typing.Optional[str] = None,
     ) -> Room:
         address = someone_auth(info)
         db.execute(
