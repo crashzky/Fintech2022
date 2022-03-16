@@ -1,8 +1,6 @@
 import warnings
 
-from src.vendor.eth_account.signers.base import (
-    BaseAccount,
-)
+from src.vendor.eth_account.signers.base import BaseAccount
 
 
 class LocalAccount(BaseAccount):
@@ -25,6 +23,7 @@ class LocalAccount(BaseAccount):
         >>> bytes(my_local_account) # doctest: +SKIP
         b"\\x01\\x23..."
     """
+
     def __init__(self, key, account):
         """
         Initialize a new account with the the given private key.
@@ -71,7 +70,9 @@ class LocalAccount(BaseAccount):
         This uses the same structure as in
         :meth:`~src.vendor.eth_account.account.Account.encrypt`, but without a private key argument.
         """
-        return self._publicapi.encrypt(self.key, password, kdf=kdf, iterations=iterations)
+        return self._publicapi.encrypt(
+            self.key, password, kdf=kdf, iterations=iterations
+        )
 
     def signHash(self, message_hash):
         return self._publicapi.signHash(
@@ -86,7 +87,9 @@ class LocalAccount(BaseAccount):
         This uses the same structure as in
         :meth:`~src.vendor.eth_account.account.Account.sign_message`, but without a private key argument.
         """
-        return self._publicapi.sign_message(signable_message, private_key=self.key)
+        return self._publicapi.sign_message(
+            signable_message, private_key=self.key
+        )
 
     def signTransaction(self, transaction_dict):
         warnings.warn(

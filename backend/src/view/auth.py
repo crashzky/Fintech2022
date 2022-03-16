@@ -1,7 +1,6 @@
 import strawberry
 
 
-
 @strawberry.type
 class Authentication:
     address: str
