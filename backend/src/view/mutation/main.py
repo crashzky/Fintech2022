@@ -78,10 +78,9 @@ class Mutation:
         try:
             vrs = (signed_message.v, signed_message.r, signed_message.s)
             root_address = Account.recover_message(
-                encode_defunct(text=message),
-                vrs=(signed_message.v, signed_message.r, signed_message.s)
+                encode_defunct(text=message), vrs=vrs
             )
-            if root_address == address and vrs not in used_signs:
+            if root_address == address:
                 used_signs.append(vrs)
                 info.context["response"].set_cookie(
                     key="access_token_cookie", value="token-" + address
