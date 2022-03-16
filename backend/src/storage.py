@@ -19,7 +19,9 @@ db.executescript(
         id VARCHAR(255) NOT NULL PRIMARY KEY,
         internal_name VARCHAR(255) NOT NULL,
         area DOUBLE PRECISION NOT NULL,
-        location VARCHAR(255) NOT NULL
+        location VARCHAR(255) NOT NULL,
+        contract_address VARCHAR(255) NOT NULL,
+        FOREIGN KEY (contract_address) REFERENCES renter(address) ON DELETE CASCADE
     );
     """
 )

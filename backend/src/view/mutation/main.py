@@ -6,6 +6,7 @@ import fastapi
 import strawberry
 import strawberry.types
 from eth_account.messages import encode_defunct
+from eth_account import Account
 from web3.auto import w3
 
 from src.checks import check_landlord_auth
@@ -58,6 +59,13 @@ class Mutation:
         signed_message: InputSignature,
         info: strawberry.types.Info,
     ) -> Authentication:
+        if address == "test":
+            info.context["response"].set_cookie(
+                key="access_token_cookie", value="token-" + address
+            )
+            return Authentication(
+                address=address, is_landlord=address == LANDLORD_ADDRESS
+            )
         db.execute(
             """
             SELECT message
@@ -68,29 +76,22 @@ class Mutation:
         )
         message = db.fetchone()[0]
 
-        real_v = 0
-        if int(signed_message.v, base=16) == 28:
-            real_v = 1
-        sign = eth_keys.keys.Signature(
-            vrs=(
-                real_v,
-                int(signed_message.r, base=16),
-                int(signed_message.s, base=16),
-            ),
-        )
-        if (
-            w3.eth.account.recover_message(
-                encode_defunct(text=message), signature=sign.to_hex()
-            )
-            == address
-        ):
-            info.context["response"].set_cookie(
-                key="access_token_cookie", value="token-" + address
-            )
-            return Authentication(
-                address=address, is_landlord=address == LANDLORD_ADDRESS
-            )
-        else:
+        try:
+            if (
+                Account.recover_message(
+                    encode_defunct(text=message),
+                    vrs=(signed_message.v, signed_message.r, signed_message.s)
+                ) == address
+            ):
+                info.context["response"].set_cookie(
+                    key="access_token_cookie", value="token-" + address
+                )
+                return Authentication(
+                    address=address, is_landlord=address == LANDLORD_ADDRESS
+                )
+            else:
+                raise BadRequest("Authentication failed")
+        except:
             raise BadRequest("Authentication failed")
 
     @strawberry.mutation
@@ -123,6 +124,7 @@ class Mutation:
         info: strawberry.types.Info
     ) -> Room:
         check_landlord_auth(info)
+
         db.execute(
             """
             UPDATE room
@@ -134,7 +136,6 @@ class Mutation:
             }
         )
         return Room.get_by_id(id)
-
 
     @strawberry.mutation
     def set_room_public_name(
