@@ -217,5 +217,5 @@ class Mutation:
             """,
             [id],
         )
-        db.commit()
+        conn.commit()
         return room
