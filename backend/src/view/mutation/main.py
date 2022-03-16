@@ -194,6 +194,7 @@ class Mutation:
             }
         )
         db.commit()
+        return Room.get_by_id(id)
 
     @strawberry.mutation
     def remove_room(self, id: strawberry.ID, info: strawberry.types.Info) -> Room:
