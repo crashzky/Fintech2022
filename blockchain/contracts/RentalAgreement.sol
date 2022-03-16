@@ -145,7 +145,7 @@ contract RentalAgreement {
         return cashiers[cashierAddr];
     }
 
-    function emoveCashier(address cashierAddr) public {
+    function removeCashier(address cashierAddr) public {
         if (msg.sender != globalTenant) {
             revert("You are not a tenant");
         } else if (cashiers[cashierAddr] == 0) {
