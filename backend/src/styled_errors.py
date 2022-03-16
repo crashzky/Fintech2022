@@ -16,6 +16,7 @@ class ChangedErrorStyleGraphQLRouter(GraphQL):
         request: fastapi.Request,
         result: strawberry.types.ExecutionResult,
     ) -> strawberry.http.GraphQLHTTPResponse:
+        print(await request.json())
         response = strawberry.http.process_result(result)
         if response.get("errors"):
             needed_errors = []
