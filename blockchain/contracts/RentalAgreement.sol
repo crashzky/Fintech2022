@@ -73,14 +73,6 @@ contract RentalAgreement {
         stime = deadline - 10;
         endtime = billingsCount * billingPeriodDuration + stime;
         a=1;
-
-        bytes memory prefix = "\x19Ethereum Signed Message:\n32";
-        bytes32 prefixedHashMessage = keccak256(abi.encodePacked(prefix, msg.sender, rentalRate, duration, this));
-        address signer = ecrecover(prefixedHashMessage, landlordSign.v, landlordSign.r, landlordSign.s);
-
-        if (signer != ladd) {
-            revert("Invalid landlord sign");
-        }
     }
 
     function getTenant() view public returns (address) {
@@ -101,5 +93,17 @@ contract RentalAgreement {
 
     function getRentEndTime() view public returns (uint) {
         return endtime;
+    }
+
+    function addCashier(address addr) view public {
+        if (addr!=tadd && msg.sender!=tadd) {
+            revert("You are not a tenant");
+        }
+        if (msg.sender==tadd && addr==ladd) {
+            revert("The landlord cannot become a cashier");
+        }
+        if (msg.sender==tadd && addr==address(0)) {
+            revert("Zero address cannot become a cashier");
+        }
     }
 }
