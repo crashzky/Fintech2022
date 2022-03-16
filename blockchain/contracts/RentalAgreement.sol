@@ -128,7 +128,7 @@ contract RentalAgreement {
         return globalRentEndTime;
     }
 
-    function addCashier(address addr) view public {
+    function addCashier(address addr) public {
         if (msg.sender != globalTenant) {
             revert("You are not a tenant");
         } else if (addr == globalLandlord) {
