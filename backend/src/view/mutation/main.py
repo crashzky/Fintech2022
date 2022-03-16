@@ -111,8 +111,26 @@ class Mutation:
         return Room.get_by_id(room_id)
 
     @strawberry.mutation
-    def edit_room(self, id: strawberry.ID, room: InputRoom) -> Room:
-        pass
+    def edit_room(self, id: strawberry.ID, room: InputRoom, info: strawberry.types.Info) -> Room:
+        check_landlord_auth(info)
+        if room.area <= 0:
+            raise BadRequest("The room area must be greater than zero")
+        db.execute(
+            """
+            UPDATE room
+            SET internal_name = :internal_name,
+                area = :area,
+                location = :location
+            WHERE id = :room_id
+            """, {
+                "room_id": id,
+                "internal_name": room.internal_name,
+                "area": room.area,
+                "location": room.location,
+            }
+        )
+        conn.commit()
+        return Room.get_by_id(id)
 
     @strawberry.mutation
     def set_room_contract_address(
@@ -139,6 +157,7 @@ class Mutation:
                 "contract_address": contract_address
             }
         )
+        conn.commit()
         return Room.get_by_id(id)
 
     @strawberry.mutation
@@ -149,4 +168,11 @@ class Mutation:
 
     @strawberry.mutation
     def remove_room(self, id: strawberry.ID) -> Room:
-        pass
+        room = Room.get_by_id(id)
+        db.execute(
+            """
+            DELETE FROM room
+            WHERE id = ?
+            """, [id]
+        )
+        return room
