@@ -30,15 +30,6 @@ contract RentalAgreement {
         landlord = msg.sender;
     }
 
-    function getRoomInternalId() public view returns(uint) {
-        return data[landlord];
-    }
-
-    function getLandlord() public view returns(address) {
-        return landlord;
-    }
-
-
     function rent(
         uint deadline,
         address tenant,
@@ -65,6 +56,14 @@ contract RentalAgreement {
         payable(landlord).transfer(rentalRate);
     }
 
+    function getRoomInternalId() public view returns(uint) {
+        return data[landlord];
+    }
+
+    function getLandlord() public view returns(address) {
+        return landlord;
+    }
+
     function getTenant() view public returns (address) {
         return globalTenant;
     }
@@ -85,25 +84,25 @@ contract RentalAgreement {
         return globalRentEndTime;
     }
 
-    address[] cashiers;
-    uint i=0;
-    function addCashier(address addr) public {
-        if (addr!=tadd && msg.sender!=tadd) {
-            revert("You are not a tenant");
-        }
-        if (msg.sender==tadd && addr==ladd) {
-            revert("The landlord cannot become a cashier");
-        }
-        if (msg.sender==tadd && addr==address(0)) {
-            revert("Zero address cannot become a cashier");
-        }
-        cashiers[i] = addr;
-        i++;
-    }
-
-    function getCashierNonce(address cashierAddr) view public returns (uint) {
-        if (msg.sender!=tadd) {
-            return 0;
-        }
-    }
+//    address[] cashiers;
+//    uint i=0;
+//    function addCashier(address addr) public {
+//        if (addr!=tadd && msg.sender!=tadd) {
+//            revert("You are not a tenant");
+//        }
+//        if (msg.sender==tadd && addr==ladd) {
+//            revert("The landlord cannot become a cashier");
+//        }
+//        if (msg.sender==tadd && addr==address(0)) {
+//            revert("Zero address cannot become a cashier");
+//        }
+//        cashiers[i] = addr;
+//        i++;
+//    }
+//
+//    function getCashierNonce(address cashierAddr) view public returns (uint) {
+//        if (msg.sender!=tadd) {
+//            return 0;
+//        }
+//    }
 }
