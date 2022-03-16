@@ -35,16 +35,12 @@ contract RentalAgreement {
         bytes32 s;
     }
 
-    struct Permit {
+    struct RentalPermit {
         uint256 deadline;
         address tenant;
         uint256 rentalRate;
         uint256 billingPeriodDuration;
         uint256 billingsCount;
-    }
-
-    function RentalPermit(uint256 deadline,address tenant,uint256 rentalRate,uint256 billingPeriodDuration,uint256 billingsCount) public {
-        
     }
 
     function EIP712Domain(string memory name,string memory version,address verifyingContract) public{
@@ -59,15 +55,6 @@ contract RentalAgreement {
         
         if (a==1 && block.timestamp<=deadline) {
             revert("The contract is being in not allowed state");
-        }
-
-        if (msg.sender==tadd) {
-            rrate = rentalRate;
-            duration = billingPeriodDuration;
-            stime = deadline - 10;
-            endtime = billingsCount * billingPeriodDuration + stime;
-            a=1;
-            payable(ladd).transfer(rentalRate);
         }
         
         if (msg.sender!=tadd) {
@@ -92,6 +79,15 @@ contract RentalAgreement {
 
         if (signer != ladd) {
             revert("Invalid landlord sign");
+        }
+
+        if (msg.sender==tadd) {
+            rrate = rentalRate;
+            duration = billingPeriodDuration;
+            stime = deadline - 10;
+            endtime = billingsCount * billingPeriodDuration + stime;
+            a=1;
+            payable(ladd).transfer(rentalRate);
         }
     }
 
