@@ -139,9 +139,13 @@ contract RentalAgreement {
         cashiers.push(addr);
     }
 
-//    function getCashierNonce(address cashierAddr) view public returns (uint) {
-//
-//    }
+    function getCashierNonce(address cashierAddr) view public returns (uint) {
+        if (cashiers.exists) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
 //    address[] cashiers;
 //    uint i=0;
 //    function addCashier(address addr) public {
