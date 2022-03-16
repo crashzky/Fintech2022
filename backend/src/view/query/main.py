@@ -4,6 +4,7 @@ import strawberry
 import strawberry.types
 
 from src.env import LANDLORD_ADDRESS
+from src.exceptions import BadRequest
 from src.storage import db
 from src.view.auth import Authentication
 from src.view.room import Room
@@ -27,13 +28,27 @@ class Query:
             )
 
     @strawberry.field
-    def rooms(self) -> typing.List[Room]:
-        db.execute(
-            """
-            SELECT id, internal_name, area, location, contract_address, public_name
-            FROM room
-            """
-        )
+    def rooms(self, info: strawberry.types.Info) -> typing.List[Room]:
+        cookies = info.context["request"].cookies
+        try:
+            address = cookies["access_token_cookie"][6:]
+        except KeyError:
+            raise BadRequest("Authentication required")
+        if address == LANDLORD_ADDRESS:
+            db.execute(
+                """
+                SELECT id, internal_name, area, location, contract_address, public_name
+                FROM room
+                """
+            )
+        else:
+            db.execute(
+                """
+                SELECT id, internal_name, area, location, contract_address, public_name
+                FROM room
+                WHERE contract_address = ? OR contract_address IS NULL
+                """
+            )
         rooms = db.fetchall()
         rooms = [Room(**room) for room in rooms]
         return rooms

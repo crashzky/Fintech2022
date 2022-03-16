@@ -13,3 +13,11 @@ def check_landlord_auth(info: strawberry.types.Info) -> None:
     else:
         if address != LANDLORD_ADDRESS:
             raise BadRequest("This method is available only for the landlord")
+
+
+def someone_auth(info: strawberry.types.Info) -> str:
+    cookies = info.context["request"].cookies
+    try:
+        return cookies["access_token_cookie"][6:]
+    except KeyError:
+        raise BadRequest("Authentication required")

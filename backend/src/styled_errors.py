@@ -25,7 +25,7 @@ class ChangedErrorStyleGraphQLRouter(GraphQL):
 
             response["errors"] = needed_errors
             # response["data"] = None
-
+        print(response)
         return response
 
     async def get_context(
