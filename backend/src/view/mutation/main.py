@@ -142,6 +142,7 @@ class Mutation:
         self, id: strawberry.ID, contract_address: typing.Optional[str],
         info: strawberry.types.Info
     ) -> Room:
+        print("Set room to:", id, contract_address)
         check_landlord_auth(info)
         db.execute(
             """
