@@ -166,9 +166,19 @@ class Mutation:
 
     @strawberry.mutation
     def set_room_public_name(
-        self, id: strawberry.ID, contract_address: typing.Optional[str]
+        self, id: strawberry.ID, public_name: typing.Optional[str]
     ) -> Room:
-        pass
+        db.execute(
+            """
+            UPDATE room
+            SET public_name := :public_name
+            WHERE id = :room_id
+            """, {
+                "room_id": id,
+                "public_name": public_name
+            }
+        )
+        db.commit()
 
     @strawberry.mutation
     def remove_room(self, id: strawberry.ID, info: strawberry.types.Info) -> Room:
