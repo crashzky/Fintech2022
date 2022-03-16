@@ -19,3 +19,13 @@ main_app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+#
+# @main_app.middleware("http")
+# async def check_error(request: fastapi.Request, call_next):
+#     response = await call_next(request)
+#     if isinstance(response, fastapi.responses.JSONResponse) and b"error" in response.body:
+#         response.status_code = 400
+#
+#     return response

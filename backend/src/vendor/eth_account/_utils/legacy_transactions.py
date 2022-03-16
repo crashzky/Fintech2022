@@ -1,34 +1,14 @@
 import itertools
-from typing import (
-    Dict,
-)
+from typing import Dict
 
-from cytoolz import (
-    curry,
-    dissoc,
-    merge,
-    partial,
-    pipe,
-)
-from eth_rlp import (
-    HashableRLP,
-)
-from eth_utils.curried import (
-    apply_formatters_to_dict,
-)
 import rlp
-from rlp.sedes import (
-    Binary,
-    big_endian_int,
-    binary,
-)
+from cytoolz import curry, dissoc, merge, partial, pipe
+from eth_rlp import HashableRLP
+from eth_utils.curried import apply_formatters_to_dict
+from rlp.sedes import Binary, big_endian_int, binary
 
-from .transaction_utils import (
-    set_transaction_type_if_needed,
-)
-from .typed_transactions import (
-    TypedTransaction,
-)
+from .transaction_utils import set_transaction_type_if_needed
+from .typed_transactions import TypedTransaction
 from .validation import (
     LEGACY_TRANSACTION_FORMATTERS,
     LEGACY_TRANSACTION_VALID_VALUES,
@@ -37,7 +17,7 @@ from .validation import (
 
 def serializable_unsigned_transaction_from_dict(transaction_dict):
     transaction_dict = set_transaction_type_if_needed(transaction_dict)
-    if 'type' in transaction_dict:
+    if "type" in transaction_dict:
         # We delegate to TypedTransaction, which will carry out validation & formatting.
         return TypedTransaction.from_dict(transaction_dict)
 
@@ -49,7 +29,7 @@ def serializable_unsigned_transaction_from_dict(transaction_dict):
         chain_id_to_v,
         apply_formatters_to_dict(LEGACY_TRANSACTION_FORMATTERS),
     )
-    if 'v' in filled_transaction:
+    if "v" in filled_transaction:
         serializer = Transaction
     else:
         serializer = UnsignedTransaction
@@ -58,60 +38,81 @@ def serializable_unsigned_transaction_from_dict(transaction_dict):
 
 def encode_transaction(unsigned_transaction, vrs):
     (v, r, s) = vrs
-    chain_naive_transaction = dissoc(unsigned_transaction.as_dict(), 'v', 'r', 's')
+    chain_naive_transaction = dissoc(
+        unsigned_transaction.as_dict(), "v", "r", "s"
+    )
     if isinstance(unsigned_transaction, TypedTransaction):
         # Typed transaction have their own encoding format, so we must delegate the encoding.
-        chain_naive_transaction['v'] = v
-        chain_naive_transaction['r'] = r
-        chain_naive_transaction['s'] = s
-        signed_typed_transaction = TypedTransaction.from_dict(chain_naive_transaction)
+        chain_naive_transaction["v"] = v
+        chain_naive_transaction["r"] = r
+        chain_naive_transaction["s"] = s
+        signed_typed_transaction = TypedTransaction.from_dict(
+            chain_naive_transaction
+        )
         return signed_typed_transaction.encode()
     signed_transaction = Transaction(v=v, r=r, s=s, **chain_naive_transaction)
     return rlp.encode(signed_transaction)
 
 
 TRANSACTION_DEFAULTS = {
-    'to': b'',
-    'value': 0,
-    'data': b'',
-    'chainId': None,
+    "to": b"",
+    "value": 0,
+    "data": b"",
+    "chainId": None,
 }
 
 ALLOWED_TRANSACTION_KEYS = {
-    'nonce',
-    'gasPrice',
-    'gas',
-    'to',
-    'value',
-    'data',
-    'chainId',  # set chainId to None if you want a transaction that can be replayed across networks
+    "nonce",
+    "gasPrice",
+    "gas",
+    "to",
+    "value",
+    "data",
+    "chainId",  # set chainId to None if you want a transaction that can be replayed across networks
 }
 
-REQUIRED_TRANSACTION_KEYS = ALLOWED_TRANSACTION_KEYS.difference(TRANSACTION_DEFAULTS.keys())
+REQUIRED_TRANSACTION_KEYS = ALLOWED_TRANSACTION_KEYS.difference(
+    TRANSACTION_DEFAULTS.keys()
+)
 
 
 def assert_valid_fields(transaction_dict):
     # check if any keys are missing
-    missing_keys = REQUIRED_TRANSACTION_KEYS.difference(transaction_dict.keys())
+    missing_keys = REQUIRED_TRANSACTION_KEYS.difference(
+        transaction_dict.keys()
+    )
     if missing_keys:
-        raise TypeError("Transaction must include these fields: %r" % missing_keys)
+        raise TypeError(
+            "Transaction must include these fields: %r" % missing_keys
+        )
 
     # check if any extra keys were specified
-    superfluous_keys = set(transaction_dict.keys()).difference(ALLOWED_TRANSACTION_KEYS)
+    superfluous_keys = set(transaction_dict.keys()).difference(
+        ALLOWED_TRANSACTION_KEYS
+    )
     if superfluous_keys:
-        raise TypeError("Transaction must not include unrecognized fields: %r" % superfluous_keys)
+        raise TypeError(
+            "Transaction must not include unrecognized fields: %r"
+            % superfluous_keys
+        )
 
     # check for valid types in each field
     valid_fields: Dict[str, bool]
-    valid_fields = apply_formatters_to_dict(LEGACY_TRANSACTION_VALID_VALUES, transaction_dict)
+    valid_fields = apply_formatters_to_dict(
+        LEGACY_TRANSACTION_VALID_VALUES, transaction_dict
+    )
     if not all(valid_fields.values()):
-        invalid = {key: transaction_dict[key] for key, valid in valid_fields.items() if not valid}
+        invalid = {
+            key: transaction_dict[key]
+            for key, valid in valid_fields.items()
+            if not valid
+        }
         raise TypeError("Transaction had invalid fields: %r" % invalid)
 
 
 def chain_id_to_v(transaction_dict):
     # See EIP 155
-    chain_id = transaction_dict.pop('chainId')
+    chain_id = transaction_dict.pop("chainId")
     if chain_id is None:
         return transaction_dict
     else:
@@ -124,20 +125,20 @@ def fill_transaction_defaults(transaction):
 
 
 UNSIGNED_TRANSACTION_FIELDS = (
-    ('nonce', big_endian_int),
-    ('gasPrice', big_endian_int),
-    ('gas', big_endian_int),
-    ('to', Binary.fixed_length(20, allow_empty=True)),
-    ('value', big_endian_int),
-    ('data', binary),
+    ("nonce", big_endian_int),
+    ("gasPrice", big_endian_int),
+    ("gas", big_endian_int),
+    ("to", Binary.fixed_length(20, allow_empty=True)),
+    ("value", big_endian_int),
+    ("data", binary),
 )
 
 
 class Transaction(HashableRLP):
     fields = UNSIGNED_TRANSACTION_FIELDS + (
-        ('v', big_endian_int),
-        ('r', big_endian_int),
-        ('s', big_endian_int),
+        ("v", big_endian_int),
+        ("r", big_endian_int),
+        ("s", big_endian_int),
     )
 
 
@@ -154,4 +155,4 @@ def strip_signature(txn):
 
 
 def vrs_from(transaction):
-    return (getattr(transaction, part) for part in 'vrs')
+    return (getattr(transaction, part) for part in "vrs")
