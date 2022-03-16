@@ -35,6 +35,14 @@ contract RentalAgreement {
         bytes32 s;
     }
 
+    struct Permit {
+        uint256 deadline;
+        address tenant;
+        uint256 rentalRate;
+        uint256 billingPeriodDuration;
+        uint256 billingsCount;
+    }
+
     function RentalPermit(uint256 deadline,address tenant,uint256 rentalRate,uint256 billingPeriodDuration,uint256 billingsCount) public {
         
     }
@@ -48,7 +56,7 @@ contract RentalAgreement {
     function rent(uint deadline, address tenant, uint rentalRate, 
         uint billingPeriodDuration, uint billingsCount, Sign memory landlordSign) public payable {
         tadd = tenant;
-
+        
         if (a==1 && block.timestamp<=deadline) {
             revert("The contract is being in not allowed state");
         }
@@ -61,7 +69,7 @@ contract RentalAgreement {
             a=1;
             payable(ladd).transfer(rentalRate);
         }
-
+        
         if (msg.sender!=tadd) {
             revert("The caller account and the account specified as a tenant do not match");
         }
@@ -77,15 +85,16 @@ contract RentalAgreement {
         if (billingPeriodDuration==0 || billingsCount==0) {
             revert("Rent period should be strictly greater than zero");
         }
-
-        bytes32 message = keccak256(abi.encode(deadline, tenant, rentalRate, billingPeriodDuration, billingsCount));
+        
+        Permit memory A = Permit(deadline, tenant, rentalRate, billingPeriodDuration, billingsCount);
+        bytes32 message = keccak256(abi.encode(A));
         address signer = ecrecover(message, landlordSign.v, landlordSign.r, landlordSign.s);
 
         if (signer != ladd) {
             revert("Invalid landlord sign");
         }
     }
-    
+
     function getTenant() view public returns (address) {
         return tadd;
     }
