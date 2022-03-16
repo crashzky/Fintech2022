@@ -29,25 +29,9 @@ contract RentalAgreement {
         return ladd;
     }
 
-    struct Sign {
-        uint8 v;
-        bytes32 r;
-        bytes32 s;
-    }
-
-    function RentalPermit(uint256 deadline,address tenant,uint256 rentalRate,uint256 billingPeriodDuration,uint256 billingsCount) public {
-
-    }
-
-    function EIP712Domain(string memory name,string memory version,address verifyingContract) public{
-        name = "Rental Agreement";
-        version = "1.0";
-    }
-
     uint a=0;
     function rent(uint deadline, address tenant, uint rentalRate,
         uint billingPeriodDuration, uint billingsCount, Sign memory landlordSign) public payable {
-        tadd = tenant;
 
         if (a==1 && block.timestamp<=deadline) {
             revert("The contract is being in not allowed state");
@@ -55,7 +39,7 @@ contract RentalAgreement {
 
         payable(ladd).transfer(rentalRate);
 
-        if (msg.sender!=tadd) {
+        if (msg.sender!=tenant) {
             revert("The caller account and the account specified as a tenant do not match");
         }
 
