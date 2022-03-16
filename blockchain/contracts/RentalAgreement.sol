@@ -73,6 +73,7 @@ contract RentalAgreement {
         stime = deadline - 10;
         endtime = billingsCount * billingPeriodDuration + stime;
         a=1;
+        
     }
 
     function getTenant() view public returns (address) {
