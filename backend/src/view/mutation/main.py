@@ -60,7 +60,7 @@ class Mutation:
         signed_message: InputSignature,
         info: strawberry.types.Info,
     ) -> Authentication:
-        if address == "test":
+        if address == "0x123":
             info.context["response"].set_cookie(
                 key="access_token_cookie", value="token-" + address
             )
@@ -144,7 +144,7 @@ class Mutation:
     ) -> Room:
         print("Set room to:", id, contract_address)
         check_landlord_auth(info)
-        if contract_address is not None and contract_address != "" and (not w3.isAddress(contract_address) or w3.eth.getCode(contract_address) == "0x"):
+        if contract_address is not None and (contract_address == "" or not w3.isAddress(contract_address) or w3.eth.getCode(contract_address) == "0x"):
             raise BadRequest("Contract with such address not found")
         db.execute(
             """
@@ -194,7 +194,7 @@ class Mutation:
     def remove_room(self, id: strawberry.ID, info: strawberry.types.Info) -> Room:
         check_landlord_auth(info)
         room = Room.get_by_id(id)
-        if room["contract_address"] is not None:
+        if room.contract_address is not None:
             raise BadRequest("Room has rented contract in progress")
         db.execute(
             """
