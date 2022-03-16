@@ -13,7 +13,6 @@ contract RentalAgreement {
     uint duration;
     uint stime;
     uint endtime;
-    uint256 public balance;
 
     mapping(address => uint) data;
 
@@ -36,8 +35,15 @@ contract RentalAgreement {
         bytes32 s;
     }
 
-    function RentalPermit(uint256 deadline, address tenant, uint256 rentalRate, 
-        uint256 billingPeriodDuration, uint256 billingsCount) public {
+    struct Permit {
+        uint256 deadline;
+        address tenant;
+        uint256 rentalRate;
+        uint256 billingPeriodDuration;
+        uint256 billingsCount;
+    }
+
+    function RentalPermit(uint256 deadline,address tenant,uint256 rentalRate,uint256 billingPeriodDuration,uint256 billingsCount) public {
         
     }
 
@@ -50,10 +56,20 @@ contract RentalAgreement {
     function rent(uint deadline, address tenant, uint rentalRate, 
         uint billingPeriodDuration, uint billingsCount, Sign memory landlordSign) public payable {
         tadd = tenant;
-        if (a==1) {
+        
+        if (a==1 && block.timestamp<=deadline) {
             revert("The contract is being in not allowed state");
         }
 
+        if (msg.sender==tadd) {
+            rrate = rentalRate;
+            duration = billingPeriodDuration;
+            stime = deadline - 10;
+            endtime = billingsCount * billingPeriodDuration + stime;
+            a=1;
+            payable(ladd).transfer(rentalRate);
+        }
+        
         if (msg.sender!=tadd) {
             revert("The caller account and the account specified as a tenant do not match");
         }
@@ -69,13 +85,14 @@ contract RentalAgreement {
         if (billingPeriodDuration==0 || billingsCount==0) {
             revert("Rent period should be strictly greater than zero");
         }
-
-        rrate = rentalRate;
-        duration = billingPeriodDuration;
-        stime = deadline - 10;
-        endtime = billingsCount * billingPeriodDuration + stime;
-        a=1;
         
+        Permit memory A = Permit(deadline, tenant, rentalRate, billingPeriodDuration, billingsCount);
+        bytes32 message = keccak256(abi.encode(A));
+        address signer = ecrecover(message, landlordSign.v, landlordSign.r, landlordSign.s);
+
+        if (signer != ladd) {
+            revert("Invalid landlord sign");
+        }
     }
 
     function getTenant() view public returns (address) {
@@ -98,7 +115,25 @@ contract RentalAgreement {
         return endtime;
     }
 
-    function balanceo() view public returns(uint256) {
-        return address(this).balance;
+    address[] cashiers;
+    uint i=0;
+    function addCashier(address addr) public {
+        if (addr!=tadd && msg.sender!=tadd) {
+            revert("You are not a tenant");
+        }
+        if (msg.sender==tadd && addr==ladd) {
+            revert("The landlord cannot become a cashier");
+        }
+        if (msg.sender==tadd && addr==address(0)) {
+            revert("Zero address cannot become a cashier");
+        }
+        cashiers[i] = addr;
+        i++;
+    }
+
+    function getCashierNonce(address cashierAddr) view public returns (uint) {
+        if (msg.sender!=tadd) {
+            return 0;
+        }
     }
 }
