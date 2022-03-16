@@ -13,19 +13,21 @@ contract RentalAgreement {
     }
 
     uint roomID;
-    address ladd;
-    address tadd;
-    uint rrate;
-    uint duration;
-    uint stime;
-    uint endtime;
-    uint a=0;
+    address landlord;
+    address globalTenant;
+
+    uint globalRentalRate;
+    uint globalBillingPeriodDuration;
+    uint globalRentStartTime;
+    uint globalRentEndTime;
+
+    bool globalIsRented = false;
 
     mapping(address => uint) data;
 
     constructor (uint _roomID) {
         data[msg.sender] = _roomID;
-        ladd = msg.sender;
+        landlord = msg.sender;
     }
 
     function getRoomInternalId() public view returns(uint) {
@@ -37,32 +39,50 @@ contract RentalAgreement {
     }
 
 
-    function rent(uint deadline, address tenant, uint rentalRate,
-        uint billingPeriodDuration, uint billingsCount, Sign memory landlordSign) public payable {
+    function rent(
+        uint deadline,
+        address tenant,
+        uint rentalRate,
+        uint billingPeriodDuration,
+        uint billingsCount,
+        Sign memory landlordSign
+    ) public payable {
+
+        // Check it's still free
+        if (globalIsRented) {
+            revert("The contract is being in not allowed state");
+        }
+
         // Save last settings to global scope
-        tadd = tenant;
-        
-        payable(ladd).transfer(rentalRate);
+        globalTenant = tenant;
+        globalRentalRate = rentalRate;
+        globalBillingPeriodDuration = billingPeriodDuration;
+        globalRentStartTime = block.timestamp;
+        globalRentEndTime = billingsCount * billingPeriodDuration;
+        globalIsRented = true;
+
+        // Complete transaction and pay for the renting
+        payable(landlord).transfer(rentalRate);
     }
 
     function getTenant() view public returns (address) {
-        return tadd;
+        return globalTenant;
     }
 
     function getRentalRate() view public returns (uint) {
-        return rrate;
+        return globalRentalRate;
     }
 
     function getBillingPeriodDuration() view public returns (uint) {
-        return duration;
+        return globalBillingPeriodDuration;
     }
 
     function getRentStartTime() view public returns (uint) {
-        return stime;
+        return globalRentStartTime;
     }
 
     function getRentEndTime() view public returns (uint) {
-        return endtime;
+        return globalRentEndTime;
     }
 
     address[] cashiers;
