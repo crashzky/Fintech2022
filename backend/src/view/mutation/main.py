@@ -14,6 +14,9 @@ from src.view.room import InputRoom, Room
 from src.view.signature import InputSignature
 
 
+used_signs = []
+
+
 @strawberry.type
 class Mutation:
     @strawberry.mutation
@@ -27,6 +30,7 @@ class Mutation:
         )
         such_exists = db.fetchone()[0]
         message = uuid.uuid4().hex
+
         if not such_exists:
             db.execute(
                 """
@@ -71,14 +75,14 @@ class Mutation:
             [address],
         )
         message = db.fetchone()[0]
-
         try:
+            vrs = (signed_message.v, signed_message.r, signed_message.s)
             root_address = Account.recover_message(
                 encode_defunct(text=message),
                 vrs=(signed_message.v, signed_message.r, signed_message.s)
             )
-            print(message, root_address, address)
-            if root_address == address:
+            if root_address == address and vrs not in used_signs:
+                used_signs.append(vrs)
                 info.context["response"].set_cookie(
                     key="access_token_cookie", value="token-" + address
                 )
