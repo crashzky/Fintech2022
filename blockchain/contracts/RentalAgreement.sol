@@ -48,7 +48,8 @@ contract RentalAgreement {
     function rent(uint deadline, address tenant, uint rentalRate, 
         uint billingPeriodDuration, uint billingsCount, Sign memory landlordSign) public payable {
         tadd = tenant;
-        if (a==1) {
+        
+        if (a==1 && block.timestamp<=deadline) {
             revert("The contract is being in not allowed state");
         }
 
@@ -68,20 +69,31 @@ contract RentalAgreement {
             revert("Rent period should be strictly greater than zero");
         }
 
-        rrate = rentalRate;
-        duration = billingPeriodDuration;
-        stime = deadline - 10;
-        endtime = billingsCount * billingPeriodDuration + stime;
-        a=1;
+        if (block.timestamp <= deadline) {
+            rrate = rentalRate;
+            duration = billingPeriodDuration;
+            stime = deadline - 10;
+            endtime = billingsCount * billingPeriodDuration + stime;
+            a=1;
+        }
         
+        if (block.timestamp > deadline ) {
+            revert("The operation is outdated");
+        }
+
         bytes32 prefixedHashMessage = keccak256(abi.encodePacked(msg.sender, rentalRate, duration, this));
         address signer = ecrecover(prefixedHashMessage, landlordSign.v, landlordSign.r, landlordSign.s);
 
         if (signer != ladd) {
             revert("Invalid landlord sign");
         }
+
     }
 
+    function time() view public returns (uint) {
+        return block.timestamp;
+    }
+    
     function getTenant() view public returns (address) {
         return tadd;
     }
@@ -102,7 +114,9 @@ contract RentalAgreement {
         return endtime;
     }
 
-    function addCashier(address addr) view public {
+    address[] cashiers;
+    uint i=0;
+    function addCashier(address addr) public {
         if (addr!=tadd && msg.sender!=tadd) {
             revert("You are not a tenant");
         }
@@ -112,5 +126,14 @@ contract RentalAgreement {
         if (msg.sender==tadd && addr==address(0)) {
             revert("Zero address cannot become a cashier");
         }
+        cashiers[i] = addr;
+        i++;
     }
+
+    function getCashierNonce(address cashierAddr) view public returns (uint) {
+        if (msg.sender!=tadd) {
+            return 0;
+        }
+    }
+    
 }
