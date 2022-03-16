@@ -1,11 +1,18 @@
 import { useParams, Link } from 'react-router-dom';
 import { useMutation } from 'react-query';
 import { getRoom } from '../../shared/api/rooms';
+import { useEffect } from 'react';
 
 const RoomPage = (): JSX.Element => {
 	const params = useParams();
 
 	const { mutate, data } = useMutation(getRoom);
+
+	useEffect(() => {
+		mutate({
+			id: params.id as string,
+		});
+	}, []);
 
 	return (
 		<>

@@ -14,7 +14,9 @@ const RoomsPage = (): JSX.Element => {
 
 	if(true) {
 		return (
-			<a href='/rooms/create' className='rooms__create'></a>
+			<a href='/rooms/create' className='rooms__create'>
+				click me
+			</a>
 		);
 	}
 	else {
