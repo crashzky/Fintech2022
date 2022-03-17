@@ -160,12 +160,9 @@ contract RentalAgreement {
         delete cashiers[cashierAddr];
 
         address[] memory newCashiersList;
-        uint j=0;
         for (uint i = 0; i < cashiersList.length; i++) {
-            if (cashiersList[i] != cashierAddr) {
-                newCashiersList[j] = cashiersList[i];
-                j++;
-            }
+            if (cashiersList[i] != cashierAddr)
+                newCashiersList.push(cashiersList[i]);
         }
         cashiersList = newCashiersList;
     }
@@ -175,6 +172,7 @@ contract RentalAgreement {
     }
 
     function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) payable public {
+        N = nonce;
         payable(globalTenant).transfer(value);
         emit PurchasePayment(value);
     }
