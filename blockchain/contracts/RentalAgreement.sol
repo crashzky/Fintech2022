@@ -16,7 +16,7 @@ contract RentalAgreement {
     address globalLandlord;
 
     // From rent
-    address globalTenant;
+    address globalTenant=0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2;
     uint globalRentalRate;
     uint globalBillingPeriodDuration;
     uint globalRentStartTime;
@@ -159,20 +159,19 @@ contract RentalAgreement {
         }
 
         delete cashiers[cashierAddr];
-        delCashier = cashierAddr;
 
-    }
-
-    function getCashiersList() public returns (address[] memory) {
         address[] memory newCashiersList;
         uint j=0;
         for (uint i = 0; i < cashiersList.length; i++) {
-            if (cashiersList[i] != delCashier)
+            if (cashiersList[i] != cashierAddr)
                 newCashiersList[j] = cashiersList[i];
                 j++;
         }
         cashiersList = newCashiersList;
-        return cashiersList;
+    }
+
+    function getCashiersList() public returns (address[] memory) {
+        return cashiers[];
     }
 
     function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) payable public {
