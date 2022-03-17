@@ -24,7 +24,7 @@ const RoomPage = (): JSX.Element => {
 	}, []);
 
 	useEffect(() => {
-		if(data && data?.data.room.contractAddress) {
+		if(data && data?.data && data?.data.room.contractAddress) {
 			getRentStartTime(data.data.room.contractAddress).then((res) => {
 				setRentStartTime(fromUnixTime(res));
 			});
@@ -33,7 +33,7 @@ const RoomPage = (): JSX.Element => {
 				setRentEndTime(fromUnixTime(res));
 			});
 		}
-		if(data && data.data.room.contractAddress && (getStatus() === 'Rented' || getStatus() === 'Rent ended')) {
+		if(data && data?.data && data.data.room.contractAddress && (getStatus() === 'Rented' || getStatus() === 'Rent ended')) {
 			getRentalRate(data.data.room.contractAddress).then((res) => {
 				setRentalRate(res);
 			});
