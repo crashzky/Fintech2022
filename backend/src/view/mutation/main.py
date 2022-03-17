@@ -1,3 +1,4 @@
+import datetime
 import typing
 import uuid
 
@@ -225,6 +226,26 @@ class Mutation:
 
     def create_ticket(self, ticket: InputTicket) -> Ticket:
         ticket_id = uuid.uuid4().hex
+        room = Room.get_by_id(ticket.room)
+        if not ticket.value.wei.isdigit():
+            raise BadRequest("Value must be an integer")
+        elif ticket.value.wei.startswith("-"):
+            raise BadRequest("Value must be greater than zero")
+        try:
+            deadline = ticket.deadline.get()
+        except ValueError:
+            raise BadRequest("Invalid deadline date format")
+        else:
+            if datetime.datetime.now() > deadline:
+                raise BadRequest("The operation is outdated")
+
+        vrs = (
+            ticket.cashier_signature.v,
+            ticket.cashier_signature.r,
+            ticket.cashier_signature.s)
+        root_address = Account.recover_message(
+            encode_defunct(text=message), vrs=vrs
+        )
         db.execute(
             """
             INSERT INTO ticket(

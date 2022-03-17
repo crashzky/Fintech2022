@@ -33,7 +33,7 @@ db.executescript(
         nonce INTEGER NOT NULL,
         cashier_sig_v VARCHAR(255) NOT NULL,
         cashier_sig_r VARCHAR(255) NOT NULL,
-        cashier_sig_s VARCHAR(255) NOT NULL,
+        cashier_sig_s VARCHAR(255) NOT NULL
     );
     """
 )
