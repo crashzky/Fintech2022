@@ -139,8 +139,7 @@ contract RentalAgreement {
             revert("Zero address cannot become a cashier");
         }
         // Commit it
-        cashiers[addr] = ++cashierIncrement;
-        cashiersList.push(addr);
+        cashiers[addr] = 1;
     }
 
     // Check if cashier exists
