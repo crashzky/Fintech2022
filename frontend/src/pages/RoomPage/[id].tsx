@@ -68,7 +68,7 @@ const RoomPage = (): JSX.Element => {
 		if(room) {
 			if(!room.contractAddress)
 				return 'Unavailable for renting';
-			else if(!rentalRate)
+			else if(!rentalRate && !room.publicName)
 				return 'Available for renting';
 			else if(rentEndTime && rentEndTime > new Date(Date.now()))
 				return 'Rented';
@@ -134,11 +134,9 @@ const RoomPage = (): JSX.Element => {
 					{data.data.room.contractAddress}
 				</p>
 			)}
-			{((data && data?.data && data?.data.room.publicName) || isEditMode) && (
-				<p className='room__internal-name '>
-					{data && data.data.room.internalName}
-				</p>
-			)}
+			<p className='room__internal-name '>
+				{data && data.data.room.internalName}
+			</p>
 			{(data && data?.data && (getStatus() === 'Rented' || getStatus() === 'Rent ended')) && (
 				<>
 					<p className='room__tenant'>
