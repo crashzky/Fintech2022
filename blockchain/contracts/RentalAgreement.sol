@@ -226,7 +226,6 @@ contract RentalAgreement {
 
     }
 
-    
     function getCashiersList() view public returns (address[] memory) {
         return cashiers.keys;
     }
