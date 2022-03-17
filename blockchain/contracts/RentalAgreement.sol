@@ -25,6 +25,8 @@ contract RentalAgreement {
 
     // Cashiers
     mapping(address => uint) cashiers;
+    address[] public cashiersList;
+    uint cashierIncrement = 0;
 
     constructor (uint roomInternalId) {
         globalRoomInternalID = roomInternalId;
@@ -144,7 +146,8 @@ contract RentalAgreement {
             revert("Zero address cannot become a cashier");
         }
         // Commit it
-        cashiers[addr] = 1;
+        cashiers[addr] = ++cashierIncrement;
+        cashiersList.push(addr);
     }
 
     // Check if cashier exists
