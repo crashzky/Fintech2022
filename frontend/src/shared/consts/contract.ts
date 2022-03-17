@@ -5,24 +5,23 @@ const CONTRACT_ABI = [
 	  type: 'constructor'
 	},
 	{
-	  inputs: [ [Object], [Object], [Object] ],
-	  name: 'EIP712Domain',
-	  outputs: [],
-	  stateMutability: 'nonpayable',
-	  type: 'function'
-	},
-	{
-	  inputs: [ [Object], [Object], [Object], [Object], [Object] ],
-	  name: 'RentalPermit',
-	  outputs: [],
-	  stateMutability: 'nonpayable',
-	  type: 'function'
+	  anonymous: false,
+	  inputs: [ [Object] ],
+	  name: 'PurchasePayment',
+	  type: 'event'
 	},
 	{
 	  inputs: [ [Object] ],
 	  name: 'addCashier',
 	  outputs: [],
 	  stateMutability: 'nonpayable',
+	  type: 'function'
+	},
+	{
+	  inputs: [ [Object] ],
+	  name: 'cashiersList',
+	  outputs: [ [Object] ],
+	  stateMutability: 'view',
 	  type: 'function'
 	},
 	{
@@ -35,6 +34,13 @@ const CONTRACT_ABI = [
 	{
 	  inputs: [ [Object] ],
 	  name: 'getCashierNonce',
+	  outputs: [ [Object] ],
+	  stateMutability: 'view',
+	  type: 'function'
+	},
+	{
+	  inputs: [],
+	  name: 'getCashiersList',
 	  outputs: [ [Object] ],
 	  stateMutability: 'view',
 	  type: 'function'
@@ -82,17 +88,24 @@ const CONTRACT_ABI = [
 	  type: 'function'
 	},
 	{
-	  inputs: [ [Object], [Object], [Object], [Object], [Object], [Object] ],
-	  name: 'rent',
+	  inputs: [ [Object], [Object], [Object], [Object] ],
+	  name: 'pay',
 	  outputs: [],
 	  stateMutability: 'payable',
 	  type: 'function'
 	},
 	{
-	  inputs: [],
-	  name: 'sayHelloWorld',
-	  outputs: [ [Object] ],
-	  stateMutability: 'pure',
+	  inputs: [ [Object] ],
+	  name: 'removeCashier',
+	  outputs: [],
+	  stateMutability: 'nonpayable',
+	  type: 'function'
+	},
+	{
+	  inputs: [ [Object], [Object], [Object], [Object], [Object], [Object] ],
+	  name: 'rent',
+	  outputs: [],
+	  stateMutability: 'payable',
 	  type: 'function'
 	}
 ];

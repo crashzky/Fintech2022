@@ -29,6 +29,7 @@ class Query:
 
     @strawberry.field
     def rooms(self, info: strawberry.types.Info) -> typing.List[Room]:
+        return []
         cookies = info.context["request"].cookies
         try:
             address = cookies["access_token_cookie"][6:]
