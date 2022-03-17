@@ -24,5 +24,16 @@ db.executescript(
         contract_address VARCHAR(255),
         public_name VARCHAR(255)
     );
+    
+    CREATE TABLE ticket(
+        id VARCHAR(255) NOT NULL PRIMARY KEY,
+        room VARCHAR(255) NOT NULL,
+        value VARCHAR(255) NOT NULL,
+        deadline VARCHAR(255) NOT NULL,
+        nonce INTEGER NOT NULL,
+        cashier_sig_v VARCHAR(255) NOT NULL,
+        cashier_sig_r VARCHAR(255) NOT NULL,
+        cashier_sig_s VARCHAR(255) NOT NULL,
+    );
     """
 )

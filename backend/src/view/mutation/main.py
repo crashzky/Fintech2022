@@ -224,4 +224,52 @@ class Mutation:
         return room
 
     def create_ticket(self, ticket: InputTicket) -> Ticket:
-        pass
+        ticket_id = uuid.uuid4().hex
+        db.execute(
+            """
+            INSERT INTO ticket(
+                id,
+                room,
+                value,
+                deadline,
+                nonce,
+                cashier_sig_v,
+                cashier_sig_r,
+                cashier_sig_s
+            ) VALUES (
+                :id,
+                :oom,
+                :value,
+                :deadline,
+                :nonce,
+                :cashier_sig_v,
+                :cashier_sig_r,
+                :cashier_sig_s,
+            )
+            """, {
+                "id": uuid.uuid4().hex,
+                "room": ticket.room,
+                "value": ticket.value.wei,
+                "deadline": ticket.deadline.datetime,
+                "nonce": ticket.nonce.value,
+                "cashier_sig_v": ticket.cashier_signature.v,
+                "cashier_sig_r": ticket.cashier_signature.r,
+                "cashier_sig_s": ticket.cashier_signature.s
+            }
+        )
+        conn.commit()
+        db.execute(
+            """
+            SELECT 
+                id,
+                room,
+                value,
+                deadline,
+                nonce,
+                cashier_sig_v,
+                cashier_sig_r,
+                cashier_sig_s
+            WHERE id = ?
+            """, [ticket_id]
+        )
+        return db.fetchone()
