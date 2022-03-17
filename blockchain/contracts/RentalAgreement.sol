@@ -159,14 +159,14 @@ contract RentalAgreement {
 
         delete cashiers[cashierAddr];
 
-        address[] memory newCashiersList;
-        uint j=0;
-        for (uint i = 0; i < cashiersList.length; i++) {
-            if (cashiersList[i] != cashierAddr)
-                newCashiersList[j] = cashiersList[i];
-                j++;
-        }
-        cashiersList = newCashiersList;
+        // address[] memory newCashiersList;
+        // uint j=0;
+        // for (uint i = 0; i < cashiersList.length; i++) {
+        //     if (cashiersList[i] != cashierAddr)
+        //         newCashiersList[j] = cashiersList[i];
+        //         j++;
+        // }
+        // cashiersList = newCashiersList;
     }
 
     function getCashiersList() view public returns (address[] memory) {
