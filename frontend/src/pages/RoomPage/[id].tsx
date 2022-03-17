@@ -140,7 +140,7 @@ const RoomPage = (): JSX.Element => {
 				{data && data.data.room.internalName}
 			</p>
 			<p>
-				{rentEndTime ? rentEndTimeNum : 'none'}
+				{rentEndTime ? rentEndTimeNum : 'none time'}
 			</p>
 			{/*(data && data?.data && (getStatus() === 'Rented' || getStatus() === 'Rent ended')) && (
 				<>
