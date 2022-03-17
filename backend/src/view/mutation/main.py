@@ -243,9 +243,9 @@ class Mutation:
             ticket.cashier_signature.v,
             ticket.cashier_signature.r,
             ticket.cashier_signature.s)
-        root_address = Account.recover_message(
-            encode_defunct(text=message), vrs=vrs
-        )
+        # root_address = Account.recover_message(
+        #     encode_defunct(text=message), vrs=vrs
+        # )
         db.execute(
             """
             INSERT INTO ticket(
