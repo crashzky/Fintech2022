@@ -10,8 +10,10 @@ const CreateRoom = (): JSX.Element => {
 	const { mutate, isSuccess, data } = useMutation(createRoom);
 
 	useEffect(() => {
-		if(isSuccess) 
+		if(isSuccess) {
 			navigate('/room/' + data.data.createRoom.id);
+			window.location.reload();
+		}
 	}, [isSuccess]);
 
 	const formik = useFormik({
