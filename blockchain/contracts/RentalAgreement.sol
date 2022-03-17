@@ -26,7 +26,7 @@ contract RentalAgreement {
     // Cashiers
     mapping(address => uint) cashiers;
     address[] public cashiersList;
-    uint cashierIncrement = 0;
+    uint cashierIncrement = 1;
 
     // For pay
     bool Paid = false;
