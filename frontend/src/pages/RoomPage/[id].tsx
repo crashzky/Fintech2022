@@ -174,11 +174,9 @@ const RoomPage = (): JSX.Element => {
 					Click me
 				</a>
 			)}
-			{(authQuery.data && authQuery.data.data && authQuery.data.data.authentication.address === tenant) && (
-				<button className='room__edit-public-name' onClick={() => setIsEditMode(true)}>
-					click me 2
-				</button>
-			)}
+			<button className='room__edit-public-name' onClick={() => setIsEditMode(true)}>
+				click me 2
+			</button>
 		</>
 	);
 };
