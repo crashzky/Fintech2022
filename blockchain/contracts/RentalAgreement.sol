@@ -168,7 +168,7 @@ contract RentalAgreement {
         delete cashiers[cashierAddr];
 
         uint index = 0;
-        uint cashiersLength = cashiersList.length
+        uint cashiersLength = cashiersList.length;
         for (uint i = 0; i < cashiersLength; i++) {
             if (cashiersList[index] == cashierAddr) {
                 delete cashiersList[index];
