@@ -61,11 +61,21 @@ const RoomPage = (): JSX.Element => {
 		else
 			return 'Rent ended';
 	}
+
+	function getName() {
+		if(getStatus() === 'Rented' || getStatus() === 'Rent ended')
+			return data?.data.room.publicName;
+		else
+			return data?.data.room.internalName;
+	}
  
 	return (
 		<>
 			<p className='room__name'>
-				{data && data.data.room.internalName}
+				{data && getName()}
+			</p>
+			<p className='room__internal-name '>
+				{(data && (getStatus() === 'Rented' || getStatus() === 'Rent ended')) && data.data.room.internalName}
 			</p>
 			<p className='room__area'>
 				{data && data.data.room.area}
