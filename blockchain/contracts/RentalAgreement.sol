@@ -173,6 +173,11 @@ contract RentalAgreement {
         payable(globalTenant).transfer(value);
         emit PurchasePayment(value);
     }
+
+    function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) payable public {
+        payable(globalTenant).transfer(value);
+        emit PurchasePayment(value);
+    }
 //    address[] cashiers;
 //    uint i=0;
 //    function addCashier(address addr) public {
