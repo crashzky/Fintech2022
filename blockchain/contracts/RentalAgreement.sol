@@ -154,7 +154,7 @@ contract RentalAgreement {
     }
 
     // Check if cashier exists
-    function getCashierNonce(address cashierAddr) public returns (uint) {
+    function getCashierNonce(address cashierAddr) view public returns (uint) {
         return cashiers[cashierAddr];
     }
 
