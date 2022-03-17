@@ -62,15 +62,6 @@ const RoomPage = (): JSX.Element => {
 			setInterval(intervalToDuration({ start: rentStartTime as Date, end: rentEndTime as Date }));
 	}, [rentStartTime, rentEndTime]);
 
-	useEffect(() => {
-		if(updatePublicNameMutattion.isSuccess) {
-			setIsEditMode(false);
-			mutate({
-				id: params.id as string,
-			});
-		}
-	}, [updatePublicNameMutattion.isSuccess]);
-
 	function getStatus() {
 		const room = data?.data ? data?.data.room : null;
 
