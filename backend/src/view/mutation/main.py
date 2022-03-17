@@ -51,6 +51,7 @@ class Mutation:
                 {"address": address, "message": message},
             )
             conn.commit()
+
         return message
 
     @strawberry.mutation
