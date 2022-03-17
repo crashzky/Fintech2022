@@ -218,7 +218,7 @@ contract RentalAgreement {
     function removeCashier(address cashierAddr) public {
         if (msg.sender != globalTenant) {
             revert("You are not a tenant");
-        } else if (cashiers[cashierAddr] == 0) {
+        } else if (cashiers.get(cashierAddr) == 0) {
             revert("Unknown cashier");
         }
 
