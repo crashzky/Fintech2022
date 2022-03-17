@@ -28,6 +28,9 @@ contract RentalAgreement {
     address[] public cashiersList;
     uint cashierIncrement = 0;
 
+    // For pay
+    bool Paid = false;
+
     constructor (uint roomInternalId) {
         globalRoomInternalID = roomInternalId;
         globalLandlord = msg.sender;
@@ -146,7 +149,11 @@ contract RentalAgreement {
     }
 
     // Check if cashier exists
-    function getCashierNonce(address cashierAddr) view public returns (uint) {
+    function getCashierNonce(address cashierAddr) public returns (uint) {
+        if (Paid = true) {
+            cashiers[cashierAddr] = ++cashierIncrement;
+            Paid = false;
+        }
         return cashiers[cashierAddr];
     }
 
@@ -159,12 +166,13 @@ contract RentalAgreement {
 
         delete cashiers[cashierAddr];
 
-        address[] memory newCashiersList;
-        for (uint i = 0; i < cashiersList.length; i++) {
-            if (cashiersList[i] != cashierAddr)
-                newCashiersList.push(cashiersList[i]);
-        }
-        cashiersList = newCashiersList;
+        // address[] memory newCashiersList;
+        // for (uint i = 0; i < cashiersList.length; i++) {
+        //     if (cashiersList[i] != cashierAddr)
+        //         newCashiersList.push(cashiersList[i]);
+        // }
+        // cashiersList = newCashiersList;
+
     }
 
     function getCashiersList() view public returns (address[] memory) {
@@ -174,5 +182,6 @@ contract RentalAgreement {
     function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) payable public {
         payable(globalTenant).transfer(value);
         emit PurchasePayment(value);
+        Paid = true;
     }
 }
