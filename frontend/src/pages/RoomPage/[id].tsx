@@ -98,6 +98,7 @@ const RoomPage = (): JSX.Element => {
 			name: data?.data.room.publicName ? data?.data.room.publicName : '',
 		},
 		onSubmit: (values) => {
+			setIsEditMode(false);
 			setTmpName(values.name);
 			updatePublicNameMutattion.mutate({
 				id: params.id as string,
