@@ -284,7 +284,7 @@ contract RentalAgreement {
             )
         );
 
-        
+
         bytes32 cashierSignKeccak = keccak256(
             abi.encode(
                 keccak256("Ticket(uint256 deadline,uint256 nonce,uint256 value)"),
@@ -293,6 +293,7 @@ contract RentalAgreement {
                 value
             )
         );
+        
 
         bytes32 messageHash = keccak256(abi.encodePacked("\x19\x01", EIP712Domain, cashierSignKeccak));
         address signer = ecrecover(messageHash, cashierSign.v, cashierSign.r, cashierSign.s);
