@@ -92,7 +92,7 @@ contract RentalAgreement {
     mapping(uint => address) cashierUintToAddressNonce;
     mapping(address => uint) cashierAddressToUintNonce;
     uint cashierIncrement = 1;
-    uint cashierNonceIncrement = 0;
+    uint cashierNonceIncrement = 1;
 
     // For pay
     bool Paid = false;
