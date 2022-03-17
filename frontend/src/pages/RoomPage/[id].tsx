@@ -74,7 +74,7 @@ const RoomPage = (): JSX.Element => {
 			<p>
 				publicName:
 				{' '}
-				{data && data.data.room.publicName}
+				{(data && data.data) && data.data.room.publicName}
 			</p>
 			<p>
 				rentEnd:
