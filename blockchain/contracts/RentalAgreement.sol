@@ -209,7 +209,7 @@ contract RentalAgreement {
         // Commit it
         cashiers.set(addr, ++cashierIncrement);
     }
-    
+
     // Check if cashier exists
     function getCashierNonce(address cashierAddr) view public returns (uint) {
         return cashiers.get(cashierAddr);
@@ -227,12 +227,7 @@ contract RentalAgreement {
     }
 
     function getCashiersList() view public returns (address[] memory) {
-        address[] memory responseCashiers;
-        for (uint i = 0; i < cashiers.size(); i++) {
-            address key = cashiers.getKeyAtIndex(i);
-            responseCashiers[i] = key;
-        }
-        return responseCashiers;
+        return cashiers.keys;
     }
 
     function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) payable public {
