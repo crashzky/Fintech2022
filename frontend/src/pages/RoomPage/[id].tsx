@@ -65,10 +65,12 @@ const RoomPage = (): JSX.Element => {
 	}
 
 	function getName() {
-		if(getStatus() === 'Rented' || getStatus() === 'Rent ended')
-			return data?.data.room.publicName;
-		else
-			return data?.data.room.internalName;
+		if(data?.data) {
+			if(getStatus() === 'Rented' || getStatus() === 'Rent ended')
+				return data?.data.room.publicName;
+			else
+				return data?.data.room.internalName;
+		}
 	}
  
 	return (
