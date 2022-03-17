@@ -32,6 +32,16 @@ const RoomsPage = (): JSX.Element => {
 
 	return (
 		<>
+			<p>
+				roomsCount: 
+				{' '}
+				{(roomsQuery.data && roomsQuery.data.data) && roomsQuery.data.data.rooms.length}
+			</p>
+			<p>
+				error: 
+				{' '}
+				{(roomsQuery.data && !roomsQuery.data.data) && (roomsQuery.data as any).errors.map((i: any, num: number) => num + ' ' + i.message)}
+			</p>
 			{(roomsQuery.data && roomsQuery.data.data && roomsQuery.data.data.rooms)
 				&& roomsQuery.data.data.rooms.map((i, num) => {
 
