@@ -11,6 +11,8 @@ const RoomPage = (): JSX.Element => {
 	const [isLandlord, setIsLandlord] = useState(false);
 	const params = useParams();
 
+	const [isEditMode, setIsEditMode] = useState(false);
+
 	const [rentStartTime, setRentStartTime] = useState<Date>();
 	const [rentEndTime, setRentEndTime] = useState<Date>();
 	const [tenant, setTenant] = useState<string>();
@@ -106,9 +108,16 @@ const RoomPage = (): JSX.Element => {
 				{' '}
 				{rentalRate}
 			</p>
-			<p className='room__name'>
-				{(data && data?.data) && getName()}
-			</p>
+			{!isEditMode ? (
+				<p className='room__name'>
+					{(data && data?.data) && getName()}
+				</p>
+			) : (
+				<form className='public-name-edit'>
+					<input
+						 />
+				</form>
+			)}
 			<p className='room__area'>
 				{(data && data?.data) && data.data.room.area}
 				{' sq.m.'}
@@ -163,6 +172,11 @@ const RoomPage = (): JSX.Element => {
 				<a href={`/room/${params.id}/edit`} className='room__edit'>
 					Click me
 				</a>
+			)}
+			{(authQuery.data && authQuery.data.data && authQuery.data.data.authentication.address === tenant) && (
+				<button className='room__edit-public-name' onClick={() => setIsEditMode(true)}>
+					click me 2
+				</button>
 			)}
 		</>
 	);
