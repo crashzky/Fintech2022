@@ -89,8 +89,7 @@ contract RentalAgreement {
 
     // Cashiers
     Map cashiers;
-    mapping(uint => address) cashierUintToAddressNonce;
-    mapping(address => uint) cashierAddressToUintNonce;
+    mapping(uint => address) cashierNonce;
     uint cashierIncrement = 1;
     uint cashierNonceIncrement = 1;
 
@@ -215,31 +214,22 @@ contract RentalAgreement {
             revert("Zero address cannot become a cashier");
         }
         // Commit it
+        uint newNonce = ++cashierIncrement;
         if (cashiers.inserted[addr]) {
-            cashiers.values[addr] = ++cashierIncrement;
+            cashiers.values[addr] = newNonce;
         } else {
             cashiers.inserted[addr] = true;
-            cashiers.values[addr] = ++cashierIncrement;
+            cashiers.values[addr] = newNonce;
             cashiers.indexOf[addr] = cashiers.keys.length;
             cashiers.keys.push(addr);
         }
+
+        cashierNonce[newNonce] = addr;
     }
 
     // Check if cashier exists
-    function getCashierNonce(address cashierAddr) public returns (uint) {
-        if  (cashiers.values[cashierAddr] == 0) {
-            return 0;
-        } else {
-            // No any nonce for this cashier
-            uint currentNonce = cashierAddressToUintNonce[msg.sender];
-            if (currentNonce == 0) {
-                currentNonce = ++cashierNonceIncrement;
-                cashierUintToAddressNonce[currentNonce] = cashierAddr;
-                cashierAddressToUintNonce[msg.sender] = currentNonce;
-            }
-            return currentNonce;
-
-        }
+    function getCashierNonce(address cashierAddr) public view returns (uint) {
+        return cashiers.values[cashierAddr] == 0;
     }
 
     function removeCashier(address cashierAddr) public {
