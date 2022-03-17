@@ -47,6 +47,11 @@ interface IRoom {
 	publicName: string | null;
 }
 
+interface IRoomPublicName {
+	id: string;
+	publicName: string;
+}
+
 export type {
 	ICreateRoomRequest,
 	ICreateRoomResponse,
@@ -55,4 +60,5 @@ export type {
 	IUpdateRoomRequest,
 	IGetRoomsResponse,
 	IRoom,
+	IRoomPublicName,
 };

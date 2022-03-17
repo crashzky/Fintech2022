@@ -1,11 +1,12 @@
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';
-import { getRoom } from '../../shared/api/rooms';
+import { getRoom, setRoomPublicName } from '../../shared/api/rooms';
 import { useEffect, useState } from 'react';
 import { getRentalRate, getRentEndTime, getRentStartTime, getTenant } from '../../shared/api/contract';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import { format, intervalToDuration, Duration } from 'date-fns';
 import { checkAuntefication } from '../../shared/api/auth';
+import { useFormik } from 'formik';
 
 const RoomPage = (): JSX.Element => {
 	const [isLandlord, setIsLandlord] = useState(false);
@@ -21,6 +22,7 @@ const RoomPage = (): JSX.Element => {
 
 	const authQuery = useQuery('auth', checkAuntefication);
 	const { mutate, data } = useMutation(getRoom);
+	const updatePublicNameMutattion = useMutation(setRoomPublicName);
 
 	useEffect(() => {
 		mutate({
@@ -52,12 +54,21 @@ const RoomPage = (): JSX.Element => {
 				setTenant(res);
 			});
 		}
+		setIsEditMode(false);
 	}, [data]);
 
 	useEffect(() => {
 		if(rentEndTime && rentEndTime)
 			setInterval(intervalToDuration({ start: rentStartTime as Date, end: rentEndTime as Date }));
 	}, [rentStartTime, rentEndTime]);
+
+	useEffect(() => {
+		if(updatePublicNameMutattion.isSuccess) {
+			mutate({
+				id: params.id as string,
+			});
+		}
+	}, [updatePublicNameMutattion.isSuccess]);
 
 	function getStatus() {
 		const room = data?.data ? data?.data.room : null;
@@ -80,6 +91,18 @@ const RoomPage = (): JSX.Element => {
 		else
 			return data?.data.room.internalName;
 	}
+
+	const formik = useFormik({
+		initialValues: {
+			name: data?.data.room.publicName ? data?.data.room.publicName : '',
+		},
+		onSubmit: (values) => {
+			updatePublicNameMutattion.mutate({
+				id: params.id as string,
+				publicName: values.name,
+			});
+		},
+	});
  
 	return (
 		<>
@@ -113,9 +136,15 @@ const RoomPage = (): JSX.Element => {
 					{(data && data?.data) && getName()}
 				</p>
 			) : (
-				<form className='public-name-edit'>
+				<form onSubmit={formik.handleSubmit} className='public-name-edit'>
 					<input
-						 />
+						name='name'
+						value={formik.values.name}
+						onChange={formik.handleChange}
+						className='public-name-edit__name' />
+					<button type='submit' className='public-name-edit__submit'>
+						submit
+					</button>
 				</form>
 			)}
 			<p className='room__area'>
