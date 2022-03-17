@@ -167,13 +167,11 @@ contract RentalAgreement {
 
         delete cashiers[cashierAddr];
 
-        address[] memory newCashiersList;
+        address[] storage newCashiersList;
 
-        uint256 j = 0;
-        for (uint256 i = 0; i < cashiersList.length; i++) {
+        for (uint i = 0; i < cashiersList.length; i++) {
             if (cashiersList[i] != cashierAddr) {
-                newCashiersList[j] = cashiersList[i];
-                j++;
+                newCashiersList.push(cashiersList[i])
             }
 
         }
