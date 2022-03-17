@@ -91,7 +91,7 @@ const RoomPage = (): JSX.Element => {
 		onSubmit: (values) => {
 			setTmpName(values.name);
 			setIsEditMode(false);
-
+			
 			updatePublicNameMutattion.mutate({
 				id: params.id as string,
 				publicName: values.name,
@@ -101,31 +101,6 @@ const RoomPage = (): JSX.Element => {
  
 	return (
 		<>
-			<p>
-				publicName:
-				{' '}
-				{(data && data.data) && data.data.room.publicName}
-			</p>
-			<p>
-				rentEnd:
-				{' '}
-				{rentEndTime}
-			</p>
-			<p>
-				rentStart:
-				{' '}
-				{rentStartTime}
-			</p>
-			<p>
-				tenant:
-				{' '}
-				{tenant}
-			</p>
-			<p>
-				rentalRate:
-				{' '}
-				{rentalRate}
-			</p>
 			{!isEditMode ? (
 				<p className='room__name'>
 					{tmpName ?
@@ -199,7 +174,11 @@ const RoomPage = (): JSX.Element => {
 					Click me
 				</a>
 			)}
-			
+			{(authQuery.data && authQuery.data.data && authQuery.data.data.authentication.address === tenant) && (
+				<button className='room__edit-public-name' onClick={() => setIsEditMode(true)}>
+					click me 2
+				</button>
+			)}
 		</>
 	);
 };
