@@ -54,7 +54,6 @@ const RoomPage = (): JSX.Element => {
 				setTenant(res);
 			});
 		}
-		setIsEditMode(false);
 	}, [data]);
 
 	useEffect(() => {
@@ -64,6 +63,7 @@ const RoomPage = (): JSX.Element => {
 
 	useEffect(() => {
 		if(updatePublicNameMutattion.isSuccess) {
+			setIsEditMode(false);
 			mutate({
 				id: params.id as string,
 			});
