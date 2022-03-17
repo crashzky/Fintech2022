@@ -274,6 +274,7 @@ contract RentalAgreement {
             revert("The contract is being in not allowed state");
         }
 
+        
         // Verify sign
         bytes32 EIP712Domain = keccak256(
             abi.encode(
