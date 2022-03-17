@@ -50,7 +50,7 @@ const RoomPage = (): JSX.Element => {
 	}, [rentStartTime, rentEndTime]);
 
 	function getStatus() {
-		const room = data?.data.room;
+		const room = data?.data ? data?.data.room : {};
 
 		if(!room?.contractAddress)
 			return 'Unavailable for renting';
