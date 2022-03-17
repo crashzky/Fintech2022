@@ -1,12 +1,14 @@
-import { useParams, Link } from 'react-router-dom';
-import { useMutation } from 'react-query';
+import { useParams } from 'react-router-dom';
+import { useMutation, useQuery } from 'react-query';
 import { getRoom } from '../../shared/api/rooms';
 import { useEffect, useState } from 'react';
 import { getRentalRate, getRentEndTime, getRentStartTime, getTenant } from '../../shared/api/contract';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import { format, intervalToDuration, Duration } from 'date-fns';
+import { checkAuntefication } from '../../shared/api/auth';
 
 const RoomPage = (): JSX.Element => {
+	const [isLandlord, setIsLandlord] = useState(false);
 	const params = useParams();
 
 	const [rentStartTime, setRentStartTime] = useState<Date>();
@@ -15,6 +17,7 @@ const RoomPage = (): JSX.Element => {
 	const [rentalRate, setRentalRate] = useState<number>();
 	const [interval, setInterval] = useState<Duration>();
 
+	const authQuery = useQuery('auth', checkAuntefication);
 	const { mutate, data } = useMutation(getRoom);
 
 	useEffect(() => {
@@ -22,6 +25,11 @@ const RoomPage = (): JSX.Element => {
 			id: params.id as string,
 		});
 	}, []);
+
+	useEffect(() => {
+		if(authQuery.data?.data.authentication.isLandlord) 
+			setIsLandlord(true);
+	}, [authQuery.data]);
 
 	useEffect(() => {
 		if(data && data?.data && data?.data.room.contractAddress) {
@@ -151,7 +159,11 @@ const RoomPage = (): JSX.Element => {
 					</p>
 				</>
 			)}
-			<Link to={`/room/${params.id}/edit`} className='room__edit' />
+			{isLandlord && (
+				<a href={`/room/${params.id}/edit`} className='room__edit'>
+					Click me
+				</a>
+			)}
 		</>
 	);
 };

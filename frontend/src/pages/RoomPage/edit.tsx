@@ -1,27 +1,45 @@
 import { useFormik } from 'formik';
 import { useEffect } from 'react';
 import { useMutation } from 'react-query';
-import { getRoom } from '../../shared/api/rooms';
-import { useNavigate } from 'react-router-dom';
+import { getRoom, updateRoom } from '../../shared/api/rooms';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const EditPage = (): JSX.Element => {
 	const navigate = useNavigate();
+	const params = useParams();
 
 	const roomInfoMutation = useMutation(getRoom);
+	const updateMutation = useMutation(updateRoom);
+
+	useEffect(() => {
+		roomInfoMutation.mutate({
+			id: params.id as string,
+		});
+	}, []);
+
+	useEffect(() => {
+		if(updateMutation.isSuccess)
+			navigate('/room/' + params.id);
+	}, [updateMutation.isSuccess]);
 
 	const formik = useFormik({
 		initialValues: {
-			name: roomInfoMutation.data && roomInfoMutation.data.data.room.internalName,
-			area: roomInfoMutation.data && roomInfoMutation.data.data.room.area,
-			location: roomInfoMutation.data && roomInfoMutation.data.data.room.location,
+			name: (roomInfoMutation.data && roomInfoMutation.data.data) && roomInfoMutation.data.data.room.internalName,
+			area: (roomInfoMutation.data && roomInfoMutation.data.data) && roomInfoMutation.data.data.room.area,
+			location: (roomInfoMutation.data && roomInfoMutation.data.data) && roomInfoMutation.data.data.room.location,
 		},
 		onSubmit: (values) => {
-			
+			updateMutation.mutate({
+				id: params.id as string,
+				internalName: values.name as string,
+				area: values.area as number,
+				location: values.location as string
+			});
 		},
 	});
 
 	return (
-		<form onSubmit={formik.handleSubmit}>
+		<form onSubmit={formik.handleSubmit} className='room-form'>
 			<input
 				type='text'
 				name='name'

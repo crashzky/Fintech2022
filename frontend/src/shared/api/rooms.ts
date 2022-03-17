@@ -58,12 +58,19 @@ const updateRoom = (data: IUpdateRoomRequest): Promise<IGetRoomResponse> => {
 	return axios.post('', {
 		query: `
 			mutation {
-				rooms: createRoom(room: {
+				editRoom(id: "${data.id}",
+					room: {
 						internalName: "${data.internalName}",
 						area: ${data.area},
 						location: "${data.location}"
-					}) {
-					id, internalName, area, location
+					}
+				) {
+					id,
+					internalName,
+					area,
+					location,
+					contractAddress,
+					publicName
 				}
 			}
 		`,

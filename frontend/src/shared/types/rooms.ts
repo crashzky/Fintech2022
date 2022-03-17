@@ -31,12 +31,15 @@ interface IGetRoomsResponse {
 	}
 }
 
-interface IUpdateRoomRequest extends IRoom {
-	id: number;
+interface IUpdateRoomRequest {
+	id: string;
+	internalName: string;
+	area: number;
+	location: string
 }
 
 interface IRoom {
-	id: number;
+	id: string;
 	internalName: string;
 	area: number;
 	location: string
