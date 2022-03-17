@@ -54,7 +54,7 @@ const RoomPage = (): JSX.Element => {
 
 		if(!room?.contractAddress)
 			return 'Unavailable for renting';
-		else if(!room.publicName)
+		else if(!rentalRate)
 			return 'Available for renting';
 		else if(rentEndTime && rentEndTime > new Date(Date.now()))
 			return 'Rented';
