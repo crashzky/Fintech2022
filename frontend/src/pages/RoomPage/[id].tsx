@@ -50,16 +50,18 @@ const RoomPage = (): JSX.Element => {
 	}, [rentStartTime, rentEndTime]);
 
 	function getStatus() {
-		const room = data?.data ? data?.data.room : {};
+		const room = data?.data ? data?.data.room : null;
 
-		if(!room?.contractAddress)
-			return 'Unavailable for renting';
-		else if(!rentalRate)
-			return 'Available for renting';
-		else if(rentEndTime && rentEndTime > new Date(Date.now()))
-			return 'Rented';
-		else
-			return 'Rent ended';
+		if(room) {
+			if(!room.contractAddress)
+				return 'Unavailable for renting';
+			else if(!rentalRate)
+				return 'Available for renting';
+			else if(rentEndTime && rentEndTime > new Date(Date.now()))
+				return 'Rented';
+			else
+				return 'Rent ended';
+		}
 	}
 
 	function getName() {
