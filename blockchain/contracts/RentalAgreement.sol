@@ -228,6 +228,9 @@ contract RentalAgreement {
 
     // Check if cashier exists
     function getCashierNonce(address cashierAddr) public returns (uint) {
+        if (cashiers.values[cashierAddr] == 0) {
+            return 0;
+        }
         uint currentNonce = cashierAddressToUintNonce[cashierAddr];
         if (currentNonce == 0) {
             currentNonce = ++cashierNonceIncrement;
