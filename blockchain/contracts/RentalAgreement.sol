@@ -182,8 +182,9 @@ contract RentalAgreement {
     }
 
     function getCashiersList() view public returns (address[] memory) {
-        if (cashierIncrement == 2 && cashierDecrement == 1) {
-            return address[];
+        if (cashierIncrement == cashierDecrement + 1) {
+            address[] memory emptyList;
+            return emptyList;
         }
         return cashiersList;
     }
