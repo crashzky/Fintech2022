@@ -6,14 +6,14 @@ from eth_account.messages import encode_defunct
 from eth_account import Account
 
 from src.checks import check_landlord_auth, someone_auth
-from src.client import w3
+from src.client import w3, get_contract
 from src.env import LANDLORD_ADDRESS
 from src.exceptions import BadRequest
 from src.storage import addresses_messages, conn, db
 from src.view.auth import Authentication
 from src.view.room import InputRoom, Room
 from src.view.signature import InputSignature
-
+from src.view.ticket import InputTicket, Ticket
 
 used_signs = []
 counts = 0
@@ -51,6 +51,7 @@ class Mutation:
                 {"address": address, "message": message},
             )
             conn.commit()
+
         return message
 
     @strawberry.mutation
@@ -189,8 +190,10 @@ class Mutation:
         such_room = db.fetchone()
         if such_room is None:
             raise BadRequest("Room with such ID not found")
-        # elif such_room["contract_address"] != address:
-        #     raise BadRequest("This room is not rented by you")
+        contract = get_contract(such_room["contract_address"])
+        tenant = contract.functions.getTenant().call()
+        if tenant != address:
+            raise BadRequest("This room is not rented by you")
         db.execute(
             """
             UPDATE room
@@ -219,3 +222,6 @@ class Mutation:
         )
         conn.commit()
         return room
+
+    def create_ticket(self, ticket: InputTicket) -> Ticket:
+        pass
