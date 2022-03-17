@@ -59,6 +59,8 @@ class Query:
                 print("BC DATA:", tenant, is_rented)
                 if tenant == address or not is_rented:
                     rooms.append(Room(**room))
+
+        print("108-2 ROOMS:", rooms)
         return rooms
 
     @strawberry.field
