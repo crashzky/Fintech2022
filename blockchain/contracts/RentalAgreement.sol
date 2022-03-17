@@ -210,7 +210,6 @@ contract RentalAgreement {
         cashiers.set(addr, ++cashierIncrement);
     }
 
-
     // Check if cashier exists
     function getCashierNonce(address cashierAddr) view public returns (uint) {
         return cashiers.get(cashierAddr);
