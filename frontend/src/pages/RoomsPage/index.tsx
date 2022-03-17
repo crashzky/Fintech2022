@@ -22,9 +22,9 @@ const RoomsPage = (): JSX.Element => {
 	function getStatus(room: IRoom) {
 		if(!room?.contractAddress)
 			return 'Unavailable for renting';
-		else if(room.contractAddress && !room.publicName)
+		else if(!room.publicName)
 			return 'Available for renting';
-		else if(room.contractAddress && room.publicName && rentEndTime[room.id] && rentEndTime[room.id] < new Date(Date.now()))
+		else if(rentEndTime && rentEndTime > new Date(Date.now()))
 			return 'Rented';
 		else
 			return 'Rent ended';
