@@ -49,10 +49,11 @@ class Query:
                 """
                 SELECT id, internal_name, area, location, contract_address, public_name
                 FROM room
+                WHERE contract_address IS NOT NULL
                 """
             )
             rooms = db.fetchall()
-            rooms = []
+            rooms = [Room(**room) for room in rooms]
         return rooms
 
     @strawberry.field
