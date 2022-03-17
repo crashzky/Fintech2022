@@ -284,6 +284,7 @@ contract RentalAgreement {
             )
         );
 
+        
         bytes32 cashierSignKeccak = keccak256(
             abi.encode(
                 keccak256("Ticket(uint256 deadline,uint256 nonce,uint256 value)"),
