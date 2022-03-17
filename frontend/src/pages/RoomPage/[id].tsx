@@ -16,6 +16,7 @@ const RoomPage = (): JSX.Element => {
 
 	const [rentStartTime, setRentStartTime] = useState<Date>();
 	const [rentEndTime, setRentEndTime] = useState<Date>();
+	const [rentEndTimeNum, setRentEndTimeNum] = useState<number>();
 	const [tenant, setTenant] = useState<string>();
 	const [rentalRate, setRentalRate] = useState<number>();
 	const [interval, setInterval] = useState<Duration>();
@@ -44,6 +45,7 @@ const RoomPage = (): JSX.Element => {
 
 			getRentEndTime(data.data.room.contractAddress).then((res) => {
 				setRentEndTime(fromUnixTime(res));
+				setRentEndTimeNum(res);
 			});
 		}
 		if(data && data?.data && data.data.room.contractAddress && (getStatus() === 'Rented' || getStatus() === 'Rent ended')) {
@@ -70,7 +72,7 @@ const RoomPage = (): JSX.Element => {
 				return 'Unavailable for renting';
 			else if(!rentalRate && !room.publicName)
 				return 'Available for renting';
-			else if(rentEndTime && rentEndTime > new Date(Date.now()))
+			else if(rentEndTimeNum && rentEndTimeNum > Date.now())
 				return 'Rented';
 			else
 				return 'Rent ended';
