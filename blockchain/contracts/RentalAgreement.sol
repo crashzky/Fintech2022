@@ -150,6 +150,7 @@ contract RentalAgreement {
         return cashiers[cashierAddr];
     }
 
+    address delCashier;
     function removeCashier(address cashierAddr) public {
         if (msg.sender != globalTenant) {
             revert("You are not a tenant");
@@ -158,18 +159,19 @@ contract RentalAgreement {
         }
 
         delete cashiers[cashierAddr];
+        delCashier = cashierAddr;
 
-        // address[] memory newCashiersList;
-        // uint j=0;
-        // for (uint i = 0; i < cashiersList.length; i++) {
-        //     if (cashiersList[i] != cashierAddr)
-        //         newCashiersList[j] = cashiersList[i];
-        //         j++;
-        // }
-        // cashiersList = newCashiersList;
     }
 
-    function getCashiersList() view public returns (address[] memory) {
+    function getCashiersList() public returns (address[] memory) {
+        address[] memory newCashiersList;
+        uint j=0;
+        for (uint i = 0; i < cashiersList.length; i++) {
+            if (cashiersList[i] != delCashier)
+                newCashiersList[j] = cashiersList[i];
+                j++;
+        }
+        cashiersList = newCashiersList;
         return cashiersList;
     }
 
