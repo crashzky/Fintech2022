@@ -155,12 +155,8 @@ contract RentalAgreement {
 
     // Check if cashier exists
     function getCashierNonce(address cashierAddr) public returns (uint) {
-        if (Paid = true) {
-            cashiers[cashierAddr] = ++cashierIncrement;
-            Paid = false;
-        }
         return cashiers[cashierAddr];
-    }
+    }∂
 
     function removeCashier(address cashierAddr) public {
         if (msg.sender != globalTenant) {
