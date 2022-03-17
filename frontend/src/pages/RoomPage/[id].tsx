@@ -58,6 +58,7 @@ const RoomPage = (): JSX.Element => {
 			});
 		}
 	}, [data]);
+	//foo
 
 	useEffect(() => {
 		if(rentEndTime && rentEndTime)
