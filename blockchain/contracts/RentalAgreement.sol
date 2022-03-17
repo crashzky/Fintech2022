@@ -171,7 +171,7 @@ contract RentalAgreement {
     }
 
     function getCashiersList() public returns (address[] memory) {
-        return cashiers[];
+        return cashiersList;
     }
 
     function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) payable public {
