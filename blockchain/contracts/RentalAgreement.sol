@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.11;
 
-library IterableMapping {
-    // Iterable mapping from address to uint;
+
+
+contract RentalAgreement {
+
     struct Map {
         address[] keys;
         mapping(address => uint) values;
@@ -10,19 +12,19 @@ library IterableMapping {
         mapping(address => bool) inserted;
     }
 
-    function get(Map storage map, address key) public view returns (uint) {
+    function map_get(Map storage map, address key) public view returns (uint) {
         return map.values[key];
     }
 
-    function getKeyAtIndex(Map storage map, uint index) public view returns (address) {
+    function map_getKeyAtIndex(Map storage map, uint index) public view returns (address) {
         return map.keys[index];
     }
 
-    function size(Map storage map) public view returns (uint) {
+    function map_size(Map storage map) public view returns (uint) {
         return map.keys.length;
     }
 
-    function set(
+    function map_set(
         Map storage map,
         address key,
         uint val
@@ -37,7 +39,7 @@ library IterableMapping {
         }
     }
 
-    function remove(Map storage map, address key) public {
+    function map_remove(Map storage map, address key) public {
         if (!map.inserted[key]) {
             return;
         }
@@ -55,12 +57,6 @@ library IterableMapping {
         map.keys[index] = lastKey;
         map.keys.pop();
     }
-}
-
-
-contract RentalAgreement {
-
-    using IterableMapping for IterableMapping.Map;
 
     event PurchasePayment(uint amount);
 
@@ -83,7 +79,7 @@ contract RentalAgreement {
     bool globalIsRented = false;
 
     // Cashiers
-    IterableMapping.Map cashiers;
+    Map cashiers;
     address[] public cashiersList;
     uint cashierIncrement = 1;
     uint cashierDecrement = 0;
@@ -209,22 +205,22 @@ contract RentalAgreement {
             revert("Zero address cannot become a cashier");
         }
         // Commit it
-        cashiers.set(addr, ++cashierIncrement);
+        map_set(cashiers, addr, ++cashierIncrement);
     }
 
     // Check if cashier exists
     function getCashierNonce(address cashierAddr) view public returns (uint) {
-        return cashiers.get(cashierAddr);
+        return map_get(cashiers, cashierAddr);
     }
 
     function removeCashier(address cashierAddr) public {
         if (msg.sender != globalTenant) {
             revert("You are not a tenant");
-        } else if (cashiers.get(cashierAddr) == 0) {
+        } else if (map_get(cashiers, cashierAddr) == 0) {
             revert("Unknown cashier");
         }
 
-        cashiers.remove(cashierAddr);
+        map_remove(cashiers, cashierAddr);
 
     }
 
