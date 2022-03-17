@@ -64,7 +64,7 @@ const updateRoom = (data: IUpdateRoomRequest): Promise<IGetRoomResponse> => {
 				}
 			}
 		`,
-	})
+	}).then((res) => res.data);
 };
 
 export {

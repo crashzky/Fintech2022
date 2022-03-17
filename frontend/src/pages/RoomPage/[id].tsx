@@ -71,6 +71,31 @@ const RoomPage = (): JSX.Element => {
  
 	return (
 		<>
+			<p>
+				publicName:
+				{' '}
+				{data && data.data.room.publicName}
+			</p>
+			<p>
+				rentEnd:
+				{' '}
+				{rentEndTime}
+			</p>
+			<p>
+				rentStart:
+				{' '}
+				{rentStartTime}
+			</p>
+			<p>
+				tenant:
+				{' '}
+				{tenant}
+			</p>
+			<p>
+				rentalRate:
+				{' '}
+				{rentalRate}
+			</p>
 			<p className='room__name'>
 				{data && getName()}
 			</p>
