@@ -172,7 +172,6 @@ contract RentalAgreement {
     }
 
     function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) payable public {
-        N = nonce;
         payable(globalTenant).transfer(value);
         emit PurchasePayment(value);
     }
