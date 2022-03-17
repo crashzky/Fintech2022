@@ -212,7 +212,7 @@ contract RentalAgreement {
 
     // Check if cashier exists
     function getCashierNonce(address cashierAddr) view public returns (uint) {
-        return cashiers[cashierAddr];
+        return cashiers.get(cashierAddr);
     }
 
     function removeCashier(address cashierAddr) public {
