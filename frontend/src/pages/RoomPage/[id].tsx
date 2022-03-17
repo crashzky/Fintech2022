@@ -54,9 +54,9 @@ const RoomPage = (): JSX.Element => {
 
 		if(!room?.contractAddress)
 			return 'Unavailable for renting';
-		else if(room.contractAddress && !room.publicName)
+		else if(!room.publicName)
 			return 'Available for renting';
-		else if(room.contractAddress && room.publicName && rentEndTime && rentEndTime < new Date(Date.now()))
+		else if(rentEndTime && rentEndTime > new Date(Date.now()))
 			return 'Rented';
 		else
 			return 'Rent ended';
@@ -73,9 +73,6 @@ const RoomPage = (): JSX.Element => {
 		<>
 			<p className='room__name'>
 				{data && getName()}
-			</p>
-			<p className='room__internal-name '>
-				{(data && (getStatus() === 'Rented' || getStatus() === 'Rent ended')) && data.data.room.internalName}
 			</p>
 			<p className='room__area'>
 				{data && data.data.room.area}
@@ -94,6 +91,9 @@ const RoomPage = (): JSX.Element => {
 			)}
 			{(data && (getStatus() === 'Rented' || getStatus() === 'Rent ended')) && (
 				<>
+					<p className='room__internal-name '>
+						{data.data.room.internalName}
+					</p>
 					<p className='room__tenant'>
 						{tenant}
 					</p>
