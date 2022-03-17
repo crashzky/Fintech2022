@@ -92,6 +92,7 @@ contract RentalAgreement {
     mapping(uint => address) cashierUintToAddressNonce;
     mapping(address => uint) cashierAddressToUintNonce;
     uint cashierIncrement = 1;
+    uint cashierNonceIncrement = 1;
 
     // For pay
     bool Paid = false;
@@ -229,7 +230,15 @@ contract RentalAgreement {
         if  (cashiers.values[cashierAddr] == 0) {
             return 0;
         } else {
-            return cashiers.values[cashierAddr];
+            // No any nonce for this cashier
+            uint currentNonce = cashierAddressToUintNonce[msg.sender];
+            if (currentNonce == 0) {
+                currentNonce = ++cashierNonceIncrement;
+                cashierUintToAddressNonce[currentNonce] = cashierAddr;
+                cashierAddressToUintNonce[msg.sender] = currentNonce;
+            }
+            return currentNonce;
+
         }
     }
 
