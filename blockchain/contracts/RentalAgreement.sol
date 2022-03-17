@@ -1,13 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.11;
 
-// VRS Signature
-struct Sign {
-    uint8 v;
-    bytes32 r;
-    bytes32 s;
-}
-
 library IterableMapping {
     // Iterable mapping from address to uint;
     struct Map {
@@ -66,8 +59,17 @@ library IterableMapping {
 
 
 contract RentalAgreement {
+
     using IterableMapping for IterableMapping.Map;
+
     event PurchasePayment(uint amount);
+
+    // VRS Signature
+    struct Sign {
+        uint8 v;
+        bytes32 r;
+        bytes32 s;
+    }
     // From constructor
     uint globalRoomInternalID;
     address globalLandlord;
