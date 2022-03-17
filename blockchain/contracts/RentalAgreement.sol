@@ -228,16 +228,20 @@ contract RentalAgreement {
 
     // Check if cashier exists
     function getCashierNonce(address cashierAddr) public returns (uint) {
+        // No such cashier
         if (cashiers.values[cashierAddr] == 0) {
             return 0;
+        } else {
+            // No any nonce for this cashier
+            uint currentNonce = cashierAddressToUintNonce[cashierAddr];
+            if (currentNonce == 0) {
+                currentNonce = ++cashierNonceIncrement;
+                cashierUintToAddressNonce[currentNonce] = cashierAddr;
+                cashierAddressToUintNonce[cashierAddr] = currentNonce;
+            }
+            return currentNonce;
         }
-        uint currentNonce = cashierAddressToUintNonce[cashierAddr];
-        if (currentNonce == 0) {
-            currentNonce = ++cashierNonceIncrement;
-            cashierUintToAddressNonce[currentNonce] = cashierAddr;
-            cashierAddressToUintNonce[cashierAddr] = currentNonce;
-        }
-        return currentNonce;
+
     }
 
     function removeCashier(address cashierAddr) public {
