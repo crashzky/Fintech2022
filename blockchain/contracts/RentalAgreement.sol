@@ -171,7 +171,7 @@ contract RentalAgreement {
 
         address[] memory newCashiersList;
         uint256 newCashiersIndex = 0;
-        for (uint i = 0; i < cashiersList.length; i++) {
+        for (uint i = 0; i < cashiersList.length - 1; i++) {
             if (cashiersList[i] != cashierAddr) {
                 newCashiersList[newCashiersIndex] = cashiersList[i];
                 newCashiersIndex++;
