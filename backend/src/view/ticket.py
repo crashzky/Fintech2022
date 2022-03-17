@@ -12,7 +12,7 @@ class Ticket:
     value: Wei
     deadline: Datetime
     nonce: Nonce
-    cashierSignature: Signature
+    cashier_signature: Signature
 
 
 
@@ -22,4 +22,4 @@ class InputTicket:
     value: InputWei
     deadline: InputDatetime
     nonce: InputNonce
-    cashierSignature: InputSignature
+    cashier_signature: InputSignature
