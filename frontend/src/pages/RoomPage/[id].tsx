@@ -78,7 +78,7 @@ const RoomPage = (): JSX.Element => {
 	}
 
 	function getName() {
-		if(getStatus() === 'Rented' || getStatus() === 'Rent ended')
+		if(data?.data.room.publicName)
 			return data?.data.room.publicName;
 		else
 			return data?.data.room.internalName;
