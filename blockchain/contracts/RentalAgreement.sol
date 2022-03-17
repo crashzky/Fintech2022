@@ -27,6 +27,7 @@ contract RentalAgreement {
     mapping(address => uint) cashiers;
     address[] public cashiersList;
     uint cashierIncrement = 1;
+    uint cashierDecrement = 0;
 
     // For pay
     bool Paid = false;
@@ -165,6 +166,7 @@ contract RentalAgreement {
             revert("Unknown cashier");
         }
 
+        cashierDecrement++;
         delete cashiers[cashierAddr];
 
         uint index = 0;
@@ -179,7 +181,10 @@ contract RentalAgreement {
         }
     }
 
-    function getCashiersList() view public returns (address[] storage) {
+    function getCashiersList() view public returns (address[] memory) {
+        if (cashierIncrement == 2 && cashierDecrement == 1) {
+            return address[];
+        }
         return cashiersList;
     }
 
