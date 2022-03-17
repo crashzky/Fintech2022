@@ -19,6 +19,7 @@ const RoomPage = (): JSX.Element => {
 	const [tenant, setTenant] = useState<string>();
 	const [rentalRate, setRentalRate] = useState<number>();
 	const [interval, setInterval] = useState<Duration>();
+	const [tmpName, setTmpName] = useState('');
 
 	const authQuery = useQuery('auth', checkAuntefication);
 	const { mutate, data } = useMutation(getRoom);
@@ -97,6 +98,7 @@ const RoomPage = (): JSX.Element => {
 			name: data?.data.room.publicName ? data?.data.room.publicName : '',
 		},
 		onSubmit: (values) => {
+			setTmpName(values.name);
 			updatePublicNameMutattion.mutate({
 				id: params.id as string,
 				publicName: values.name,
@@ -133,7 +135,9 @@ const RoomPage = (): JSX.Element => {
 			</p>
 			{!isEditMode ? (
 				<p className='room__name'>
-					{(data && data?.data) && getName()}
+					{tmpName ?
+						tmpName :
+						((data && data?.data) && getName())}
 				</p>
 			) : (
 				<form onSubmit={formik.handleSubmit} className='public-name-edit'>
