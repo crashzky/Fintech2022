@@ -29,7 +29,8 @@ const getRooms = (): Promise<IGetRoomsResponse> => {
 					internalName,
 					area,
 					location,
-					contractAddress
+					contractAddress,
+					publicName
 				}
 			}
 		`
@@ -41,10 +42,12 @@ const getRoom = (data: IGetRoomRequest): Promise<IGetRoomResponse> => {
 		query: `
 			query {
 				room(id: "${data.id}") {
+					id,
 					internalName,
 					area,
 					location,
-					contractAddress
+					contractAddress,
+					publicName
 				}
 			}
 		`
