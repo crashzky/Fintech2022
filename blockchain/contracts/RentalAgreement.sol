@@ -209,7 +209,6 @@ contract RentalAgreement {
         // Commit it
         cashiers.set(addr, ++cashierIncrement);
     }
-
     
     // Check if cashier exists
     function getCashierNonce(address cashierAddr) view public returns (uint) {
