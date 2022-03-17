@@ -3,11 +3,14 @@ import typing
 import strawberry
 import strawberry.types
 
+from src.checks import someone_auth
+from src.client import get_contract
 from src.env import LANDLORD_ADDRESS
 from src.exceptions import BadRequest
 from src.storage import db
 from src.view.auth import Authentication
 from src.view.room import Room
+from src.view.ticket import Ticket
 
 
 @strawberry.type
@@ -29,12 +32,7 @@ class Query:
 
     @strawberry.field
     def rooms(self, info: strawberry.types.Info) -> typing.List[Room]:
-        return []
-        cookies = info.context["request"].cookies
-        try:
-            address = cookies["access_token_cookie"][6:]
-        except KeyError:
-            raise BadRequest("Authentication required")
+        address = someone_auth(info)
         if address == LANDLORD_ADDRESS:
             db.execute(
                 """
@@ -42,17 +40,32 @@ class Query:
                 FROM room
                 """
             )
+            rooms = db.fetchall()
+            rooms = [Room(**room) for room in rooms]
         else:
             db.execute(
                 """
                 SELECT id, internal_name, area, location, contract_address, public_name
                 FROM room
+                WHERE contract_address IS NOT NULL
                 """
             )
-        rooms = db.fetchall()
-        rooms = [Room(**room) for room in rooms]
+            db_rooms = db.fetchall()
+            rooms = []
+            for room in db_rooms:
+                contract = get_contract(room["contract_address"])
+                tenant = contract.functions.getTenant().call()
+                is_rented = contract.functions.getRentedState().call()
+                print("BC DATA:", tenant, is_rented, room)
+                if tenant == address or is_rented:
+                    rooms.append(Room(**room))
+
+        print("108-2 ROOMS:", rooms)
         return rooms
 
     @strawberry.field
     def room(self, id: strawberry.ID) -> Room:
         return Room.get_by_id(id)
+
+    def ticket(self, id: strawberry.ID) -> Ticket:
+        pass

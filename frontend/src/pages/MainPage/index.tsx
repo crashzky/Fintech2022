@@ -2,6 +2,7 @@ import Web3 from 'web3';
 import { useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
 import { authenticate, checkAuntefication, requestAuthentication } from '../../shared/api/auth';
+import { deployContract } from '../../shared/api/contract';
 
 const MainPage = (): JSX.Element => {
 	const [accountAddress, setAccountAddress] = useState(null);
@@ -35,6 +36,19 @@ const MainPage = (): JSX.Element => {
 	useEffect(() => {
 		if(authRequestMutation.isSuccess) {
 			web3.eth.personal.sign(authRequestMutation.data.data.message, accountAddressRequest, '').then((result) => {
+				function deleteAllCookies() {
+					let cookies = document.cookie.split(";");
+				
+					for (var i = 0; i < cookies.length; i++) {
+						let cookie = cookies[i];
+						let eqPos = cookie.indexOf("=");
+						let name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+						document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+					}
+				}
+
+				deleteAllCookies();
+
 				authenticateMutation.mutate({
 					address: accountAddressRequest,
 					signedMessage: {

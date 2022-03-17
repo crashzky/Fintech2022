@@ -41,6 +41,11 @@ contract RentalAgreement {
         return globalLandlord;
     }
 
+    function getRentedState() public view returns(bool) {
+        return globalIsRented;
+    }
+
+
     function rent(
         uint deadline,
         address tenant,
@@ -160,8 +165,13 @@ contract RentalAgreement {
         delete cashiers[cashierAddr];
     }
 
-    function getCashiersList() view public returns (address[] memory) {
-        return cashiersList;
+//    function getCashiersList() view public returns (address[] memory) {
+//        return cashiersList;
+//    }
+
+    function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) payable public {
+        payable(globalTenant).transfer(value);
+        emit PurchasePayment(value);
     }
 
     function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) payable public {

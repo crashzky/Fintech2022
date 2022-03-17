@@ -31,17 +31,34 @@ interface IGetRoomsResponse {
 	}
 }
 
-interface IUpdateRoomRequest extends IRoom {
-	id: number;
+interface IUpdateRoomRequest {
+	id: string;
+	internalName: string;
+	area: number;
+	location: string
 }
 
 interface IRoom {
-	id: number;
+	id: string;
 	internalName: string;
 	area: number;
 	location: string
 	contractAddress: string | null;
 	publicName: string | null;
+}
+
+interface IRoomPublicNameRequest {
+	id: string;
+	publicName: string;
+}
+
+interface IRoomPublicNameResponse {
+	data: {
+		setRoomPublicName: {
+			id: string;
+			publicName: string;
+		}
+	}
 }
 
 export type {
@@ -52,4 +69,6 @@ export type {
 	IUpdateRoomRequest,
 	IGetRoomsResponse,
 	IRoom,
+	IRoomPublicNameRequest,
+	IRoomPublicNameResponse
 };
