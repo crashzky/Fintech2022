@@ -1,10 +1,10 @@
 FROM python:3.9-alpine
 
 # Copy source code
-COPY src /app/src
+COPY backend/src /app/src
 
 # Copy another needed files
-COPY Makefile poetry.toml pyproject.toml requirements.txt ../blockchain/contracts/RentalAgreement.sol /app/
+COPY backend/Makefile backend/poetry.toml backend/pyproject.toml backend/requirements.txt blockchain/contracts/RentalAgreement.sol /app/
 
 # Checkout to the workdir
 WORKDIR /app
