@@ -139,6 +139,7 @@ const RoomPage = (): JSX.Element => {
 			<p className='room__internal-name '>
 				{data && data.data.room.internalName}
 			</p>
+			
 			{/*(data && data?.data && (getStatus() === 'Rented' || getStatus() === 'Rent ended')) && (
 				<>
 					<p className='room__tenant'>

@@ -1,3 +1,4 @@
+import datetime
 import typing
 import uuid
 
@@ -224,4 +225,72 @@ class Mutation:
         return room
 
     def create_ticket(self, ticket: InputTicket) -> Ticket:
-        pass
+        ticket_id = uuid.uuid4().hex
+        room = Room.get_by_id(ticket.room)
+        if not ticket.value.wei.isdigit():
+            raise BadRequest("Value must be an integer")
+        elif ticket.value.wei.startswith("-"):
+            raise BadRequest("Value must be greater than zero")
+        try:
+            deadline = ticket.deadline.get()
+        except ValueError:
+            raise BadRequest("Invalid deadline date format")
+        else:
+            if datetime.datetime.now() > deadline:
+                raise BadRequest("The operation is outdated")
+
+        vrs = (
+            ticket.cashier_signature.v,
+            ticket.cashier_signature.r,
+            ticket.cashier_signature.s)
+        # root_address = Account.recover_message(
+        #     encode_defunct(text=message), vrs=vrs
+        # )
+        db.execute(
+            """
+            INSERT INTO ticket(
+                id,
+                room,
+                value,
+                deadline,
+                nonce,
+                cashier_sig_v,
+                cashier_sig_r,
+                cashier_sig_s
+            ) VALUES (
+                :id,
+                :oom,
+                :value,
+                :deadline,
+                :nonce,
+                :cashier_sig_v,
+                :cashier_sig_r,
+                :cashier_sig_s,
+            )
+            """, {
+                "id": uuid.uuid4().hex,
+                "room": ticket.room,
+                "value": ticket.value.wei,
+                "deadline": ticket.deadline.datetime,
+                "nonce": ticket.nonce.value,
+                "cashier_sig_v": ticket.cashier_signature.v,
+                "cashier_sig_r": ticket.cashier_signature.r,
+                "cashier_sig_s": ticket.cashier_signature.s
+            }
+        )
+        conn.commit()
+        db.execute(
+            """
+            SELECT 
+                id,
+                room,
+                value,
+                deadline,
+                nonce,
+                cashier_sig_v,
+                cashier_sig_r,
+                cashier_sig_s
+            WHERE id = ?
+            """, [ticket_id]
+        )
+        return db.fetchone()
