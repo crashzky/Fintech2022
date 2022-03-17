@@ -23,7 +23,7 @@ contract RentalAgreement {
     uint globalRentEndTime;
     bool globalIsRented = false;
 
-    // Cashiers
+    /// Cashiers
     mapping(address => uint) cashiers;
     address[] public cashiersList;
     uint cashierIncrement = 0;
@@ -32,6 +32,8 @@ contract RentalAgreement {
         globalRoomInternalID = roomInternalId;
         globalLandlord = msg.sender;
     }
+
+    event PurchasePayment(uint amount);
 
     function getRoomInternalId() public view returns(uint) {
         return globalRoomInternalID;
