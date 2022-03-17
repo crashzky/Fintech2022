@@ -171,7 +171,7 @@ contract RentalAgreement {
 
         for (uint i = 0; i < cashiersList.length; i++) {
             if (cashiersList[i] != cashierAddr) {
-                newCashiersList.push(cashiersList[i])
+                newCashiersList.push(cashiersList[i]);
             }
 
         }
