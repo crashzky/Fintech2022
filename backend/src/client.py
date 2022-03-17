@@ -3,6 +3,7 @@ import solcx
 
 from src.env import RPC_URL
 
+solcx.install_solc(version="0.8.11")
 
 def get_abi():
     with open("RentalAgreement.sol") as bcfile:
