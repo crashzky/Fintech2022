@@ -86,11 +86,12 @@ const RoomPage = (): JSX.Element => {
 
 	const formik = useFormik({
 		initialValues: {
-			name: data?.data.room.publicName ? data?.data.room.publicName : '',
+			name: data && data?.data && data?.data.room.publicName ? data?.data.room.publicName : '',
 		},
 		onSubmit: (values) => {
-			setIsEditMode(false);
 			setTmpName(values.name);
+			setIsEditMode(false);
+
 			updatePublicNameMutattion.mutate({
 				id: params.id as string,
 				publicName: values.name,
@@ -198,11 +199,7 @@ const RoomPage = (): JSX.Element => {
 					Click me
 				</a>
 			)}
-			{(authQuery.data && authQuery.data.data && authQuery.data.data.authentication.address === tenant) && (
-				<button className='room__edit-public-name' onClick={() => setIsEditMode(true)}>
-					click me 2
-				</button>
-			)}
+			
 		</>
 	);
 };
