@@ -229,7 +229,7 @@ contract RentalAgreement {
     function getCashiersList() view public returns (address[] memory) {
         address[] memory responseCashiers;
         for (uint i = 0; i < cashiers.size(); i++) {
-            address key = map.getKeyAtIndex(i);
+            address key = cashiers.getKeyAtIndex(i);
             responseCashiers[i] = key;
         }
         return responseCashiers;
