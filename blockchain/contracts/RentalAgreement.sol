@@ -16,7 +16,7 @@ contract RentalAgreement {
     address globalLandlord;
 
     // From rent
-    address globalTenant=0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2;
+    address globalTenant;
     uint globalRentalRate;
     uint globalBillingPeriodDuration;
     uint globalRentStartTime;
@@ -171,7 +171,7 @@ contract RentalAgreement {
     }
 
     function getCashiersList() public returns (address[] memory) {
-        return cashiersList;
+        return cashiers[];
     }
 
     function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) payable public {
