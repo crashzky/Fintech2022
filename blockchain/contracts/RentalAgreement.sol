@@ -172,7 +172,7 @@ contract RentalAgreement {
         address[] memory newCashiersList;
         uint256 newCashiersIndex = 0;
         for (uint i = 0; i < cashiersList.length; i++) {
-            if (cashiersList[i] == cashierAddr) {
+            if (cashiersList[i] != cashierAddr) {
                 newCashiersList[newCashiersIndex] = cashiersList[i];
                 newCashiersIndex++;
             }
@@ -180,7 +180,7 @@ contract RentalAgreement {
         cashiersList = newCashiersList;
     }
 
-    function getCashiersList() view public returns (address[] memory) {
+    function getCashiersList() view public returns (address[] storage) {
         return cashiersList;
     }
 
