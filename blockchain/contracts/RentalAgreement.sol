@@ -227,11 +227,11 @@ contract RentalAgreement {
     }
 
     // Check if cashier exists
-    function getCashierNonce(address cashierAddr) view public returns (uint) {
+    function getCashierNonce(address cashierAddr) public returns (uint) {
         uint currentNonce = cashierAddressToUintNonce[cashierAddr];
-        if (currentNonce == address(0)) {
+        if (currentNonce == 0) {
             currentNonce = ++cashierNonceIncrement;
-            cashierUintToAddressNonce[cashiersNonce] = cashierAddr;
+            cashierUintToAddressNonce[currentNonce] = cashierAddr;
             cashierAddressToUintNonce[cashierAddr] = currentNonce;
         }
         return currentNonce;
@@ -268,7 +268,7 @@ contract RentalAgreement {
     }
 
     function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) payable public {
-        cashierAddress = cashierUintToAddressNonce[nonce];
+        address cashierAddress = cashierUintToAddressNonce[nonce];
         if (cashierAddress == address(0)) {
             revert("Invalid nonce");
         } else if (msg.value != value) {
@@ -289,7 +289,7 @@ contract RentalAgreement {
             )
         );
 
-        bytes32 cashierSign = keccak256(
+        bytes32 cashierSignKeccak = keccak256(
             abi.encode(
                 keccak256("Ticket(uint256 deadline,uint256 nonce,uint256 value)"),
                 deadline,
@@ -298,7 +298,7 @@ contract RentalAgreement {
             )
         );
 
-        bytes32 messageHash = keccak256(abi.encodePacked("\x19\x01", EIP712Domain, cashierSign));
+        bytes32 messageHash = keccak256(abi.encodePacked("\x19\x01", EIP712Domain, cashierSignKeccak));
         address signer = ecrecover(messageHash, cashierSign.v, cashierSign.r, cashierSign.s);
 
         if (cashierAddress != signer) {
