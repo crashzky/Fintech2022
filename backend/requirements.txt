@@ -4,3 +4,4 @@ uvicorn[standard]==0.15.0
 virtualenv==20.4.4
 eth_account==0.5.7
 web3==5.27.0
+py-solc-x==1.1.1

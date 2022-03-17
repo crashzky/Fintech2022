@@ -4,7 +4,7 @@ FROM python:3.9-alpine
 COPY src /app/src
 
 # Copy another needed files
-COPY Makefile poetry.toml pyproject.toml requirements.txt /app/
+COPY Makefile poetry.toml pyproject.toml requirements.txt ../blockchain/contracts/RentalAgreement.sol /app/
 
 # Checkout to the workdir
 WORKDIR /app

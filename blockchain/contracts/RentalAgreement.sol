@@ -39,6 +39,11 @@ contract RentalAgreement {
         return globalLandlord;
     }
 
+    function getRentedState() public view returns(bool) {
+        return globalIsRented;
+    }
+
+
     function rent(
         uint deadline,
         address tenant,

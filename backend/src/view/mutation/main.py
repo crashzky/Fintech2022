@@ -6,7 +6,7 @@ from eth_account.messages import encode_defunct
 from eth_account import Account
 
 from src.checks import check_landlord_auth, someone_auth
-from src.client import w3
+from src.client import w3, get_contract
 from src.env import LANDLORD_ADDRESS
 from src.exceptions import BadRequest
 from src.storage import addresses_messages, conn, db
@@ -190,8 +190,10 @@ class Mutation:
         such_room = db.fetchone()
         if such_room is None:
             raise BadRequest("Room with such ID not found")
-        # elif such_room["contract_address"] != address:
-        #     raise BadRequest("This room is not rented by you")
+        contract = get_contract(such_room["contract_address"])
+        tenant = contract.functions.getTenant().call()
+        if tenant != address:
+            raise BadRequest("This room is not rented by you")
         db.execute(
             """
             UPDATE room

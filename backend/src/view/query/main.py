@@ -3,6 +3,8 @@ import typing
 import strawberry
 import strawberry.types
 
+from src.checks import someone_auth
+from src.client import get_contract
 from src.env import LANDLORD_ADDRESS
 from src.exceptions import BadRequest
 from src.storage import db
@@ -30,11 +32,7 @@ class Query:
 
     @strawberry.field
     def rooms(self, info: strawberry.types.Info) -> typing.List[Room]:
-        cookies = info.context["request"].cookies
-        try:
-            address = cookies["access_token_cookie"][6:]
-        except KeyError:
-            raise BadRequest("Authentication required")
+        address = someone_auth(info)
         if address == LANDLORD_ADDRESS:
             db.execute(
                 """
@@ -52,8 +50,15 @@ class Query:
                 WHERE contract_address IS NOT NULL
                 """
             )
-            rooms = db.fetchall()
-            rooms = [Room(**room) for room in rooms]
+            db_rooms = db.fetchall()
+            rooms = []
+            for room in db_rooms:
+                contract = get_contract(room["contract_address"])
+                tenant = contract.functions.getTenant().call()
+                is_rented = contract.functions.getRentedState().call()
+                print("BC DATA:", tenant, is_rented)
+                if tenant == address or not is_rented:
+                    rooms.append(Room(**room))
         return rooms
 
     @strawberry.field
