@@ -134,7 +134,7 @@ const RoomPage = (): JSX.Element => {
 					{data.data.room.contractAddress}
 				</p>
 			)}
-			{((data && data?.data && (getStatus() === 'Rented' || getStatus() === 'Rent ended')) || isEditMode) && (
+			{((data && data?.data && data?.data.room.publicName) || isEditMode) && (
 				<p className='room__internal-name '>
 					{data && data.data.room.internalName}
 				</p>
