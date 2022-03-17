@@ -264,14 +264,14 @@ contract RentalAgreement {
 
     function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) payable public {
         address cashierAddress = cashierNonce[nonce];
-//        if (cashierAddress == address(0)) {
-//            revert("Invalid nonce");
-//        } else if (msg.value != value) {
-//            revert("Invalid value");
-//        } else if (block.timestamp > deadline) {
-//            revert("The operation is outdated");
-//        }
-//
+        if (cashierAddress == address(0)) {
+            revert("Invalid nonce");
+        } else if (msg.value != value) {
+            revert("Invalid value");
+        } else if (block.timestamp > deadline) {
+            revert("The operation is outdated");
+        }
+
         // Verify sign
         bytes32 EIP712Domain = keccak256(
             abi.encode(
@@ -293,7 +293,7 @@ contract RentalAgreement {
                 value
             )
         );
-        
+
 
         bytes32 messageHash = keccak256(abi.encodePacked("\x19\x01", EIP712Domain, cashierSignKeccak));
         address signer = ecrecover(messageHash, cashierSign.v, cashierSign.r, cashierSign.s);
