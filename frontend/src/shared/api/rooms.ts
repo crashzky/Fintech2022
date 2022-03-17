@@ -17,7 +17,7 @@ const createRoom = (data: ICreateRoomRequest): Promise<ICreateRoomResponse> => {
 				}
 			}
 		`,
-	})
+	}).then((res) => res.data);
 };
 
 const getRooms = (): Promise<IGetRoomsResponse> => {
