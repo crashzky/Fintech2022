@@ -179,7 +179,7 @@ contract RentalAgreement {
         }
     }
 
-    function getCashiersList() view public returns (address[] memory) {
+    function getCashiersList() view public returns (address[] storage) {
         return cashiersList;
     }
 
