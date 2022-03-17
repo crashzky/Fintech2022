@@ -65,12 +65,10 @@ const RoomPage = (): JSX.Element => {
 	}
 
 	function getName() {
-		if(data?.data) {
-			if(getStatus() === 'Rented' || getStatus() === 'Rent ended')
-				return data?.data.room.publicName;
-			else
-				return data?.data.room.internalName;
-		}
+		if(getStatus() === 'Rented' || getStatus() === 'Rent ended')
+			return data?.data.room.publicName;
+		else
+			return data?.data.room.internalName;
 	}
  
 	return (
@@ -101,24 +99,24 @@ const RoomPage = (): JSX.Element => {
 				{rentalRate}
 			</p>
 			<p className='room__name'>
-				{data && getName()}
+				{(data && data?.data) && getName()}
 			</p>
 			<p className='room__area'>
-				{data && data.data.room.area}
+				{(data && data?.data) && data.data.room.area}
 				{' sq.m.'}
 			</p>
 			<p className='room__location'>
-				{data && data.data.room.location}
+				{(data && data?.data) && data.data.room.location}
 			</p>
 			<p className='room__status'>
-				{data && getStatus()}
+				{(data && data?.data) && getStatus()}
 			</p>
-			{(data && data.data.room.contractAddress) && (
+			{(data && data?.data && data.data.room.contractAddress) && (
 				<p className='room__contract-address'>
 					{data.data.room.contractAddress}
 				</p>
 			)}
-			{(data && (getStatus() === 'Rented' || getStatus() === 'Rent ended')) && (
+			{(data && data?.data && (getStatus() === 'Rented' || getStatus() === 'Rent ended')) && (
 				<>
 					<p className='room__internal-name '>
 						{data.data.room.internalName}
