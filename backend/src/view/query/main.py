@@ -8,6 +8,7 @@ from src.exceptions import BadRequest
 from src.storage import db
 from src.view.auth import Authentication
 from src.view.room import Room
+from src.view.ticket import Ticket
 
 
 @strawberry.type
@@ -41,6 +42,8 @@ class Query:
                 FROM room
                 """
             )
+            rooms = db.fetchall()
+            rooms = [Room(**room) for room in rooms]
         else:
             db.execute(
                 """
@@ -48,10 +51,13 @@ class Query:
                 FROM room
                 """
             )
-        rooms = db.fetchall()
-        rooms = [Room(**room) for room in rooms]
+            rooms = db.fetchall()
+            rooms = []
         return rooms
 
     @strawberry.field
     def room(self, id: strawberry.ID) -> Room:
         return Room.get_by_id(id)
+
+    def ticket(self, id: strawberry.ID) -> Ticket:
+        pass

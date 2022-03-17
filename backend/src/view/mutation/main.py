@@ -13,7 +13,7 @@ from src.storage import addresses_messages, conn, db
 from src.view.auth import Authentication
 from src.view.room import InputRoom, Room
 from src.view.signature import InputSignature
-
+from src.view.ticket import InputTicket, Ticket
 
 used_signs = []
 counts = 0
@@ -220,3 +220,6 @@ class Mutation:
         )
         conn.commit()
         return room
+
+    def create_ticket(self, ticket: InputTicket) -> Ticket:
+        pass
