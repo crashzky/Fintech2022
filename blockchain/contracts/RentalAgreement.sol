@@ -8,7 +8,9 @@ struct Sign {
     bytes32 s;
 }
 
+
 contract RentalAgreement {
+    event PurchasePayment(uint amount);
     // From constructor
     uint globalRoomInternalID;
     address globalLandlord;
@@ -23,6 +25,8 @@ contract RentalAgreement {
 
     // Cashiers
     mapping(address => uint) cashiers;
+    address[] public cashiersList;
+    uint cashierIncrement = 0;
 
     constructor (uint roomInternalId) {
         globalRoomInternalID = roomInternalId;
@@ -137,7 +141,8 @@ contract RentalAgreement {
             revert("Zero address cannot become a cashier");
         }
         // Commit it
-        cashiers[addr] = 1;
+        cashiers[addr] = ++cashierIncrement;
+        cashiersList.push(addr);
     }
 
     // Check if cashier exists
@@ -145,7 +150,7 @@ contract RentalAgreement {
         return cashiers[cashierAddr];
     }
 
-    function emoveCashier(address cashierAddr) public {
+    function removeCashier(address cashierAddr) public {
         if (msg.sender != globalTenant) {
             revert("You are not a tenant");
         } else if (cashiers[cashierAddr] == 0) {
@@ -153,6 +158,15 @@ contract RentalAgreement {
         }
 
         delete cashiers[cashierAddr];
+    }
+
+    function getCashiersList() view public returns (address[] memory) {
+        return cashiersList;
+    }
+
+    function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) payable public {
+        payable(globalTenant).transfer(value);
+        emit PurchasePayment(value);
     }
 //    address[] cashiers;
 //    uint i=0;
