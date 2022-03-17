@@ -305,8 +305,10 @@ contract RentalAgreement {
         emit PurchasePayment(value);
 
         // Renew nonce
+        uint newNonce = ++cashierIncrement;
         delete cashierNonce[nonce];
-        cashiers.values[cashierAddress] = ++cashierIncrement;
+        cashiers.values[cashierAddress] = newNonce;
+        cashierNonce[newNonce] = cashierAddress;
 
     }
 }
