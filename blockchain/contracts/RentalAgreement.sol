@@ -92,7 +92,6 @@ contract RentalAgreement {
     mapping(uint => address) cashierUintToAddressNonce;
     mapping(address => uint) cashierAddressToUintNonce;
     uint cashierIncrement = 1;
-    uint cashierNonceIncrement = 1;
 
     // For pay
     bool Paid = false;
@@ -223,25 +222,15 @@ contract RentalAgreement {
             cashiers.indexOf[addr] = cashiers.keys.length;
             cashiers.keys.push(addr);
         }
-
     }
 
     // Check if cashier exists
-    function getCashierNonce(address cashierAddr) public returns (uint) {
-        // No such cashier
-        if (cashiers.values[cashierAddr] == 0) {
+    function getCashierNonce(address cashierAddr) view public returns (uint) {
+        if  (cashiers.values[cashierAddr] == 0) {
             return 0;
         } else {
-            // No any nonce for this cashier
-            uint currentNonce = cashierAddressToUintNonce[cashierAddr];
-            if (currentNonce == 0) {
-                currentNonce = ++cashierNonceIncrement;
-                cashierUintToAddressNonce[currentNonce] = cashierAddr;
-                cashierAddressToUintNonce[cashierAddr] = currentNonce;
-            }
-            return currentNonce;
+            return cashiers.values[cashierAddr];
         }
-
     }
 
     function removeCashier(address cashierAddr) public {
@@ -275,44 +264,6 @@ contract RentalAgreement {
     }
 
     function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) payable public {
-        address cashierAddress = cashierUintToAddressNonce[nonce];
-        if (cashierAddress == address(0)) {
-            revert("Invalid nonce");
-        } else if (msg.value != value) {
-            revert("Invalid value");
-        } else if (block.timestamp > deadline) {
-            revert("The operation is outdated");
-        }
-
-        // Verify sign
-        bytes32 EIP712Domain = keccak256(
-            abi.encode(
-                keccak256(
-                    "EIP712Domain(string name,string version,address verifyingContract)"
-                ),
-                keccak256(bytes("Rental Agreement")),
-                keccak256(bytes("1.0")),
-                address(this)
-            )
-        );
-
-        bytes32 cashierSignKeccak = keccak256(
-            abi.encode(
-                keccak256("Ticket(uint256 deadline,uint256 nonce,uint256 value)"),
-                deadline,
-                nonce,
-                value
-            )
-        );
-
-        bytes32 messageHash = keccak256(abi.encodePacked("\x19\x01", EIP712Domain, cashierSignKeccak));
-        address signer = ecrecover(messageHash, cashierSign.v, cashierSign.r, cashierSign.s);
-
-        if (cashierAddress != signer) {
-            revert("Unknown cashier");
-        }
-
-        // OK
         payable(globalTenant).transfer(value);
         emit PurchasePayment(value);
         Paid = true;
