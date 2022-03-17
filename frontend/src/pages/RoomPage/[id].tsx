@@ -139,6 +139,41 @@ const RoomPage = (): JSX.Element => {
 			<p className='room__internal-name '>
 				{data && data.data.room.internalName}
 			</p>
+			<p>
+				{rentEndTime ? rentEndTimeNum : 'none'}
+			</p>
+			{/*(data && data?.data && (getStatus() === 'Rented' || getStatus() === 'Rent ended')) && (
+				<>
+					<p className='room__tenant'>
+						{tenant}
+					</p>
+					<p className='room__rent-start'>
+						{format(rentStartTime as Date, 'iii, d LLL yyyy kk:mm:ss ')}
+						{' GMT'}
+					</p>
+					<p className='room__rent-end'>
+						{format(rentEndTime as Date, 'iii, d LLL yyyy kk:mm:ss ')}
+						{' GMT'}
+					</p>
+					<p className='room__billing-period'>
+						{(interval && interval.years) && (interval.years + ' years')}
+						{(interval && interval.years && interval.months) && ' '}
+						{(interval && interval.months) && (interval.months + ' months')}
+						{(interval && interval.months && interval.days) && ' '}
+						{(interval && interval.days) && (interval.days + ' days')}
+						{(interval && interval.days && interval.hours) && ' '}
+						{(interval && interval.hours) && (interval.hours + ' hours')}
+						{(interval && interval.hours && interval.minutes) && ' '}
+						{(interval && interval.minutes) && (interval.minutes + ' minutes')}
+						{(interval && interval.minutes && interval.seconds) && ' '}
+						{(interval && interval.seconds) && (interval.seconds + ' seconds')}
+					</p>
+					<p className='room__rental-rate'>
+						{rentalRate}
+						{' wei'}
+					</p>
+				</>
+			)*/}
 			{isLandlord && (
 				<a href={`/room/${params.id}/edit`} className='room__edit'>
 					Click me
