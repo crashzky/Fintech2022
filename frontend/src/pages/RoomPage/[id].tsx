@@ -97,6 +97,8 @@ const RoomPage = (): JSX.Element => {
 	}
 
 	function getName() {
+		if(!tmpName.length && updatePublicNameMutattion.isSuccess)
+			return data?.data.room.internalName;
 		if(data?.data.room.publicName)
 			return data?.data.room.publicName;
 		else
