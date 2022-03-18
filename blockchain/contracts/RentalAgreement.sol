@@ -359,7 +359,6 @@ contract RentalAgreement {
             // Если эта сумма перекрывается текущей оплатой,
             // То нужно остаток отдать тенанту
             // Иначе вся сумма идет ленлорду
-            landlordProfit += landlordRequiredToGet;
             if (landlordRequiredToGet < value) {
                 landlordProfit += landlordRequiredToGet;
                 payable(globalLandlord).transfer(landlordRequiredToGet);
