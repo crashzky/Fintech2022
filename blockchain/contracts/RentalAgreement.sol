@@ -279,7 +279,7 @@ contract RentalAgreement {
 
         address cashierAddress = cashierNonce[nonce];
         // Таймтамп на месяце, который полностью оплачен
-        uint payedPeriodTime = globalRentStartTime + (landlordProfit / globalRentalRate);
+        uint payedPeriodTime = globalRentStartTime + (landlordProfit / globalRentalRate)*globalBillingPeriodDuration;
         if (cashierAddress == address(0)) {
             revert("Invalid nonce");
         } else if (msg.value != value) {
