@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';
 import { getRoom, removeRoom, setRoomContractAddress, setRoomPublicName } from '../../shared/api/rooms';
 import { useEffect, useState } from 'react';
-import { deployContract, getRentalRate, getRentEndTime, getRentStartTime, getTenant } from '../../shared/api/contract';
+import { deployContract, getBillingPeriodDuration, getRentalRate, getRentEndTime, getRentStartTime, getTenant } from '../../shared/api/contract';
 import { format, intervalToDuration, Duration, fromUnixTime } from 'date-fns';
 import { checkAuntefication } from '../../shared/api/auth';
 import { useFormik } from 'formik';
@@ -18,6 +18,7 @@ const RoomPage = (): JSX.Element => {
 	const [rentEndTimeNum, setRentEndTimeNum] = useState<number>();
 	const [tenant, setTenant] = useState<string>();
 	const [rentalRate, setRentalRate] = useState<number>();
+	const [billingPeriodDuration, setBillingPeriodDuration] = useState<number>();
 	const [interval, setInterval] = useState<Duration>();
 	const [tmpName, setTmpName] = useState('');
 	const [tmpStatus, setTmpStatus] = useState('');
@@ -57,6 +58,10 @@ const RoomPage = (): JSX.Element => {
 			getTenant(data.data.room.contractAddress).then((res) => {
 				setTenant(res);
 			});
+
+			getBillingPeriodDuration(data.data.room.contractAddress).then((res) => {
+				setBillingPeriodDuration(res);
+			});
 		}
 		if(data && data?.data && data.data.room.contractAddress && (getStatus() === 'Rented' || getStatus() === 'Rent ended')) {
 			//foo bar
@@ -64,9 +69,9 @@ const RoomPage = (): JSX.Element => {
 	}, [data]);
 
 	useEffect(() => {
-		if(rentStartTimeNum && rentEndTimeNum)
-			setInterval(intervalToDuration({ start: fromUnixTime(rentStartTimeNum) as Date, end: fromUnixTime(rentEndTimeNum) as Date }));
-	}, [rentStartTimeNum, rentEndTimeNum]);
+		if(billingPeriodDuration)
+			setInterval(intervalToDuration({ start: fromUnixTime(0) as Date, end: fromUnixTime(billingPeriodDuration) as Date }));
+	}, [billingPeriodDuration]);
 
 	useEffect(() => {
 		if(removeRoomMutattion.isSuccess)
@@ -175,17 +180,17 @@ const RoomPage = (): JSX.Element => {
 					</p>
 					{interval && (
 						<p className='room__billing-period'>
-							{(interval && interval.years) && (interval.years + ' years')}
-							{(interval && interval.years && interval.months) && ' '}
-							{(interval && interval.months) && (interval.months + ' months')}
-							{(interval && interval.months && interval.days) && ' '}
-							{(interval && interval.days) && (interval.days + ' days')}
-							{(interval && interval.days && interval.hours) && ' '}
-							{(interval && interval.hours) && (interval.hours + ' hours')}
-							{(interval && interval.hours && interval.minutes) && ' '}
-							{(interval && interval.minutes) && (interval.minutes + ' minutes')}
-							{(interval && interval.minutes && interval.seconds) && ' '}
-							{(interval && interval.seconds) && (interval.seconds + ' seconds')}
+							{(interval && interval.years) ? (interval.years + ' years') : ''}
+							{(interval && interval.years && interval.months) ? ' ' : ''}
+							{(interval && interval.months) ? (interval.months + ' months') : ''}
+							{(interval && interval.months && interval.days) ? ' ' : ''}
+							{(interval && interval.days) ? (interval.days + ' days') : ''}
+							{(interval && interval.days && interval.hours) ? ' ' : ''}
+							{(interval && interval.hours) ? (interval.hours + ' hours') : ''}
+							{(interval && interval.hours && interval.minutes) ? ' ' : ''}
+							{(interval && interval.minutes) ? (interval.minutes + ' minutes') : ''}
+							{(interval && interval.minutes && interval.seconds) ? ' ' : ''}
+							{(interval && interval.seconds) ? (interval.seconds + ' seconds') : ''}
 						</p>
 					)}
 					<p className='room__rental-rate'>
