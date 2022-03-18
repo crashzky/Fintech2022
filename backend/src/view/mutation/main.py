@@ -1,3 +1,4 @@
+import datetime
 import typing
 import uuid
 
@@ -6,14 +7,14 @@ from eth_account.messages import encode_defunct
 from eth_account import Account
 
 from src.checks import check_landlord_auth, someone_auth
-from src.client import w3
+from src.client import w3, get_contract
 from src.env import LANDLORD_ADDRESS
 from src.exceptions import BadRequest
 from src.storage import addresses_messages, conn, db
 from src.view.auth import Authentication
 from src.view.room import InputRoom, Room
 from src.view.signature import InputSignature
-
+from src.view.ticket import InputTicket, Ticket
 
 used_signs = []
 counts = 0
@@ -51,6 +52,7 @@ class Mutation:
                 {"address": address, "message": message},
             )
             conn.commit()
+
         return message
 
     @strawberry.mutation
@@ -189,8 +191,10 @@ class Mutation:
         such_room = db.fetchone()
         if such_room is None:
             raise BadRequest("Room with such ID not found")
-        # elif such_room["contract_address"] != address:
-        #     raise BadRequest("This room is not rented by you")
+        contract = get_contract(such_room["contract_address"])
+        tenant = contract.functions.getTenant().call()
+        if tenant != address:
+            raise BadRequest("This room is not rented by you")
         db.execute(
             """
             UPDATE room
@@ -219,3 +223,74 @@ class Mutation:
         )
         conn.commit()
         return room
+
+    def create_ticket(self, ticket: InputTicket) -> Ticket:
+        ticket_id = uuid.uuid4().hex
+        room = Room.get_by_id(ticket.room)
+        if not ticket.value.wei.isdigit():
+            raise BadRequest("Value must be an integer")
+        elif ticket.value.wei.startswith("-"):
+            raise BadRequest("Value must be greater than zero")
+        try:
+            deadline = ticket.deadline.get()
+        except ValueError:
+            raise BadRequest("Invalid deadline date format")
+        else:
+            if datetime.datetime.now() > deadline:
+                raise BadRequest("The operation is outdated")
+
+        vrs = (
+            ticket.cashier_signature.v,
+            ticket.cashier_signature.r,
+            ticket.cashier_signature.s)
+        # root_address = Account.recover_message(
+        #     encode_defunct(text=message), vrs=vrs
+        # )
+        db.execute(
+            """
+            INSERT INTO ticket(
+                id,
+                room,
+                value,
+                deadline,
+                nonce,
+                cashier_sig_v,
+                cashier_sig_r,
+                cashier_sig_s
+            ) VALUES (
+                :id,
+                :oom,
+                :value,
+                :deadline,
+                :nonce,
+                :cashier_sig_v,
+                :cashier_sig_r,
+                :cashier_sig_s,
+            )
+            """, {
+                "id": uuid.uuid4().hex,
+                "room": ticket.room,
+                "value": ticket.value.wei,
+                "deadline": ticket.deadline.datetime,
+                "nonce": ticket.nonce.value,
+                "cashier_sig_v": ticket.cashier_signature.v,
+                "cashier_sig_r": ticket.cashier_signature.r,
+                "cashier_sig_s": ticket.cashier_signature.s
+            }
+        )
+        conn.commit()
+        db.execute(
+            """
+            SELECT 
+                id,
+                room,
+                value,
+                deadline,
+                nonce,
+                cashier_sig_v,
+                cashier_sig_r,
+                cashier_sig_s
+            WHERE id = ?
+            """, [ticket_id]
+        )
+        return db.fetchone()

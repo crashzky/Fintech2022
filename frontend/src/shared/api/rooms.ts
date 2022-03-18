@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { API_URL } from '../consts/api';
-import { ICreateRoomRequest, ICreateRoomResponse, IGetRoomRequest, IGetRoomResponse, IGetRoomsResponse, IUpdateRoomRequest } from '../types/rooms';
+import { ICreateRoomRequest, ICreateRoomResponse, IGetRoomRequest, IGetRoomResponse, IGetRoomsResponse,
+	IRoomPublicNameRequest, IRoomPublicNameResponse, IUpdateRoomRequest } from '../types/rooms';
 
 axios.defaults.baseURL = API_URL;
 
@@ -17,7 +18,7 @@ const createRoom = (data: ICreateRoomRequest): Promise<ICreateRoomResponse> => {
 				}
 			}
 		`,
-	})
+	}).then((res) => res.data);
 };
 
 const getRooms = (): Promise<IGetRoomsResponse> => {
@@ -29,7 +30,8 @@ const getRooms = (): Promise<IGetRoomsResponse> => {
 					internalName,
 					area,
 					location,
-					contractAddress
+					contractAddress,
+					publicName
 				}
 			}
 		`
@@ -41,10 +43,12 @@ const getRoom = (data: IGetRoomRequest): Promise<IGetRoomResponse> => {
 		query: `
 			query {
 				room(id: "${data.id}") {
+					id,
 					internalName,
 					area,
 					location,
-					contractAddress
+					contractAddress,
+					publicName
 				}
 			}
 		`
@@ -55,16 +59,35 @@ const updateRoom = (data: IUpdateRoomRequest): Promise<IGetRoomResponse> => {
 	return axios.post('', {
 		query: `
 			mutation {
-				rooms: createRoom(room: {
+				editRoom(id: "${data.id}",
+					room: {
 						internalName: "${data.internalName}",
 						area: ${data.area},
 						location: "${data.location}"
-					}) {
-					id, internalName, area, location
+					}
+				) {
+					id,
+					internalName,
+					area,
+					location,
+					contractAddress,
+					publicName
 				}
 			}
 		`,
-	})
+	}).then((res) => res.data);
+};
+
+const setRoomPublicName = (data: IRoomPublicNameRequest): Promise<IRoomPublicNameResponse> => {
+	return axios.post('', {
+		query: `
+			mutation {
+				setRoomPublicName(id: "${data.id}", publicName: "${data.publicName}") {
+					id, publicName
+				}
+			}
+		`
+	}).then((res) => res.data);
 };
 
 export {
@@ -72,4 +95,5 @@ export {
 	getRoom,
 	updateRoom,
 	getRooms,
+	setRoomPublicName,
 };

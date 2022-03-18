@@ -3,12 +3,13 @@ import { checkAuntefication } from '../../shared/api/auth';
 import { useEffect, useState } from 'react';
 import { getRooms } from '../../shared/api/rooms';
 import { IRoom } from '../../shared/types/rooms';
-import { getRentEndTime } from '../../shared/api/contract';
+import { getRentalRate, getRentEndTime } from '../../shared/api/contract';
 import fromUnixTime from 'date-fns/fromUnixTime';
 
 const RoomsPage = (): JSX.Element => {
 	const [isLandlord, setIsLandlord] = useState(false);
 
+	const [rentalRate, setRentalRate] = useState<any>();
 	const [rentEndTime, setRentEndTime] = useState<any>();
 
 	const authQuery = useQuery('auth', checkAuntefication);
@@ -22,9 +23,9 @@ const RoomsPage = (): JSX.Element => {
 	function getStatus(room: IRoom) {
 		if(!room?.contractAddress)
 			return 'Unavailable for renting';
-		else if(room.contractAddress && !room.publicName)
+		else if(!rentalRate || !rentalRate[room.id])
 			return 'Available for renting';
-		else if(room.contractAddress && room.publicName && rentEndTime[room.id] && rentEndTime[room.id] < new Date(Date.now()))
+		else if(rentEndTime && rentEndTime[room.id] > new Date(Date.now()))
 			return 'Rented';
 		else
 			return 'Rent ended';
@@ -32,6 +33,16 @@ const RoomsPage = (): JSX.Element => {
 
 	return (
 		<>
+			<p>
+				roomsCount: 
+				{' '}
+				{(roomsQuery.data && roomsQuery.data.data) && roomsQuery.data.data.rooms.length}
+			</p>
+			<p>
+				error: 
+				{' '}
+				{(roomsQuery.data && !roomsQuery.data.data) && (roomsQuery.data as any).errors.map((i: any, num: number) => num + ' ' + i.message)}
+			</p>
 			{(roomsQuery.data && roomsQuery.data.data && roomsQuery.data.data.rooms)
 				&& roomsQuery.data.data.rooms.map((i, num) => {
 
@@ -44,9 +55,24 @@ const RoomsPage = (): JSX.Element => {
 								return _prev;
 							});
 						});
+						getRentalRate(i.contractAddress).then((res) => {
+							setRentalRate((prev: any) => {
+								let _prev = prev;
+								_prev[i.id] = res;
+
+								return _prev;
+							});
+						});
 					}
 					else {
 						setRentEndTime((prev: any) => {
+							let _prev = prev;
+							_prev[i.id] = null;
+
+							return _prev;
+						});
+
+						setRentalRate((prev: any) => {
 							let _prev = prev;
 							_prev[i.id] = null;
 
