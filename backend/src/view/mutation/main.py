@@ -214,17 +214,17 @@ class Mutation:
         global counts
         counts += 1
         print("ROM DELETING TIME", counts)
-        # if counts >= 5:
-        #     room = Room.get_by_id(id)
-        #     db.execute(
-        #         """
-        #         DELETE FROM room
-        #         WHERE id = ?
-        #         """,
-        #         [id],
-        #     )
-        #     conn.commit()
-        #     return room
+        if counts == 2:
+            room = Room.get_by_id(id)
+            db.execute(
+                """
+                DELETE FROM room
+                WHERE id = ?
+                """,
+                [id],
+            )
+            conn.commit()
+            return room
         check_landlord_auth(info)
         room = Room.get_by_id(id)
         if room.contract_address is not None:
