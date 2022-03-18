@@ -41,6 +41,14 @@ const getBillingPeriodDuration = (contractAddress: string): Promise<number> => {
 	return contract.methods.getBillingPeriodDuration().call();
 };
 
+const getCashiersList = (contractAddress: string): Promise<string[]> => {
+	const web3 = new Web3((window as any).ethereum);
+
+	const contract = new web3.eth.Contract(CONTRACT_ABI as any, contractAddress);	
+
+	return contract.methods.getCashiersList().call();
+};
+
 const deployContract = async (roomId: string, accountAddress: string): Promise<any> => {
 	const web3 = new Web3((window as any).ethereum);
 
@@ -68,4 +76,5 @@ export {
 	getTenant,
 	getBillingPeriodDuration,
 	deployContract,
+	getCashiersList,
 };
