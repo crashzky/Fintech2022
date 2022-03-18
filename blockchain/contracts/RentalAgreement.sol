@@ -289,7 +289,7 @@ contract RentalAgreement {
         }
         if (
             deadline > globalRentEndTime
-            || deadline > payedPeriodTime
+//            || deadline > payedPeriodTime
         ) {
             revert("The contract is being in not allowed state");
         }
@@ -326,8 +326,11 @@ contract RentalAgreement {
 
         // Если следующий период не покрыт
         if (payedPeriodTime - globalBillingPeriodDuration < deadline) {
+            // Иделаьный профит для лендрода за эту сделку, который нужен для покрытия
+            // задолженности по следующему месяцу
+            uint landlordPerfectProfit = (payedPeriodTime + globalBillingPeriodDuration) / globalBillingPeriodDuration;
             // Сумма, которую нужно получить лендлорду, чтобы получить иделаьный профит
-            uint landlordRequiredToGet = (payedPeriodTime + 1)- landlordProfit;
+            uint landlordRequiredToGet = landlordPerfectProfit - landlordProfit;
 
             // Если эта сумма перекрывается текущей оплатой,
             // То нужно остаток отдать тенанту
