@@ -85,6 +85,7 @@ contract RentalAgreement {
     uint globalBillingPeriodDuration;
     uint globalRentStartTime;
     uint globalRentEndTime;
+    uint globalRealRentEndTime;
     uint globalBillingsCount;
     bool globalIsRented = false;
 
