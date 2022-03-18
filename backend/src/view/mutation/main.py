@@ -215,8 +215,8 @@ class Mutation:
         room = Room.get_by_id(id)
         if room.contract_address is not None:
             contract = get_contract(room.contract_address)
-            is_rent_active = contract.functions.getIsRentActive().call()
-            if is_rent_active:
+            is_rented = contract.functions.getRentedState().call()
+            if is_rented:
                 raise BadRequest("Room has rented contract in progress")
         db.execute(
             """
