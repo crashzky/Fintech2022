@@ -35,7 +35,7 @@ class Ticket:
         db_ticket = db.fetchone()
         return Ticket(
             id=db_ticket["id"],
-            room=Room(id=db_ticket["room"]),
+            room=Room.get_by_id(id=db_ticket["room"]),
             value=Wei(wei=db_ticket["value"]),
             deadline=db_ticket["deadline"],
             nonce=Nonce(value=db_ticket["nonce"]),
