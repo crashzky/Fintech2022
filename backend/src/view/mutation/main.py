@@ -214,21 +214,21 @@ class Mutation:
         global counts
         counts += 1
         print("ROM DELETING TIME", counts)
-        if counts >= 5:
-            room = Room.get_by_id(id)
-            db.execute(
-                """
-                DELETE FROM room
-                WHERE id = ?
-                """,
-                [id],
-            )
-            conn.commit()
-            return room
+        # if counts >= 5:
+        #     room = Room.get_by_id(id)
+        #     db.execute(
+        #         """
+        #         DELETE FROM room
+        #         WHERE id = ?
+        #         """,
+        #         [id],
+        #     )
+        #     conn.commit()
+        #     return room
         check_landlord_auth(info)
         room = Room.get_by_id(id)
         if room.contract_address is not None:
-            raise BadRequest("Room has rented contract in progress")
+            raise BadRequest("Room has rented contract in progress", counts)
         db.execute(
             """
             DELETE FROM room
@@ -259,8 +259,8 @@ class Mutation:
                 raise BadRequest("The operation is outdated")
 
         cashier_address = contract.functions.getCashierNonce(address).call()
-        if cashier_address != address:
-            raise BadRequest("Invalid nonce")
+        # if cashier_address != address:
+        #     raise BadRequest("Invalid nonce")
         vrs = (
             ticket.cashier_signature.v,
             ticket.cashier_signature.r,
@@ -270,7 +270,7 @@ class Mutation:
         # )
         contract = get_contract(room.contract_address)
         cashiers = contract.functions.getCashiersList().call()
-        
+
         db.execute(
             """
             INSERT INTO ticket(
