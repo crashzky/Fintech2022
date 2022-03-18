@@ -16,8 +16,6 @@ const RoomPage = (): JSX.Element => {
 
 	const [rentStartTimeNum, setRentStartTimeNum] = useState<number>();
 	const [rentEndTimeNum, setRentEndTimeNum] = useState<number>();
-	const [rentStartTime, setRentStartTime] = useState<Date>();
-	const [rentEndTime, setRentEndTime] = useState<Date>();
 	const [tenant, setTenant] = useState<string>();
 	const [rentalRate, setRentalRate] = useState<number>();
 	const [interval, setInterval] = useState<Duration>();
@@ -45,12 +43,10 @@ const RoomPage = (): JSX.Element => {
 	useEffect(() => {
 		if(data && data?.data && data?.data.room.contractAddress) {
 			getRentStartTime(data.data.room.contractAddress).then((res) => {
-				//setRentStartTime(fromUnixTime(res));
 				setRentStartTimeNum(res);
 			});
 
 			getRentEndTime(data.data.room.contractAddress).then((res) => {
-				//setRentEndTime(fromUnixTime(res));
 				setRentEndTimeNum(res);
 			});
 			
@@ -68,9 +64,9 @@ const RoomPage = (): JSX.Element => {
 	}, [data]);
 
 	useEffect(() => {
-		/*if(rentStartTime && rentEndTime)
-			setInterval(intervalToDuration({ start: rentStartTime as Date, end: rentEndTime as Date }));*/
-	}, [rentStartTime, rentEndTime]);
+		if(rentStartTimeNum && rentEndTimeNum)
+			setInterval(intervalToDuration({ start: fromUnixTime(rentStartTimeNum) as Date, end: fromUnixTime(rentEndTimeNum) as Date }));
+	}, [rentStartTimeNum, rentEndTimeNum]);
 
 	useEffect(() => {
 		if(removeRoomMutattion.isSuccess)
@@ -92,7 +88,7 @@ const RoomPage = (): JSX.Element => {
 				return 'Unavailable for renting';
 			else if(!rentalRate && !room.publicName)
 				return 'Available for renting';
-			else if(rentEndTime && rentEndTime > new Date(Date.now()))
+			else if(rentEndTimeNum && fromUnixTime(rentEndTimeNum) > new Date(Date.now()))
 				return 'Rented';
 			else
 				return 'Rent ended';
@@ -169,27 +165,29 @@ const RoomPage = (): JSX.Element => {
 					<p className='room__tenant'>
 						{tenant}
 					</p>
-					{/*<p className='room__rent-start'>
-						{rentStartTime && format(rentStartTime as Date, 'iii, d LLL yyyy kk:mm:ss ')}
+					<p className='room__rent-start'>
+						{rentStartTimeNum && format(fromUnixTime(rentStartTimeNum) as Date, 'iii, d LLL yyyy kk:mm:ss ')}
 						{' GMT'}
 					</p>
 					<p className='room__rent-end'>
-						{rentEndTime && format(rentEndTime as Date, 'iii, d LLL yyyy kk:mm:ss ')}
+						{rentEndTimeNum && format(fromUnixTime(rentEndTimeNum) as Date, 'iii, d LLL yyyy kk:mm:ss ')}
 						{' GMT'}
 					</p>
-					<p className='room__billing-period'>
-						{(interval && interval.years) && (interval.years + ' years')}
-						{(interval && interval.years && interval.months) && ' '}
-						{(interval && interval.months) && (interval.months + ' months')}
-						{(interval && interval.months && interval.days) && ' '}
-						{(interval && interval.days) && (interval.days + ' days')}
-						{(interval && interval.days && interval.hours) && ' '}
-						{(interval && interval.hours) && (interval.hours + ' hours')}
-						{(interval && interval.hours && interval.minutes) && ' '}
-						{(interval && interval.minutes) && (interval.minutes + ' minutes')}
-						{(interval && interval.minutes && interval.seconds) && ' '}
-						{(interval && interval.seconds) && (interval.seconds + ' seconds')}
-					</p>*/}
+					{interval && (
+						<p className='room__billing-period'>
+							{(interval && interval.years) && (interval.years + ' years')}
+							{(interval && interval.years && interval.months) && ' '}
+							{(interval && interval.months) && (interval.months + ' months')}
+							{(interval && interval.months && interval.days) && ' '}
+							{(interval && interval.days) && (interval.days + ' days')}
+							{(interval && interval.days && interval.hours) && ' '}
+							{(interval && interval.hours) && (interval.hours + ' hours')}
+							{(interval && interval.hours && interval.minutes) && ' '}
+							{(interval && interval.minutes) && (interval.minutes + ' minutes')}
+							{(interval && interval.minutes && interval.seconds) && ' '}
+							{(interval && interval.seconds) && (interval.seconds + ' seconds')}
+						</p>
+					)}
 					<p className='room__rental-rate'>
 						{rentalRate}
 						{' wei'}
@@ -241,16 +239,6 @@ const RoomPage = (): JSX.Element => {
 				address:
 				{' '}
 				{tmpAddress}
-			</p>
-			<p>
-				rentStartTimeNum:
-				{' '}
-				{rentStartTimeNum}
-			</p>
-			<p>
-				rentEndTimeNum:
-				{' '}
-				{rentEndTimeNum}
 			</p>
 		</>
 	);
