@@ -51,7 +51,7 @@ class Query:
                 WHERE contract_address IS NOT NULL
                 """
             )
-
+            
             db_rooms = db.fetchall()
             rooms = []
             for room in db_rooms:
@@ -60,7 +60,7 @@ class Query:
                 is_rented = contract.functions.getRentedState().call()
                 end_time = contract.functions.getRentEndTime().call()
                 print("BC DATA:", tenant, is_rented, room)
-                if tenant == address or not is_rented:
+                if tenant == address or time.time() >= end_time or not is_rented:
                     rooms.append(Room(**room))
 
         print("108-2 ROOMS:", rooms)
