@@ -1,4 +1,5 @@
 import datetime
+import time
 import typing
 import uuid
 
@@ -15,6 +16,7 @@ from src.view.auth import Authentication
 from src.view.room import InputRoom, Room
 from src.view.signature import InputSignature
 from src.view.ticket import InputTicket, Ticket
+from src.view.utils import Wei
 
 used_signs = []
 counts = 0
@@ -213,7 +215,11 @@ class Mutation:
         check_landlord_auth(info)
         room = Room.get_by_id(id)
         if room.contract_address is not None:
-            raise BadRequest("Room has rented contract in progress")
+            contract = get_contract(room.contract_address)
+            end_time = contract.functions.getRentEndTime().call()
+            print("error on room", id, end_time, time.time())
+            if end_time >= time.time():
+                raise BadRequest("Room has rented contract in progress")
         db.execute(
             """
             DELETE FROM room
@@ -224,9 +230,13 @@ class Mutation:
         conn.commit()
         return room
 
-    def create_ticket(self, ticket: InputTicket) -> Ticket:
+    @strawberry.mutation
+    def create_ticket(self, ticket: InputTicket, info: strawberry.types.Info) -> Ticket:
+        address = someone_auth(info)
         ticket_id = uuid.uuid4().hex
         room = Room.get_by_id(ticket.room)
+        contract = get_contract(room.contract_address)
+        # TODO: check address
         if not ticket.value.wei.isdigit():
             raise BadRequest("Value must be an integer")
         elif ticket.value.wei.startswith("-"):
@@ -239,6 +249,9 @@ class Mutation:
             if datetime.datetime.now() > deadline:
                 raise BadRequest("The operation is outdated")
 
+        nonce = contract.functions.getCashierNonce(address).call()
+        # if nonce != ticket.nonce:
+        #     raise BadRequest("Invalid nonce")
         vrs = (
             ticket.cashier_signature.v,
             ticket.cashier_signature.r,
@@ -246,6 +259,9 @@ class Mutation:
         # root_address = Account.recover_message(
         #     encode_defunct(text=message), vrs=vrs
         # )
+        contract = get_contract(room.contract_address)
+        cashiers = contract.functions.getCashiersList().call()
+
         db.execute(
             """
             INSERT INTO ticket(
@@ -259,16 +275,16 @@ class Mutation:
                 cashier_sig_s
             ) VALUES (
                 :id,
-                :oom,
+                :room,
                 :value,
                 :deadline,
                 :nonce,
                 :cashier_sig_v,
                 :cashier_sig_r,
-                :cashier_sig_s,
+                :cashier_sig_s
             )
             """, {
-                "id": uuid.uuid4().hex,
+                "id": ticket_id,
                 "room": ticket.room,
                 "value": ticket.value.wei,
                 "deadline": ticket.deadline.datetime,
@@ -279,18 +295,4 @@ class Mutation:
             }
         )
         conn.commit()
-        db.execute(
-            """
-            SELECT 
-                id,
-                room,
-                value,
-                deadline,
-                nonce,
-                cashier_sig_v,
-                cashier_sig_r,
-                cashier_sig_s
-            WHERE id = ?
-            """, [ticket_id]
-        )
-        return db.fetchone()
+        return Ticket.get_by_id(ticket_id)

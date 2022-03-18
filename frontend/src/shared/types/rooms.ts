@@ -49,7 +49,7 @@ interface IRoom {
 
 interface IRoomPublicNameRequest {
 	id: string;
-	publicName: string;
+	publicName: string | null;
 }
 
 interface IRoomPublicNameResponse {
@@ -57,6 +57,35 @@ interface IRoomPublicNameResponse {
 		setRoomPublicName: {
 			id: string;
 			publicName: string;
+		}
+	}
+}
+
+interface ISetRoomContractAddressRequest {
+	id: string;
+	contractAddress: string;
+}
+
+interface ISetRoomContractAddressResponse {
+	data: {
+		setRoomContractAddress: {
+			id: string;
+			contractAddress: string;
+		}
+	}
+}
+
+interface IRemoveRoomRequest {
+	id: string;
+}
+
+interface IRemoveRoomResponse {
+	data: {
+		removeRoom: {
+			id: string;
+			internalName: string;
+			area: number;
+			location: string;
 		}
 	}
 }
@@ -70,5 +99,9 @@ export type {
 	IGetRoomsResponse,
 	IRoom,
 	IRoomPublicNameRequest,
-	IRoomPublicNameResponse
+	IRoomPublicNameResponse,
+	ISetRoomContractAddressRequest,
+	ISetRoomContractAddressResponse,
+	IRemoveRoomRequest,
+	IRemoveRoomResponse,
 };
