@@ -81,15 +81,28 @@ const updateRoom = (data: IUpdateRoomRequest): Promise<IGetRoomResponse> => {
 };
 
 const setRoomPublicName = (data: IRoomPublicNameRequest): Promise<IRoomPublicNameResponse> => {
-	return axios.post('', {
-		query: `
-			mutation {
-				setRoomPublicName(id: "${data.id}", publicName: "${data.publicName}") {
-					id, publicName
+	if(data.publicName) {
+		return axios.post('', {
+			query: `
+				mutation {
+					setRoomPublicName(id: "${data.id}", publicName: "${data.publicName}") {
+						id, publicName
+					}
 				}
-			}
-		`
-	}).then((res) => res.data);
+			`
+		}).then((res) => res.data);
+	}
+	else {
+		return axios.post('', {
+			query: `
+				mutation {
+					setRoomPublicName(id: "${data.id}") {
+						id, publicName
+					}
+				}
+			`
+		}).then((res) => res.data);
+	}
 };
 
 const setRoomContractAddress = (data: ISetRoomContractAddressRequest): Promise<ISetRoomContractAddressResponse> => {

@@ -51,8 +51,8 @@ const deployContract = (roomId: string, accountAddress: string): Promise<any> =>
 		arguments: [web3.utils.hexToNumber('0x' + roomId)],
 	}).send({
 		from: accountAddress,
-	}).on('receipt', (recepient) => recepient.contractAddress)
-	.on('error', (error) => error.message);
+		gas: 4700000,
+	}, (e, hash) => web3.eth.getTransactionReceipt(hash).then((result) => result.contractAddress));
 };
 
 export {
