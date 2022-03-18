@@ -13,14 +13,13 @@ services:
     container_name: solution-frontend
 
   backend:
-    image: deknowny/mall-dependencies:latest
     ports:
       - "8000:8000"
-#    build:
-#      context: .
-#      dockerfile: backend/Dockerfile
-#    volumes:
-#      - ./backend/src/:/app/src/
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    volumes:
+      - ./backend/src/:/app/src/
     environment:
       - LANDLORD_ADDRESS
       - RPC_URL
