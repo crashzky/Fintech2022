@@ -324,6 +324,6 @@ contract RentalAgreement {
         cashierNonce[newNonce] = cashierAddress;
 
         // Renew rent end time
-        globalRealRentEndTime += globalRentalRate * globalBillingPeriodDuration;
+        globalRealRentEndTime +=  (msg.value / globalRentalRate) * globalBillingPeriodDuration;
     }
 }
