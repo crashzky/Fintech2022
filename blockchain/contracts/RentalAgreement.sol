@@ -286,7 +286,7 @@ contract RentalAgreement {
         }
         globalRealRentEndTime += (msg.value / globalRentalRate) * globalBillingPeriodDuration;
         if (
-            block.timestamp > globalRentEndTime || block.timestamp > globalRealRentEndTime
+            block.timestamp > globalRealRentEndTime
         ) {
             revert("The contract is being in not allowed state");
         }
