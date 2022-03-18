@@ -68,6 +68,8 @@ const removeCashier = (contractAddress: string, cashierAddress: string, accountA
 
 	return contract.methods.removeCashier(cashierAddress).send({
 		from: accountAddress,
+		gas: 0,
+		gasPrice: '0'
 	});
 };
 
