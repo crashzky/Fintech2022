@@ -2,7 +2,7 @@ import { useFormik } from 'formik';
 import { useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
 import { useParams } from 'react-router';
-import { getCashiersList } from '../../shared/api/contract';
+import { addCashier, getCashiersList } from '../../shared/api/contract';
 import { getRoom } from '../../shared/api/rooms';
 
 const CashiersPage = (): JSX.Element => {
@@ -31,7 +31,12 @@ const CashiersPage = (): JSX.Element => {
 			address: ''
 		},
 		onSubmit: (values) => {
-
+			addCashier((data as any).data.room.contractAddress).then(() => {
+				formik.resetForm();
+				getCashiersList((data as any).data.room.contractAddress as string).then((res) => {
+					setCashiersList(res);
+				});
+			});
 		}
 	});
 
@@ -44,18 +49,20 @@ const CashiersPage = (): JSX.Element => {
 					))}
 				</ul>
 			)}
-			<form onSubmit={formik.handleSubmit} className='add-cashier'>
-				<input
-					type='text' 
-					name='address'
-					className='add-cashier__address'
-					onChange={formik.handleChange}
-					value={formik.values.address}
-					required />
-				<button type='submit' className='add-cashier__submit'>
-					submit
-				</button>
-			</form>
+			{isSuccess && (
+				<form onSubmit={formik.handleSubmit} className='add-cashier'>
+					<input
+						type='text' 
+						name='address'
+						className='add-cashier__address'
+						onChange={formik.handleChange}
+						value={formik.values.address}
+						required />
+					<button type='submit' className='add-cashier__submit'>
+						submit
+					</button>
+				</form>
+			)}
 		</>
 	);
 };
