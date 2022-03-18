@@ -1,4 +1,5 @@
 import datetime
+import time
 import typing
 import uuid
 
@@ -215,8 +216,9 @@ class Mutation:
         room = Room.get_by_id(id)
         if room.contract_address is not None:
             contract = get_contract(room.contract_address)
-            is_rent_active = contract.functions.getIsRentActive().call()
-            if is_rent_active:
+            end_time = contract.functions.getRentEndTime().call()
+            print("error on room", id, end_time, time.time())
+            if end_time >= time.time():
                 raise BadRequest("Room has rented contract in progress")
         db.execute(
             """
@@ -229,9 +231,11 @@ class Mutation:
         return room
 
     @strawberry.mutation
-    def create_ticket(self, ticket: InputTicket) -> Ticket:
+    def create_ticket(self, ticket: InputTicket, info: strawberry.types.Info) -> Ticket:
+        address = someone_auth(info)
         ticket_id = uuid.uuid4().hex
         room = Room.get_by_id(ticket.room)
+        contract = get_contract(room.contract_address)
         # TODO: check address
         if not ticket.value.wei.isdigit():
             raise BadRequest("Value must be an integer")
@@ -245,6 +249,9 @@ class Mutation:
             if datetime.datetime.now() > deadline:
                 raise BadRequest("The operation is outdated")
 
+        nonce = contract.functions.getCashierNonce(address).call()
+        # if nonce != ticket.nonce:
+        #     raise BadRequest("Invalid nonce")
         vrs = (
             ticket.cashier_signature.v,
             ticket.cashier_signature.r,
@@ -254,6 +261,7 @@ class Mutation:
         # )
         contract = get_contract(room.contract_address)
         cashiers = contract.functions.getCashiersList().call()
+
         db.execute(
             """
             INSERT INTO ticket(
@@ -267,13 +275,13 @@ class Mutation:
                 cashier_sig_s
             ) VALUES (
                 :id,
-                :oom,
+                :room,
                 :value,
                 :deadline,
                 :nonce,
                 :cashier_sig_v,
                 :cashier_sig_r,
-                :cashier_sig_s,
+                :cashier_sig_s
             )
             """, {
                 "id": ticket_id,
