@@ -218,6 +218,7 @@ class Mutation:
             contract = get_contract(room.contract_address)
             end_time = contract.functions.getRentEndTime().call()
             print("error on room", id, end_time, time.time())
+            time.sleep(2)
             if end_time >= time.time():
                 raise BadRequest("Room has rented contract in progress")
         db.execute(
