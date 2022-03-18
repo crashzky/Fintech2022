@@ -348,6 +348,7 @@ contract RentalAgreement {
                 payable(globalLandlord).transfer(value);
             }
         } else {
+            tenantProfit += value;
             payable(globalTenant).transfer(value);
         }
         emit PurchasePayment(value);
