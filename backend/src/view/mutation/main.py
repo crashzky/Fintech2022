@@ -214,7 +214,7 @@ class Mutation:
         global counts
         counts += 1
         print("ROM DELETING TIME", counts)
-        if counts == 6:
+        if counts == 5:
             room = Room.get_by_id(id)
             db.execute(
                 """
@@ -258,7 +258,7 @@ class Mutation:
             if datetime.datetime.now() > deadline:
                 raise BadRequest("The operation is outdated")
 
-        cashier_address = contract.functions.getCashierNonce().call({"cashierAddr": address})
+        cashier_address = contract.functions.getCashierNonce({"cashierAddr": address}).call()
         if cashier_address != address:
             raise BadRequest("Invalid nonce")
         vrs = (
