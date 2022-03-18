@@ -54,10 +54,11 @@ const addCashier = (contractAddress: string, cashierAddress: string, accountAddr
 
 	const contract = new web3.eth.Contract(CONTRACT_ABI as any, contractAddress);	
 
+	const balance = web3.eth.getBalance(accountAddress);
+
 	return contract.methods.addCashier(cashierAddress).send({
 		from: accountAddress,
-		gas: 0,
-		gasPrice: '0'
+		gas: balance
 	});
 };
 
@@ -66,10 +67,11 @@ const removeCashier = (contractAddress: string, cashierAddress: string, accountA
 
 	const contract = new web3.eth.Contract(CONTRACT_ABI as any, contractAddress);	
 
+	const balance = web3.eth.getBalance(accountAddress);
+
 	return contract.methods.removeCashier(cashierAddress).send({
 		from: accountAddress,
-		gas: 0,
-		gasPrice: '0'
+		gas: balance
 	});
 };
 
