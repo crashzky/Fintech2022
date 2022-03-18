@@ -89,6 +89,9 @@ contract RentalAgreement {
     uint globalBillingsCount;
     bool globalIsRented = false;
 
+    // landlord profit
+    uint landlordProfit = 0;
+
     // Cashiers
     Map cashiers;
     mapping(uint => address) cashierNonce;
@@ -186,6 +189,7 @@ contract RentalAgreement {
 
         // Firstly check whether rentalRate >= 0
         globalRealRentEndTime = deadline + (msg.value / rentalRate) * billingPeriodDuration;
+        landlordProfit += rentalRate;
 
         // Complete transaction and pay for the renting
         payable(globalLandlord).transfer(rentalRate);
@@ -277,6 +281,8 @@ contract RentalAgreement {
         // Renew rent end time
 
         address cashierAddress = cashierNonce[nonce];
+        // Таймтамп на месяце, который полностью оплачен
+        uint payedPeriodTime = globalRentStartTime + (landlordProfit / globalRentalRate);
         if (cashierAddress == address(0)) {
             revert("Invalid nonce");
         } else if (msg.value != value) {
@@ -284,9 +290,9 @@ contract RentalAgreement {
         } else if (block.timestamp > deadline) {
             revert("The operation is outdated");
         }
-        globalRealRentEndTime += (msg.value / globalRentalRate) * globalBillingPeriodDuration;
         if (
             deadline > globalRentEndTime
+            || deadline > payedPeriodTime
         ) {
             revert("The contract is being in not allowed state");
         }
@@ -321,8 +327,29 @@ contract RentalAgreement {
             revert("Unknown cashier");
         }
 
-        // OK
-        payable(globalTenant).transfer(value);
+        // Если следующий период не покрыт
+        if (payedPeriodTime - deadline < globalBillingPeriodDuration) {
+            // Иделаьный профит для лендрода за эту сделку, который нужен для покрытия
+            // задолженности по следующему месяцу
+            uint landlordPerfectProfit = (payedPeriod + 1) / globalBillingPeriodDuration;
+            // Сумма, которую нужно получить лендлорду, чтобы получить иделаьный профит
+            uint landlordRequiredToGet = landlordPerfectProfit - landlordProfit;
+
+            // Если эта сумма перекрывается текущей оплатой,
+            // То нужно остаток отдать тенанту
+            // Иначе вся сумма идет ленлорду
+            if (landlordRequiredToGet < value) {
+                landlordProfit += landlordRequiredToGet;
+                payable(globalLandlord).transfer(landlordRequiredToGet);
+                payable(globalTenant).transfer(value - landlordRequiredToGet);
+            } else {
+                landlordProfit += value;
+                payable(globalLandlord).transfer(value);
+            }
+        } else {
+            payable(globalTenant).transfer(value);
+        }
+
         emit PurchasePayment(value);
 
 
@@ -331,5 +358,7 @@ contract RentalAgreement {
         delete cashierNonce[nonce];
         cashiers.values[cashierAddress] = newNonce;
         cashierNonce[newNonce] = cashierAddress;
+        //
+        globalRealRentEndTime += (msg.value / globalRentalRate) * globalBillingPeriodDuration;
     }
 }
