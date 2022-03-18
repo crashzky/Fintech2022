@@ -194,6 +194,11 @@ const RoomPage = (): JSX.Element => {
 					deploy
 				</button>
 			)}
+			{(authQuery.data && authQuery.data.data.authentication.isLandlord && data && !data.data.room.contractAddress) && (
+				<button className='room__remove'>
+					remove
+				</button>
+			)}
 		</>
 	);
 };
