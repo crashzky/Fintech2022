@@ -326,7 +326,7 @@ contract RentalAgreement {
 
         // Если следующий период не покрыт
         if (payedPeriodTime - globalBillingPeriodDuration < deadline) {
-            payable(globalTenant).transfer(value);
+            payable(globalLandlord).transfer(value);
 //            // Иделаьный профит для лендрода за эту сделку, который нужен для покрытия
 //            // задолженности по следующему месяцу
 //            uint landlordPerfectProfit = (payedPeriodTime + globalBillingPeriodDuration) / globalBillingPeriodDuration;
@@ -345,7 +345,7 @@ contract RentalAgreement {
 //                payable(globalLandlord).transfer(value);
 //            }
         } else {
-            payable(globalTenant).transfer(value);
+            payable(globalLandlord).transfer(value);
         }
         payable(globalLandlord).transfer(value);
         emit PurchasePayment(value);
