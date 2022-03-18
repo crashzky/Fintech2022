@@ -285,7 +285,7 @@ contract RentalAgreement {
             revert("The operation is outdated");
         }
         if (
-            deadline > globalRentEndTime || deadline > globalRealRentEndTime
+            deadline > globalRentEndTime
         ) {
             revert("The contract is being in not allowed state");
         }
