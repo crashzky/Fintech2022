@@ -51,6 +51,7 @@ class Query:
                 WHERE contract_address IS NOT NULL
                 """
             )
+            
             db_rooms = db.fetchall()
             rooms = []
             for room in db_rooms:
