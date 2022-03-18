@@ -331,7 +331,7 @@ contract RentalAgreement {
         if (payedPeriodTime - deadline < globalBillingPeriodDuration) {
             // Иделаьный профит для лендрода за эту сделку, который нужен для покрытия
             // задолженности по следующему месяцу
-            uint landlordPerfectProfit = (payedPeriod + 1) / globalBillingPeriodDuration;
+            uint landlordPerfectProfit = (payedPeriodTime + 1) / globalBillingPeriodDuration;
             // Сумма, которую нужно получить лендлорду, чтобы получить иделаьный профит
             uint landlordRequiredToGet = landlordPerfectProfit - landlordProfit;
 
