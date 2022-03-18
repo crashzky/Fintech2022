@@ -30,7 +30,7 @@ const RoomsPage = (): JSX.Element => {
 		else
 			return 'Rent ended';
 	}
-//aboba
+
 	return (
 		<>
 			{(roomsQuery.data && roomsQuery.data.data)

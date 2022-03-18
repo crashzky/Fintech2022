@@ -53,7 +53,7 @@ const deployContract = async (roomId: string, accountAddress: string): Promise<a
 		arguments: [web3.utils.hexToNumber('0x' + roomId)],
 	}).send({
 		from: accountAddress,
-		gas: 4700000,
+		gas: 4200000
 	}, (e, hash) => {
 		txHash = hash
 	});
