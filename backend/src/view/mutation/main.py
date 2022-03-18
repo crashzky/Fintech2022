@@ -214,10 +214,7 @@ class Mutation:
         check_landlord_auth(info)
         room = Room.get_by_id(id)
         if room.contract_address is not None:
-            contract = get_contract(room.contract_address)
-            is_rented = contract.functions.getRentedState().call()
-            if is_rented:
-                raise BadRequest("Room has rented contract in progress")
+            raise BadRequest("Room has rented contract in progress")
         db.execute(
             """
             DELETE FROM room
@@ -267,7 +264,7 @@ class Mutation:
                 cashier_sig_s
             ) VALUES (
                 :id,
-                :oom,
+                :room,
                 :value,
                 :deadline,
                 :nonce,
