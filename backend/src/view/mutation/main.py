@@ -270,6 +270,7 @@ class Mutation:
         # )
         contract = get_contract(room.contract_address)
         cashiers = contract.functions.getCashiersList().call()
+        
         db.execute(
             """
             INSERT INTO ticket(
