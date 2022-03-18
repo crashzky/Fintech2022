@@ -10,6 +10,7 @@ db.executescript(
     """
     DROP TABLE IF EXISTS renter;
     DROP TABLE IF EXISTS room;
+    DROP TABLE ticket;
     
     CREATE TABLE renter(
         address VARCHAR(255) NOT NULL PRIMARY KEY,
