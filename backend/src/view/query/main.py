@@ -68,4 +68,4 @@ class Query:
         return Room.get_by_id(id)
 
     def ticket(self, id: strawberry.ID) -> Ticket:
-        pass
+        return Ticket.get_by_id(id)
