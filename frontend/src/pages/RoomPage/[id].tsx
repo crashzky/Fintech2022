@@ -161,7 +161,7 @@ const RoomPage = (): JSX.Element => {
 				</p>
 			)}
 			
-			{/*(data && data?.data && (getStatus() === 'Rented' || getStatus() === 'Rent ended')) && (
+			{(data && data?.data && (getStatus() === 'Rented' || getStatus() === 'Rent ended')) && (
 				<>
 					<p className='room__tenant'>
 						{tenant}
@@ -192,7 +192,7 @@ const RoomPage = (): JSX.Element => {
 						{' wei'}
 					</p>
 				</>
-			)*/}
+			)}
 			{isLandlord && (
 				<a href={`/room/${params.id}/edit`} className='room__edit'>
 					Click me
