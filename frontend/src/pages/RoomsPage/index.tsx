@@ -16,7 +16,7 @@ const RoomsPage = (): JSX.Element => {
 	const roomsQuery = useQuery('rooms', getRooms);
 
 	useEffect(() => {
-		if(authQuery.data?.data.authentication.isLandlord) 
+		if(authQuery.data && authQuery.data?.data.authentication.isLandlord) 
 			setIsLandlord(true);
 	}, [authQuery.data]);
 
