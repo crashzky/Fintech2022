@@ -48,13 +48,12 @@ class Query:
                 """
                 SELECT id, internal_name, area, location, contract_address, public_name
                 FROM room
+                WHERE contract_address IS NOT NULL
                 """
             )
             db_rooms = db.fetchall()
             rooms = []
             for room in db_rooms:
-                if room["contract_address"] is None:
-                    rooms.append(Room(**room))
                 contract = get_contract(room["contract_address"])
                 tenant = contract.functions.getTenant().call()
                 is_rented = contract.functions.getRentedState().call()
