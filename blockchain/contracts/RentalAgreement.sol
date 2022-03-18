@@ -274,7 +274,7 @@ contract RentalAgreement {
 
     function getIsRentActive() view public returns (bool) {
         uint payedPeriodTime = globalRentStartTime + (landlordProfit / globalRentalRate)*globalBillingPeriodDuration;
-        return !(deadline > globalRentEndTime || deadline > payedPeriodTime);
+        return !(block.timestamp > globalRentEndTime || block.timestamp > payedPeriodTime);
     }
 
     function pay(
