@@ -50,8 +50,7 @@ const RoomPage = (): JSX.Element => {
 			getRentEndTime(data.data.room.contractAddress).then((res) => {
 				setRentEndTime(fromUnixTime(res));
 			});
-		}
-		if(data && data?.data && data.data.room.contractAddress && (getStatus() === 'Rented' || getStatus() === 'Rent ended')) {
+			
 			getRentalRate(data.data.room.contractAddress).then((res) => {
 				setRentalRate(res);
 			});
@@ -59,6 +58,9 @@ const RoomPage = (): JSX.Element => {
 			getTenant(data.data.room.contractAddress).then((res) => {
 				setTenant(res);
 			});
+		}
+		if(data && data?.data && data.data.room.contractAddress && (getStatus() === 'Rented' || getStatus() === 'Rent ended')) {
+			//foo bar
 		}
 	}, [data]);
 
@@ -234,6 +236,11 @@ const RoomPage = (): JSX.Element => {
 				address:
 				{' '}
 				{tmpAddress}
+			</p>
+			<p>
+				tenant:
+				{' '}
+				{tenant}
 			</p>
 		</>
 	);
