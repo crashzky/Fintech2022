@@ -3,8 +3,7 @@ import { useMutation, useQuery } from 'react-query';
 import { getRoom, removeRoom, setRoomContractAddress, setRoomPublicName } from '../../shared/api/rooms';
 import { useEffect, useState } from 'react';
 import { deployContract, getRentalRate, getRentEndTime, getRentStartTime, getTenant } from '../../shared/api/contract';
-import fromUnixTime from 'date-fns/fromUnixTime';
-import { format, intervalToDuration, Duration } from 'date-fns';
+import { format, intervalToDuration, Duration, fromUnixTime } from 'date-fns';
 import { checkAuntefication } from '../../shared/api/auth';
 import { useFormik } from 'formik';
 
@@ -46,12 +45,12 @@ const RoomPage = (): JSX.Element => {
 	useEffect(() => {
 		if(data && data?.data && data?.data.room.contractAddress) {
 			getRentStartTime(data.data.room.contractAddress).then((res) => {
-				setRentStartTime(fromUnixTime(res));
+				//setRentStartTime(fromUnixTime(res));
 				setRentStartTimeNum(res);
 			});
 
 			getRentEndTime(data.data.room.contractAddress).then((res) => {
-				setRentEndTime(fromUnixTime(res));
+				//setRentEndTime(fromUnixTime(res));
 				setRentEndTimeNum(res);
 			});
 			
