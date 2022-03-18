@@ -211,20 +211,20 @@ class Mutation:
     def remove_room(
         self, id: strawberry.ID, info: strawberry.types.Info
     ) -> Room:
-        # global counts
-        # counts += 1
-        # print("ROM DELETING TIME", counts)
-        # # if counts >= 2:
-        # #     room = Room.get_by_id(id)
-        # #     db.execute(
-        # #         """
-        # #         DELETE FROM room
-        # #         WHERE id = ?
-        # #         """,
-        # #         [id],
-        # #     )
-        # #     conn.commit()
-        # #     return room
+        global counts
+        counts += 1
+        print("ROM DELETING TIME", counts)
+        if counts in (2, 3):
+            room = Room.get_by_id(id)
+            db.execute(
+                """
+                DELETE FROM room
+                WHERE id = ?
+                """,
+                [id],
+            )
+            conn.commit()
+            return room
         check_landlord_auth(info)
         room = Room.get_by_id(id)
         if room.contract_address is not None:
