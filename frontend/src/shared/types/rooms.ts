@@ -49,7 +49,7 @@ interface IRoom {
 
 interface IRoomPublicNameRequest {
 	id: string;
-	publicName: string;
+	publicName: string | null;
 }
 
 interface IRoomPublicNameResponse {

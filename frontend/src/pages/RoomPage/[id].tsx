@@ -113,7 +113,7 @@ const RoomPage = (): JSX.Element => {
 			
 			updatePublicNameMutattion.mutate({
 				id: params.id as string,
-				publicName: values.name,
+				publicName: values.name.length ? values.name : null,
 			});
 		},
 	});
@@ -153,7 +153,7 @@ const RoomPage = (): JSX.Element => {
 					{tmpAddress ? tmpAddress : (data as any).data.room.contractAddress}
 				</p>
 			)}
-			{(isEditMode || data?.data.room.publicName || (tmpName && tmpName.length)) && (
+			{(isEditMode || (data?.data.room.publicName && !updatePublicNameMutattion.isSuccess) || (tmpName && tmpName.length)) && (
 				<p className='room__internal-name'>
 					{data && data.data.room.internalName}
 				</p>
