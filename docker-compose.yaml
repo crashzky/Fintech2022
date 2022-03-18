@@ -18,8 +18,8 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
-    volumes:
-      - ./backend/src/:/app/src/
+#    volumes:
+#      - ./backend/src/:/app/src/
     environment:
       - LANDLORD_ADDRESS
       - RPC_URL
