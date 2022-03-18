@@ -125,7 +125,7 @@ const RoomPage = (): JSX.Element => {
 	});
 
 	function getPostfix(count: number, word: string) {
-		if(count === 0)
+		if(count === 1)
 			return count + ' ' + word;
 		else
 			return count + ' ' + word + 's';
