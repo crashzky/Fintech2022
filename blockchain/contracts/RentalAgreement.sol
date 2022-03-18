@@ -185,7 +185,7 @@ contract RentalAgreement {
         }
 
         // Firstly check whether rentalRate >= 0
-        globalRealRentEndTime = globalRentStartTime + (msg.value / rentalRate) * billingPeriodDuration;
+        globalRealRentEndTime = deadline + (msg.value / rentalRate) * billingPeriodDuration;
 
         // Complete transaction and pay for the renting
         payable(globalLandlord).transfer(rentalRate);
