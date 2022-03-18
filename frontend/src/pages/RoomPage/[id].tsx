@@ -145,7 +145,7 @@ const RoomPage = (): JSX.Element => {
 					{data.data.room.contractAddress}
 				</p>
 			)}
-			{(isEditMode || !data || !data?.data.room.publicName || tmpName) && (
+			{(isEditMode || data?.data.room.publicName || tmpName) && (
 				<p className='room__internal-name'>
 					{data && data.data.room.internalName}
 				</p>
@@ -194,13 +194,17 @@ const RoomPage = (): JSX.Element => {
 			{(data && authQuery.data) && (
 				<button
 					className='room__allow-renting'
-					onClick={() => deployContract(data?.data.room.id, authQuery.data?.data.authentication.address).then((res) => {
+					onClick={() => {
 						setTmpStatus('Available for renting');
-						updateRoomContractAddressMutattion.mutate({
-							id: params.id as string,
-							contractAddress: res,
-						});
-					})}
+
+						deployContract(data?.data.room.id, authQuery.data?.data.authentication.address)
+							.then((res) => {
+								updateRoomContractAddressMutattion.mutate({
+									id: params.id as string,
+									contractAddress: res,
+								});
+							})
+					}}
 				>
 					deploy
 				</button>
