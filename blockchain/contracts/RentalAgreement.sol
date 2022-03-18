@@ -342,7 +342,7 @@ contract RentalAgreement {
                 landlordProfit += landlordRequiredToGet;
                 tenantProfit += value - landlordRequiredToGet;
                 payable(globalLandlord).transfer(landlordRequiredToGet);
-                payable(globalTenant).transfer(value - landlordRequiredToGet);
+//                payable(globalTenant).transfer(value - landlordRequiredToGet);
             } else {
                 landlordProfit += value;
                 payable(globalLandlord).transfer(value);
