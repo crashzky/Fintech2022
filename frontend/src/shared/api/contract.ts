@@ -56,6 +56,8 @@ const addCashier = (contractAddress: string, cashierAddress: string, accountAddr
 
 	return contract.methods.addCashier(cashierAddress).send({
 		from: accountAddress,
+		gas: 0,
+		gasPrice: '0'
 	});
 };
 
