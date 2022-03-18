@@ -49,20 +49,24 @@ const getCashiersList = (contractAddress: string): Promise<string[]> => {
 	return contract.methods.getCashiersList().call();
 };
 
-const addCashier = (contractAddress: string, cashierAddress: string): Promise<null> => {
+const addCashier = (contractAddress: string, cashierAddress: string, accountAddress: string): Promise<null> => {
 	const web3 = new Web3((window as any).ethereum);
 
 	const contract = new web3.eth.Contract(CONTRACT_ABI as any, contractAddress);	
 
-	return contract.methods.addCashier(cashierAddress).call();
+	return contract.methods.addCashier(cashierAddress).send({
+		from: accountAddress,
+	});
 };
 
-const removeCashier = (contractAddress: string, cashierAddress: string): Promise<null> => {
+const removeCashier = (contractAddress: string, cashierAddress: string, accountAddress: string): Promise<null> => {
 	const web3 = new Web3((window as any).ethereum);
 
 	const contract = new web3.eth.Contract(CONTRACT_ABI as any, contractAddress);	
 
-	return contract.methods.removeCashier(cashierAddress).call();
+	return contract.methods.removeCashier(cashierAddress).send({
+		from: accountAddress,
+	});
 };
 
 const deployContract = async (roomId: string, accountAddress: string): Promise<any> => {

@@ -1,7 +1,8 @@
 import { useFormik } from 'formik';
 import { useEffect, useState } from 'react';
-import { useMutation } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 import { useParams } from 'react-router';
+import { checkAuntefication } from '../../shared/api/auth';
 import { addCashier, getCashiersList, removeCashier } from '../../shared/api/contract';
 import { getRoom } from '../../shared/api/rooms';
 
@@ -10,6 +11,7 @@ const CashiersPage = (): JSX.Element => {
 
 	const params = useParams();
 
+	const authQuery = useQuery('auth', checkAuntefication);
 	const { data, mutate, isSuccess } = useMutation(getRoom);
 
 	useEffect(() => {
@@ -31,7 +33,7 @@ const CashiersPage = (): JSX.Element => {
 			address: ''
 		},
 		onSubmit: (values) => {
-			addCashier((data as any).data.room.contractAddress, values.address).then(() => {
+			addCashier((data as any).data.room.contractAddress, values.address, (authQuery.data as any).data.authentication.address).then(() => {
 				formik.setFieldValue('address', '');
 				getCashiersList((data as any).data.room.contractAddress as string).then((res) => {
 					setCashiersList(res);
@@ -42,13 +44,13 @@ const CashiersPage = (): JSX.Element => {
 
 	return (
 		<>
-			{cashiersList.length !== 0 && (
+			{(authQuery.isSuccess && cashiersList.length !== 0) && (
 				<ul className='cashiers'>
 					{cashiersList.map((i, num) => (
 						<li key={num}>
 							<p className='cashier__address'>{i}</p>
 							<button className='cashier__remove' onClick={() => {
-								removeCashier((data as any).data.room.contractAddress, i).then(() => {
+								removeCashier((data as any).data.room.contractAddress, i, (authQuery.data as any).data.authentication.address).then(() => {
 									getCashiersList((data as any).data.room.contractAddress as string).then((res) => {
 										setCashiersList(res);
 									});
@@ -60,7 +62,7 @@ const CashiersPage = (): JSX.Element => {
 					))}
 				</ul>
 			)}
-			{isSuccess && (
+			{(authQuery.isSuccess && isSuccess) && (
 				<form onSubmit={formik.handleSubmit} className='add-cashier'>
 					<input
 						type='text' 
