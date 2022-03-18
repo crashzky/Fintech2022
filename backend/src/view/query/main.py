@@ -1,3 +1,4 @@
+import time
 import typing
 
 import strawberry
@@ -58,8 +59,9 @@ class Query:
                 contract = get_contract(room["contract_address"])
                 tenant = contract.functions.getTenant().call()
                 is_rented = contract.functions.getRentedState().call()
+                end_time = contract.functions.getRentEndTime().call()
                 print("BC DATA:", tenant, is_rented, room)
-                if tenant == address or is_rented:
+                if tenant == address or time.time() >= end_time:
                     rooms.append(Room(**room))
 
         print("108-2 ROOMS:", rooms)
