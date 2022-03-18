@@ -214,10 +214,11 @@ class Mutation:
     ) -> Room:
         check_landlord_auth(info)
         room = Room.get_by_id(id)
-        contract = get_contract(room.contract_address)
-        end_time = contract.functions.getRentEndTime().call()
-        if room.contract_address is not None and end_time >= time.time():
-            raise BadRequest("Room has rented contract in progress")
+        if room.contract_address is not None:
+            contract = get_contract(room.contract_address)
+            end_time = contract.functions.getRentEndTime().call()
+            if end_time >= time.time():
+                raise BadRequest("Room has rented contract in progress")
         db.execute(
             """
             DELETE FROM room
