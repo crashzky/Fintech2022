@@ -284,8 +284,10 @@ contract RentalAgreement {
         } else if (block.timestamp > deadline) {
             revert("The operation is outdated");
         }
+        globalRealRentEndTime += (msg.value / globalRentalRate) * globalBillingPeriodDuration;
         if (
             deadline > globalRentEndTime
+            || deadline > globalRealRentEndTime
         ) {
             revert("The contract is being in not allowed state");
         }
@@ -330,7 +332,5 @@ contract RentalAgreement {
         delete cashierNonce[nonce];
         cashiers.values[cashierAddress] = newNonce;
         cashierNonce[newNonce] = cashierAddress;
-
-        globalRealRentEndTime += (msg.value / globalRentalRate) * globalBillingPeriodDuration;
     }
 }
