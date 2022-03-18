@@ -150,7 +150,7 @@ const RoomPage = (): JSX.Element => {
 					{data.data.room.contractAddress}
 				</p>
 			)}
-			{(isEditMode || data?.data.room.publicName || tmpName) && (
+			{(isEditMode || data?.data.room.publicName || (tmpName && tmpName.length)) && (
 				<p className='room__internal-name'>
 					{data && data.data.room.internalName}
 				</p>
@@ -193,9 +193,11 @@ const RoomPage = (): JSX.Element => {
 					Click me
 				</a>
 			)}
-			<button className='room__edit-public-name' onClick={() => setIsEditMode(true)}>
-				click me 2
-			</button>
+			{(authQuery.data && authQuery.data.data.authentication.address === tenant) && (
+				<button className='room__edit-public-name' onClick={() => setIsEditMode(true)}>
+					click me 2
+				</button>
+			)}
 			{(data && authQuery.data) && (
 				<button
 					className='room__allow-renting'
@@ -226,11 +228,6 @@ const RoomPage = (): JSX.Element => {
 					remove
 				</button>
 			)}
-			<p>
-				tenant:
-				{' '}
-				{tenant}
-			</p>
 		</>
 	);
 };
