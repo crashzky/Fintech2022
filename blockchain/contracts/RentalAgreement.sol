@@ -135,7 +135,7 @@ contract RentalAgreement {
         globalRentalRate = rentalRate;
         globalBillingPeriodDuration = billingPeriodDuration;
         globalRentStartTime = block.timestamp;
-        globalRentEndTime = deadline + billingsCount * billingPeriodDuration;
+        globalRentEndTime = block.timestamp + billingsCount * billingPeriodDuration;
         globalBillingsCount = billingsCount;
         globalIsRented = true;
 
