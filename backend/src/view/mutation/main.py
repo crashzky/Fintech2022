@@ -225,9 +225,11 @@ class Mutation:
         conn.commit()
         return room
 
+    @strawberry.mutation
     def create_ticket(self, ticket: InputTicket) -> Ticket:
         ticket_id = uuid.uuid4().hex
         room = Room.get_by_id(ticket.room)
+        # TODO: check address
         if not ticket.value.wei.isdigit():
             raise BadRequest("Value must be an integer")
         elif ticket.value.wei.startswith("-"):
@@ -247,6 +249,8 @@ class Mutation:
         # root_address = Account.recover_message(
         #     encode_defunct(text=message), vrs=vrs
         # )
+        contract = get_contract(room.contract_address)
+        cashiers = contract.functions.getCashiersList().call()
         db.execute(
             """
             INSERT INTO ticket(
