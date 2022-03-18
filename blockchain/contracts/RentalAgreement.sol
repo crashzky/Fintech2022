@@ -289,7 +289,7 @@ contract RentalAgreement {
         }
         if (
             deadline > globalRentEndTime
-//            || block.timestamp > payedPeriodTime
+            || block.timestamp > payedPeriodTime
         ) {
             revert("The contract is being in not allowed state");
         }
@@ -328,7 +328,7 @@ contract RentalAgreement {
         if (payedPeriodTime - globalBillingPeriodDuration < deadline) {
             // Иделаьный профит для лендрода за эту сделку, который нужен для покрытия
             // задолженности по следующему месяцу
-            uint landlordPerfectProfit = (payedPeriodTime + globalBillingPeriodDuration) / globalBillingPeriodDuration;
+            uint landlordPerfectProfit = (payedPeriodTime + globalBillingPeriodDuration) / globalBillingPeriodDuration * globalRentalRate;
             // Сумма, которую нужно получить лендлорду, чтобы получить иделаьный профит
             uint landlordRequiredToGet = landlordPerfectProfit - landlordProfit;
 
