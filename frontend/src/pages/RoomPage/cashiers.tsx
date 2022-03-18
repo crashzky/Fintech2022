@@ -2,7 +2,7 @@ import { useFormik } from 'formik';
 import { useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
 import { useParams } from 'react-router';
-import { addCashier, getCashiersList } from '../../shared/api/contract';
+import { addCashier, getCashiersList, removeCashier } from '../../shared/api/contract';
 import { getRoom } from '../../shared/api/rooms';
 
 const CashiersPage = (): JSX.Element => {
@@ -31,7 +31,7 @@ const CashiersPage = (): JSX.Element => {
 			address: ''
 		},
 		onSubmit: (values) => {
-			addCashier((data as any).data.room.contractAddress).then(() => {
+			addCashier((data as any).data.room.contractAddress, values.address).then(() => {
 				formik.resetForm();
 				getCashiersList((data as any).data.room.contractAddress as string).then((res) => {
 					setCashiersList(res);
@@ -45,7 +45,19 @@ const CashiersPage = (): JSX.Element => {
 			{cashiersList.length !== 0 && (
 				<ul className='cashiers'>
 					{cashiersList.map((i, num) => (
-						<li className='cashier__address' key={num}>{i}</li>
+						<li key={num}>
+							<p className='cashier__address'>{i}</p>
+							<button className='cashier__remove' onClick={() => {
+								removeCashier((data as any).data.room.contractAddress, i).then(() => {
+									formik.resetForm();
+									getCashiersList((data as any).data.room.contractAddress as string).then((res) => {
+										setCashiersList(res);
+									});
+								});
+							}}>
+								remove
+							</button>
+						</li>
 					))}
 				</ul>
 			)}

@@ -252,6 +252,11 @@ const RoomPage = (): JSX.Element => {
 				{' '}
 				{tmpAddress}
 			</p>
+			{(authQuery.data && tenant === authQuery.data?.data.authentication.address) && (
+				<a className='room__manage-cashiers' href={`/room/${params.id}/cashiers`}>
+					to cashiers
+				</a>
+			)}
 		</>
 	);
 };
