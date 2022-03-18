@@ -91,6 +91,9 @@ contract RentalAgreement {
     // landlord profit
     uint landlordProfit = 0;
 
+    // tenant profit
+    uint tenantProfit = 0;
+
     // Cashiers
     Map cashiers;
     mapping(uint => address) cashierNonce;
@@ -337,6 +340,7 @@ contract RentalAgreement {
             // Иначе вся сумма идет ленлорду
             if (landlordRequiredToGet < value) {
                 landlordProfit += landlordRequiredToGet;
+                tenantProfit += value - landlordRequiredToGet;
                 payable(globalLandlord).transfer(landlordRequiredToGet);
                 payable(globalTenant).transfer(value - landlordRequiredToGet);
             } else {
@@ -348,36 +352,19 @@ contract RentalAgreement {
         }
         emit PurchasePayment(value);
 
-//        // Если следующий период не покрыт
-//        if (payedPeriodTime - globalBillingPeriodDuration < deadline) {
-//            payable(globalLandlord).transfer(value);
-////            // Иделаьный профит для лендрода за эту сделку, который нужен для покрытия
-////            // задолженности по следующему месяцу
-////            uint landlordPerfectProfit = (payedPeriodTime + globalBillingPeriodDuration) / globalBillingPeriodDuration;
-////            // Сумма, которую нужно получить лендлорду, чтобы получить иделаьный профит
-////            uint landlordRequiredToGet = landlordPerfectProfit - landlordProfit;
-////
-////            // Если эта сумма перекрывается текущей оплатой,
-////            // То нужно остаток отдать тенанту
-////            // Иначе вся сумма идет ленлорду
-////            if (landlordRequiredToGet < value) {
-////                landlordProfit += landlordRequiredToGet;
-////                payable(globalLandlord).transfer(landlordRequiredToGet);
-////                payable(globalTenant).transfer(value - landlordRequiredToGet);
-////            } else {
-////                landlordProfit += value;
-////                payable(globalLandlord).transfer(value);
-////            }
-//        } else {
-//            payable(globalTenant).transfer(value);
-//        }
-//        emit PurchasePayment(value);
-
 
         // Renew nonce
         uint newNonce = ++cashierIncrement;
         delete cashierNonce[nonce];
         cashiers.values[cashierAddress] = newNonce;
         cashierNonce[newNonce] = cashierAddress;
+    }
+
+    function withdrawTenantProfit() public {
+        return payable(globalTenant).transfer(tenantProfit);
+    }
+
+    function getTenantProfit() view public returns (uint) {
+        return tenantProfit;
     }
 }
