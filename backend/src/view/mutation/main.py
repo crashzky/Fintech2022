@@ -235,6 +235,8 @@ class Mutation:
         address = someone_auth(info)
         ticket_id = uuid.uuid4().hex
         room = Room.get_by_id(ticket.room)
+        if room.contract_address is None:
+            raise BadRequest("Room does not have a contract")
         contract = get_contract(room.contract_address)
         # TODO: check address
         if not ticket.value.wei.isdigit():
