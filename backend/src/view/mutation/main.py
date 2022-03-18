@@ -238,6 +238,7 @@ class Mutation:
         if room.contract_address is None:
             raise BadRequest("Room does not have a contract")
         contract = get_contract(room.contract_address)
+
         # TODO: check address
         if not ticket.value.wei.isdigit():
             raise BadRequest("Value must be an integer")
@@ -266,6 +267,8 @@ class Mutation:
         # )
         contract = get_contract(room.contract_address)
         cashiers = contract.functions.getCashiersList().call()
+        if address not in cashiers:
+            raise BadRequest("This method is available only for the cashiers")
 
         db.execute(
             """
