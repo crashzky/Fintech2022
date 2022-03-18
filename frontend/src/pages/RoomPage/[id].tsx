@@ -71,6 +71,11 @@ const RoomPage = (): JSX.Element => {
 			navigate('/rooms');
 	}, [removeRoomMutattion.isSuccess]);
 
+	useEffect(() => {
+		if(isEditMode && data && data?.data && data?.data.room.publicName)
+			formik.setFieldValue('name', data?.data.room.publicName);
+	}, [isEditMode]);
+
 	function getStatus() {
 		const room = data?.data ? data?.data.room : null;
 
@@ -221,6 +226,11 @@ const RoomPage = (): JSX.Element => {
 					remove
 				</button>
 			)}
+			<p>
+				tenant:
+				{' '}
+				{tenant}
+			</p>
 		</>
 	);
 };
