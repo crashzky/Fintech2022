@@ -167,11 +167,11 @@ const RoomPage = (): JSX.Element => {
 						{tenant}
 					</p>
 					<p className='room__rent-start'>
-						{format(rentStartTime as Date, 'iii, d LLL yyyy kk:mm:ss ')}
+						{rentStartTime && format(rentStartTime as Date, 'iii, d LLL yyyy kk:mm:ss ')}
 						{' GMT'}
 					</p>
 					<p className='room__rent-end'>
-						{format(rentEndTime as Date, 'iii, d LLL yyyy kk:mm:ss ')}
+						{rentEndTime && format(rentEndTime as Date, 'iii, d LLL yyyy kk:mm:ss ')}
 						{' GMT'}
 					</p>
 					<p className='room__billing-period'>
@@ -243,6 +243,16 @@ const RoomPage = (): JSX.Element => {
 				tenant:
 				{' '}
 				{tenant}
+			</p>
+			<p>
+				rentStartTime:
+				{' '}
+				{rentStartTime}
+			</p>
+			<p>
+				rentEndTime:
+				{' '}
+				{rentEndTime}
 			</p>
 		</>
 	);
