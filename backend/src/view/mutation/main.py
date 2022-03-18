@@ -211,6 +211,9 @@ class Mutation:
     def remove_room(
         self, id: strawberry.ID, info: strawberry.types.Info
     ) -> Room:
+        global counts
+        counts += 1
+        print("ROM DELETING TIME", counts)
         check_landlord_auth(info)
         room = Room.get_by_id(id)
         if room.contract_address is not None:
