@@ -85,7 +85,6 @@ contract RentalAgreement {
     uint globalBillingPeriodDuration;
     uint globalRentStartTime;
     uint globalRentEndTime;
-    uint globalRealRentEndTime;
     uint globalBillingsCount;
     bool globalIsRented = false;
 
@@ -187,8 +186,6 @@ contract RentalAgreement {
             revert("Incorrect deposit");
         }
 
-        // Firstly check whether rentalRate >= 0
-        globalRealRentEndTime = deadline + (msg.value / rentalRate) * billingPeriodDuration;
         landlordProfit += rentalRate;
 
         // Complete transaction and pay for the renting
@@ -292,7 +289,7 @@ contract RentalAgreement {
         }
         if (
             deadline > globalRentEndTime
-            || deadline > payedPeriodTime
+//            || deadline > payedPeriodTime
         ) {
             revert("The contract is being in not allowed state");
         }
