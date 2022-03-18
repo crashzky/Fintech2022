@@ -61,6 +61,20 @@ interface IRoomPublicNameResponse {
 	}
 }
 
+interface ISetRoomContractAddressRequest {
+	id: string;
+	contractAddress: string;
+}
+
+interface ISetRoomContractAddressResponse {
+	data: {
+		setRoomContractAddress: {
+			id: string;
+			contractAddress: string;
+		}
+	}
+}
+
 export type {
 	ICreateRoomRequest,
 	ICreateRoomResponse,
@@ -70,5 +84,7 @@ export type {
 	IGetRoomsResponse,
 	IRoom,
 	IRoomPublicNameRequest,
-	IRoomPublicNameResponse
+	IRoomPublicNameResponse,
+	ISetRoomContractAddressRequest,
+	ISetRoomContractAddressResponse,
 };

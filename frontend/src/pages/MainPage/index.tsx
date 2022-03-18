@@ -2,6 +2,7 @@ import Web3 from 'web3';
 import { useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
 import { authenticate, checkAuntefication, requestAuthentication } from '../../shared/api/auth';
+import { deployContract } from '../../shared/api/contract';
 
 const MainPage = (): JSX.Element => {
 	const [accountAddress, setAccountAddress] = useState(null);

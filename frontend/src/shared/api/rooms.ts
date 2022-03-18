@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { API_URL } from '../consts/api';
 import { ICreateRoomRequest, ICreateRoomResponse, IGetRoomRequest, IGetRoomResponse, IGetRoomsResponse,
-	IRoomPublicNameRequest, IRoomPublicNameResponse, IUpdateRoomRequest } from '../types/rooms';
+	IRoomPublicNameRequest, IRoomPublicNameResponse, ISetRoomContractAddressRequest, ISetRoomContractAddressResponse, IUpdateRoomRequest } from '../types/rooms';
 
 axios.defaults.baseURL = API_URL;
 
@@ -90,10 +90,26 @@ const setRoomPublicName = (data: IRoomPublicNameRequest): Promise<IRoomPublicNam
 	}).then((res) => res.data);
 };
 
+const setRoomContractAddress = (data: ISetRoomContractAddressRequest): Promise<ISetRoomContractAddressResponse> => {
+	return axios.post('', {
+		query: `
+			mutation {
+				setRoomContractAddress(
+					id: "<room-id>",
+					contractAddress: "<contract-address>"
+				) {
+					id, contractAddress
+				}
+			}
+		`
+	}).then((res) => res.data);
+};
+
 export {
 	createRoom,
 	getRoom,
 	updateRoom,
 	getRooms,
 	setRoomPublicName,
+	setRoomContractAddress,
 };

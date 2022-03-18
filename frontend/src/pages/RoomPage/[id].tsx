@@ -1,8 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';
-import { getRoom, setRoomPublicName } from '../../shared/api/rooms';
+import { getRoom, setRoomContractAddress, setRoomPublicName } from '../../shared/api/rooms';
 import { useEffect, useState } from 'react';
-import { getRentalRate, getRentEndTime, getRentStartTime, getTenant } from '../../shared/api/contract';
+import { deployContract, getRentalRate, getRentEndTime, getRentStartTime, getTenant } from '../../shared/api/contract';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import { format, intervalToDuration, Duration } from 'date-fns';
 import { checkAuntefication } from '../../shared/api/auth';
@@ -16,7 +16,6 @@ const RoomPage = (): JSX.Element => {
 
 	const [rentStartTime, setRentStartTime] = useState<Date>();
 	const [rentEndTime, setRentEndTime] = useState<Date>();
-	const [rentEndTimeNum, setRentEndTimeNum] = useState<number>();
 	const [tenant, setTenant] = useState<string>();
 	const [rentalRate, setRentalRate] = useState<number>();
 	const [interval, setInterval] = useState<Duration>();
@@ -25,12 +24,13 @@ const RoomPage = (): JSX.Element => {
 	const authQuery = useQuery('auth', checkAuntefication);
 	const { mutate, data } = useMutation(getRoom);
 	const updatePublicNameMutattion = useMutation(setRoomPublicName);
+	const updateRoomContractAddressMutattion = useMutation(setRoomContractAddress);
 
 	useEffect(() => {
 		mutate({
 			id: params.id as string,
 		});
-	}, []);
+	}, [updateRoomContractAddressMutattion.isSuccess]);
 
 	useEffect(() => {
 		if(authQuery.data?.data.authentication.isLandlord) 
@@ -45,7 +45,6 @@ const RoomPage = (): JSX.Element => {
 
 			getRentEndTime(data.data.room.contractAddress).then((res) => {
 				setRentEndTime(fromUnixTime(res));
-				setRentEndTimeNum(res);
 			});
 		}
 		if(data && data?.data && data.data.room.contractAddress && (getStatus() === 'Rented' || getStatus() === 'Rent ended')) {
@@ -72,7 +71,7 @@ const RoomPage = (): JSX.Element => {
 				return 'Unavailable for renting';
 			else if(!rentalRate && !room.publicName)
 				return 'Available for renting';
-			else if(rentEndTimeNum && rentEndTimeNum > Date.now())
+			else if(rentEndTime && rentEndTime > new Date(Date.now()))
 				return 'Rented';
 			else
 				return 'Rent ended';
@@ -136,9 +135,11 @@ const RoomPage = (): JSX.Element => {
 					{data.data.room.contractAddress}
 				</p>
 			)}
-			<p className='room__internal-name '>
-				{data && data.data.room.internalName}
-			</p>
+			{isEditMode && (
+				<p className='room__internal-name'>
+					{data && data.data.room.internalName}
+				</p>
+			)}
 			
 			{/*(data && data?.data && (getStatus() === 'Rented' || getStatus() === 'Rent ended')) && (
 				<>
@@ -180,6 +181,19 @@ const RoomPage = (): JSX.Element => {
 			<button className='room__edit-public-name' onClick={() => setIsEditMode(true)}>
 				click me 2
 			</button>
+			{(data && authQuery.data) && (
+				<button
+					className='room__allow-renting'
+					onClick={() => deployContract(data?.data.room.id, authQuery.data?.data.authentication.address).then((res) => {
+						updateRoomContractAddressMutattion.mutate({
+							id: params.id as string,
+							contractAddress: res,
+						});
+					})}
+				>
+					deploy
+				</button>
+			)}
 		</>
 	);
 };
