@@ -32,7 +32,7 @@ const CashiersPage = (): JSX.Element => {
 		},
 		onSubmit: (values) => {
 			addCashier((data as any).data.room.contractAddress, values.address).then(() => {
-				formik.resetForm();
+				formik.setFieldValue('address', '');
 				getCashiersList((data as any).data.room.contractAddress as string).then((res) => {
 					setCashiersList(res);
 				});
@@ -49,7 +49,6 @@ const CashiersPage = (): JSX.Element => {
 							<p className='cashier__address'>{i}</p>
 							<button className='cashier__remove' onClick={() => {
 								removeCashier((data as any).data.room.contractAddress, i).then(() => {
-									formik.resetForm();
 									getCashiersList((data as any).data.room.contractAddress as string).then((res) => {
 										setCashiersList(res);
 									});
