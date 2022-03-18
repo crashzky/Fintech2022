@@ -1,6 +1,6 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';
-import { getRoom, setRoomContractAddress, setRoomPublicName } from '../../shared/api/rooms';
+import { getRoom, removeRoom, setRoomContractAddress, setRoomPublicName } from '../../shared/api/rooms';
 import { useEffect, useState } from 'react';
 import { deployContract, getRentalRate, getRentEndTime, getRentStartTime, getTenant } from '../../shared/api/contract';
 import fromUnixTime from 'date-fns/fromUnixTime';
@@ -11,6 +11,7 @@ import { useFormik } from 'formik';
 const RoomPage = (): JSX.Element => {
 	const [isLandlord, setIsLandlord] = useState(false);
 	const params = useParams();
+	const navigate = useNavigate();
 
 	const [isEditMode, setIsEditMode] = useState(false);
 
@@ -20,11 +21,13 @@ const RoomPage = (): JSX.Element => {
 	const [rentalRate, setRentalRate] = useState<number>();
 	const [interval, setInterval] = useState<Duration>();
 	const [tmpName, setTmpName] = useState('');
+	const [tmpStatus, setTmpStatus] = useState('');
 
 	const authQuery = useQuery('auth', checkAuntefication);
 	const { mutate, data } = useMutation(getRoom);
 	const updatePublicNameMutattion = useMutation(setRoomPublicName);
 	const updateRoomContractAddressMutattion = useMutation(setRoomContractAddress);
+	const removeRoomMutattion = useMutation(removeRoom);
 
 	useEffect(() => {
 		mutate({
@@ -63,11 +66,18 @@ const RoomPage = (): JSX.Element => {
 			setInterval(intervalToDuration({ start: rentStartTime as Date, end: rentEndTime as Date }));
 	}, [rentStartTime, rentEndTime]);
 
+	useEffect(() => {
+		if(removeRoomMutattion.isSuccess)
+			navigate('/rooms');
+	}, [removeRoomMutattion.isSuccess]);
+
 	function getStatus() {
 		const room = data?.data ? data?.data.room : null;
 
 		if(room) {
-			if(!room.contractAddress)
+			if(tmpStatus)
+				return tmpStatus;
+			else if(!room.contractAddress)
 				return 'Unavailable for renting';
 			else if(!rentalRate && !room.publicName)
 				return 'Available for renting';
@@ -135,7 +145,7 @@ const RoomPage = (): JSX.Element => {
 					{data.data.room.contractAddress}
 				</p>
 			)}
-			{isEditMode && (
+			{(isEditMode || !data || !data?.data.room.publicName || tmpName) && (
 				<p className='room__internal-name'>
 					{data && data.data.room.internalName}
 				</p>
@@ -185,6 +195,7 @@ const RoomPage = (): JSX.Element => {
 				<button
 					className='room__allow-renting'
 					onClick={() => deployContract(data?.data.room.id, authQuery.data?.data.authentication.address).then((res) => {
+						setTmpStatus('Available for renting');
 						updateRoomContractAddressMutattion.mutate({
 							id: params.id as string,
 							contractAddress: res,
@@ -195,7 +206,14 @@ const RoomPage = (): JSX.Element => {
 				</button>
 			)}
 			{(authQuery.data && authQuery.data.data.authentication.isLandlord && data && !data.data.room.contractAddress) && (
-				<button className='room__remove'>
+				<button
+					className='room__remove'
+					onClick={() => {
+						removeRoomMutattion.mutate({
+							id: params.id as string,
+						});
+					}}
+				>
 					remove
 				</button>
 			)}

@@ -75,6 +75,21 @@ interface ISetRoomContractAddressResponse {
 	}
 }
 
+interface IRemoveRoomRequest {
+	id: string;
+}
+
+interface IRemoveRoomResponse {
+	data: {
+		removeRoom: {
+			id: string;
+			internalName: string;
+			area: number;
+			location: string;
+		}
+	}
+}
+
 export type {
 	ICreateRoomRequest,
 	ICreateRoomResponse,
@@ -87,4 +102,6 @@ export type {
 	IRoomPublicNameResponse,
 	ISetRoomContractAddressRequest,
 	ISetRoomContractAddressResponse,
+	IRemoveRoomRequest,
+	IRemoveRoomResponse,
 };

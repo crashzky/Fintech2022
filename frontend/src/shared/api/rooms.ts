@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { API_URL } from '../consts/api';
 import { ICreateRoomRequest, ICreateRoomResponse, IGetRoomRequest, IGetRoomResponse, IGetRoomsResponse,
+	IRemoveRoomRequest,
+	IRemoveRoomResponse,
 	IRoomPublicNameRequest, IRoomPublicNameResponse, ISetRoomContractAddressRequest, ISetRoomContractAddressResponse, IUpdateRoomRequest } from '../types/rooms';
 
 axios.defaults.baseURL = API_URL;
@@ -105,6 +107,18 @@ const setRoomContractAddress = (data: ISetRoomContractAddressRequest): Promise<I
 	}).then((res) => res.data);
 };
 
+const removeRoom = (data: IRemoveRoomRequest): Promise<IRemoveRoomResponse> => {
+	return axios.post('', {
+		query: `
+			mutation {
+				removeRoom(id: "${data.id}") {
+					id, internalName, area, location
+				}
+			}
+		`
+	}).then((res) => res.data);
+};
+
 export {
 	createRoom,
 	getRoom,
@@ -112,4 +126,5 @@ export {
 	getRooms,
 	setRoomPublicName,
 	setRoomContractAddress,
+	removeRoom,
 };
