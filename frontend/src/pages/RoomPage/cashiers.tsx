@@ -76,6 +76,11 @@ const CashiersPage = (): JSX.Element => {
 					</button>
 				</form>
 			)}
+		<p>
+			me:
+			{' '}
+			{authQuery.data && authQuery.data.data.authentication.address}
+		</p>
 		</>
 	);
 };
