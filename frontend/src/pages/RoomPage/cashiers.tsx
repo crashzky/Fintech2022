@@ -1,3 +1,4 @@
+import { useFormik } from 'formik';
 import { useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
 import { useParams } from 'react-router';
@@ -25,15 +26,36 @@ const CashiersPage = (): JSX.Element => {
 		}
 	}, [isSuccess]);
 
+	const formik = useFormik({
+		initialValues: {
+			address: ''
+		},
+		onSubmit: (values) => {
+
+		}
+	});
+
 	return (
 		<>
-			{cashiersList.length && (
+			{cashiersList.length !== 0 && (
 				<ul className='cashiers'>
 					{cashiersList.map((i, num) => (
 						<li className='cashier__address' key={num}>{i}</li>
 					))}
 				</ul>
 			)}
+			<form onSubmit={formik.handleSubmit} className='add-cashier'>
+				<input
+					type='text' 
+					name='address'
+					className='add-cashier__address'
+					onChange={formik.handleChange}
+					value={formik.values.address}
+					required />
+				<button type='submit' className='add-cashier__submit'>
+					submit
+				</button>
+			</form>
 		</>
 	);
 };
