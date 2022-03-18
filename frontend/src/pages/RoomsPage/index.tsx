@@ -75,7 +75,7 @@ const RoomsPage = (): JSX.Element => {
 								{i.publicName ? i.publicName : i.internalName}
 							</p>
 							<p className='room-card__status'>
-								{getStatus(i)}
+								
 							</p>
 							<a className='room-card__details' href={'/room/' + i.id}>
 								click me
