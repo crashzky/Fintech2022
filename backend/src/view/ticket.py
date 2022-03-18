@@ -28,6 +28,7 @@ class Ticket:
                 cashier_sig_v,
                 cashier_sig_r,
                 cashier_sig_s
+            FROM ticket
             WHERE id = ?
             """, [id]
         )
