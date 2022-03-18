@@ -15,6 +15,8 @@ const RoomPage = (): JSX.Element => {
 
 	const [isEditMode, setIsEditMode] = useState(false);
 
+	const [rentStartTimeNum, setRentStartTimeNum] = useState<number>();
+	const [rentEndTimeNum, setRentEndTimeNum] = useState<number>();
 	const [rentStartTime, setRentStartTime] = useState<Date>();
 	const [rentEndTime, setRentEndTime] = useState<Date>();
 	const [tenant, setTenant] = useState<string>();
@@ -45,10 +47,12 @@ const RoomPage = (): JSX.Element => {
 		if(data && data?.data && data?.data.room.contractAddress) {
 			getRentStartTime(data.data.room.contractAddress).then((res) => {
 				setRentStartTime(fromUnixTime(res));
+				setRentStartTimeNum(res);
 			});
 
 			getRentEndTime(data.data.room.contractAddress).then((res) => {
 				setRentEndTime(fromUnixTime(res));
+				setRentEndTimeNum(res);
 			});
 			
 			getRentalRate(data.data.room.contractAddress).then((res) => {
@@ -65,8 +69,8 @@ const RoomPage = (): JSX.Element => {
 	}, [data]);
 
 	useEffect(() => {
-		if(rentStartTime && rentEndTime)
-			setInterval(intervalToDuration({ start: rentStartTime as Date, end: rentEndTime as Date }));
+		/*if(rentStartTime && rentEndTime)
+			setInterval(intervalToDuration({ start: rentStartTime as Date, end: rentEndTime as Date }));*/
 	}, [rentStartTime, rentEndTime]);
 
 	useEffect(() => {
@@ -166,7 +170,7 @@ const RoomPage = (): JSX.Element => {
 					<p className='room__tenant'>
 						{tenant}
 					</p>
-					<p className='room__rent-start'>
+					{/*<p className='room__rent-start'>
 						{rentStartTime && format(rentStartTime as Date, 'iii, d LLL yyyy kk:mm:ss ')}
 						{' GMT'}
 					</p>
@@ -186,7 +190,7 @@ const RoomPage = (): JSX.Element => {
 						{(interval && interval.minutes) && (interval.minutes + ' minutes')}
 						{(interval && interval.minutes && interval.seconds) && ' '}
 						{(interval && interval.seconds) && (interval.seconds + ' seconds')}
-					</p>
+					</p>*/}
 					<p className='room__rental-rate'>
 						{rentalRate}
 						{' wei'}
@@ -253,6 +257,16 @@ const RoomPage = (): JSX.Element => {
 				rentEndTime:
 				{' '}
 				{rentEndTime}
+			</p>
+			<p>
+				rentStartTimeNum:
+				{' '}
+				{rentStartTimeNum}
+			</p>
+			<p>
+				rentEndTimeNum:
+				{' '}
+				{rentEndTimeNum}
 			</p>
 		</>
 	);
