@@ -1,4 +1,4 @@
-FROM python:3.9-alpine
+FROM deknowny/mall-dependencies
 
 # Copy source code
 COPY backend/src /app/src
@@ -11,14 +11,6 @@ WORKDIR /app
 
 # Reserve the port
 EXPOSE 8000
-
-RUN /usr/local/bin/python3.9 -m pip install --upgrade setuptools==59.8.0
-
-# Install dependencies for alpine
-RUN apk add make gcc musl-dev g++ zlib-dev libffi-dev py3-setuptools
-
-# Install project dependencies
-RUN python -m pip install -r requirements.txt
 
 # Run the server
 ENTRYPOINT ["python", "-m", "src"]

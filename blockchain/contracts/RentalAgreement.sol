@@ -85,13 +85,20 @@ contract RentalAgreement {
     uint globalBillingPeriodDuration;
     uint globalRentStartTime;
     uint globalRentEndTime;
+    uint globalBillingsCount;
     bool globalIsRented = false;
+
+    // landlord profit
+    uint landlordProfit = 0;
+
+    // tenant profit
+    uint tenantProfit = 0;
 
     // Cashiers
     Map cashiers;
-    address[] public cashiersList;
+    mapping(uint => address) cashierNonce;
     uint cashierIncrement = 1;
-    uint cashierDecrement = 0;
+    uint cashierNonceIncrement = 1;
 
     // For pay
     bool Paid = false;
@@ -133,7 +140,8 @@ contract RentalAgreement {
         globalRentalRate = rentalRate;
         globalBillingPeriodDuration = billingPeriodDuration;
         globalRentStartTime = block.timestamp;
-        globalRentEndTime = globalRentStartTime + billingsCount * billingPeriodDuration;
+        globalRentEndTime = block.timestamp + billingsCount * billingPeriodDuration;
+        globalBillingsCount = billingsCount;
         globalIsRented = true;
 
         // Verify sign
@@ -181,6 +189,8 @@ contract RentalAgreement {
             revert("Incorrect deposit");
         }
 
+        landlordProfit += rentalRate;
+
         // Complete transaction and pay for the renting
         payable(globalLandlord).transfer(rentalRate);
     }
@@ -214,18 +224,21 @@ contract RentalAgreement {
             revert("Zero address cannot become a cashier");
         }
         // Commit it
+        uint newNonce = ++cashierIncrement;
         if (cashiers.inserted[addr]) {
-            cashiers.values[addr] = ++cashierIncrement;
+            cashiers.values[addr] = newNonce;
         } else {
             cashiers.inserted[addr] = true;
-            cashiers.values[addr] = ++cashierIncrement;
+            cashiers.values[addr] = newNonce;
             cashiers.indexOf[addr] = cashiers.keys.length;
             cashiers.keys.push(addr);
         }
+
+        cashierNonce[newNonce] = addr;
     }
 
     // Check if cashier exists
-    function getCashierNonce(address cashierAddr) view public returns (uint) {
+    function getCashierNonce(address cashierAddr) public view returns (uint) {
         return cashiers.values[cashierAddr];
     }
 
@@ -259,10 +272,106 @@ contract RentalAgreement {
         return cashiers.keys;
     }
 
-    function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) payable public {
-        payable(globalTenant).transfer(value);
+    function getIsRentActive() view public returns (bool) {
+        uint payedPeriodTime = globalRentStartTime + (landlordProfit / globalRentalRate)*globalBillingPeriodDuration;
+        return !(block.timestamp > globalRentEndTime || block.timestamp > payedPeriodTime);
+    }
+
+    function pay(
+        uint deadline,
+        uint nonce,
+        uint value,
+        Sign memory cashierSign
+    ) payable public {
+        // Renew rent end time
+
+        address cashierAddress = cashierNonce[nonce];
+        // Таймтамп на месяце, который полностью оплачен
+        uint payedPeriodTime = globalRentStartTime + (landlordProfit / globalRentalRate)*globalBillingPeriodDuration;
+        if (cashierAddress == address(0)) {
+            revert("Invalid nonce");
+        } else if (msg.value != value) {
+            revert("Invalid value");
+        } else if (block.timestamp > deadline) {
+            revert("The operation is outdated");
+        }
+        if (
+            deadline > globalRentEndTime
+            || deadline > payedPeriodTime
+        ) {
+            revert("The contract is being in not allowed state");
+        }
+
+        // Verify sign
+        bytes32 EIP712Domain = keccak256(
+            abi.encode(
+                keccak256(
+                    "EIP712Domain(string name,string version,address verifyingContract)"
+                ),
+                keccak256(bytes("Rental Agreement")),
+                keccak256(bytes("1.0")),
+                address(this)
+            )
+        );
+
+
+        bytes32 cashierSignKeccak = keccak256(
+            abi.encode(
+                keccak256("Ticket(uint256 deadline,uint256 nonce,uint256 value)"),
+                deadline,
+                nonce,
+                value
+            )
+        );
+
+
+        bytes32 messageHash = keccak256(abi.encodePacked("\x19\x01", EIP712Domain, cashierSignKeccak));
+        address signer = ecrecover(messageHash, cashierSign.v, cashierSign.r, cashierSign.s);
+
+        if (cashierAddress != signer) {
+            revert("Unknown cashier");
+        }
+
+        // Если следующий период не покрыт
+        if (payedPeriodTime - globalBillingPeriodDuration < deadline) {
+            // Иделаьный профит для лендрода за эту сделку, который нужен для покрытия
+            // задолженности по следующему месяцу
+            uint landlordPerfectProfit = (payedPeriodTime + globalBillingPeriodDuration) / globalBillingPeriodDuration * globalRentalRate;
+            // Сумма, которую нужно получить лендлорду, чтобы получить иделаьный профит
+            uint landlordRequiredToGet = landlordPerfectProfit - landlordProfit;
+
+            // Если эта сумма перекрывается текущей оплатой,
+            // То нужно остаток отдать тенанту
+            // Иначе вся сумма идет ленлорду
+            if (landlordRequiredToGet < value) {
+                landlordProfit += landlordRequiredToGet;
+                tenantProfit += value - landlordRequiredToGet;
+                payable(globalLandlord).transfer(landlordRequiredToGet);
+//                payable(globalTenant).transfer(value - landlordRequiredToGet);
+            } else {
+                landlordProfit += value;
+                payable(globalLandlord).transfer(value);
+            }
+        } else {
+            tenantProfit += value;
+            payable(globalTenant).transfer(value);
+        }
         emit PurchasePayment(value);
-        Paid = true;
+
+
+        // Renew nonce
+        uint newNonce = ++cashierIncrement;
+        delete cashierNonce[nonce];
+        cashiers.values[cashierAddress] = newNonce;
+        cashierNonce[newNonce] = cashierAddress;
+    }
+
+    function withdrawTenantProfit() public {
+        return payable(globalTenant).transfer(tenantProfit);
+    }
+
+    function getTenantProfit() view public returns (uint) {
+        return tenantProfit;
     }
 
 //    address[] cashiers;

@@ -15,6 +15,7 @@ from src.view.auth import Authentication
 from src.view.room import InputRoom, Room
 from src.view.signature import InputSignature
 from src.view.ticket import InputTicket, Ticket
+from src.view.utils import Wei
 
 used_signs = []
 counts = 0
@@ -213,7 +214,10 @@ class Mutation:
         check_landlord_auth(info)
         room = Room.get_by_id(id)
         if room.contract_address is not None:
-            raise BadRequest("Room has rented contract in progress")
+            contract = get_contract(room.contract_address)
+            is_rent_active = contract.functions.getIsRentActive().call()
+            if is_rent_active:
+                raise BadRequest("Room has rented contract in progress")
         db.execute(
             """
             DELETE FROM room
@@ -224,9 +228,11 @@ class Mutation:
         conn.commit()
         return room
 
+    @strawberry.mutation
     def create_ticket(self, ticket: InputTicket) -> Ticket:
         ticket_id = uuid.uuid4().hex
         room = Room.get_by_id(ticket.room)
+        # TODO: check address
         if not ticket.value.wei.isdigit():
             raise BadRequest("Value must be an integer")
         elif ticket.value.wei.startswith("-"):
@@ -246,6 +252,8 @@ class Mutation:
         # root_address = Account.recover_message(
         #     encode_defunct(text=message), vrs=vrs
         # )
+        contract = get_contract(room.contract_address)
+        cashiers = contract.functions.getCashiersList().call()
         db.execute(
             """
             INSERT INTO ticket(
@@ -268,7 +276,7 @@ class Mutation:
                 :cashier_sig_s,
             )
             """, {
-                "id": uuid.uuid4().hex,
+                "id": ticket_id,
                 "room": ticket.room,
                 "value": ticket.value.wei,
                 "deadline": ticket.deadline.datetime,
@@ -279,18 +287,4 @@ class Mutation:
             }
         )
         conn.commit()
-        db.execute(
-            """
-            SELECT 
-                id,
-                room,
-                value,
-                deadline,
-                nonce,
-                cashier_sig_v,
-                cashier_sig_r,
-                cashier_sig_s
-            WHERE id = ?
-            """, [ticket_id]
-        )
-        return db.fetchone()
+        return Ticket.get_by_id(ticket_id)
