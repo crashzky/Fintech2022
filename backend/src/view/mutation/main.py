@@ -1,4 +1,5 @@
 import datetime
+import time
 import typing
 import uuid
 
@@ -211,23 +212,11 @@ class Mutation:
     def remove_room(
         self, id: strawberry.ID, info: strawberry.types.Info
     ) -> Room:
-        global counts
-        counts += 1
-        print("ROM DELETING TIME", counts)
-        if counts in (2, ):
-            room = Room.get_by_id(id)
-            db.execute(
-                """
-                DELETE FROM room
-                WHERE id = ?
-                """,
-                [id],
-            )
-            conn.commit()
-            return room
         check_landlord_auth(info)
         room = Room.get_by_id(id)
-        if room.contract_address is not None:
+        contract = get_contract(room.contract_address)
+        end_time = contract.functions.getRentEndTime().call()
+        if room.contract_address is not None and end_time >= time.time():
             raise BadRequest("Room has rented contract in progress")
         db.execute(
             """
