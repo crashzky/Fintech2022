@@ -67,5 +67,6 @@ class Query:
     def room(self, id: strawberry.ID) -> Room:
         return Room.get_by_id(id)
 
+    @strawberry.field
     def ticket(self, id: strawberry.ID) -> Ticket:
-        pass
+        return Ticket.get_by_id(id)

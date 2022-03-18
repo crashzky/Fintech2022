@@ -28,15 +28,16 @@ class Ticket:
                 cashier_sig_v,
                 cashier_sig_r,
                 cashier_sig_s
+            FROM ticket
             WHERE id = ?
             """, [id]
         )
         db_ticket = db.fetchone()
         return Ticket(
             id=db_ticket["id"],
-            room=Room(id=db_ticket["room"]),
+            room=Room.get_by_id(id=db_ticket["room"]),
             value=Wei(wei=db_ticket["value"]),
-            deadline=db_ticket["deadline"],
+            deadline=Datetime(datetime=db_ticket["deadline"]),
             nonce=Nonce(value=db_ticket["nonce"]),
             cashier_signature=Signature(
                 v=db_ticket["cashier_sig_v"],

@@ -135,15 +135,6 @@ contract RentalAgreement {
             revert("The contract is being in not allowed state");
         }
 
-        // Save last settings to global scope
-        globalTenant = tenant;
-        globalRentalRate = rentalRate;
-        globalBillingPeriodDuration = billingPeriodDuration;
-        globalRentStartTime = block.timestamp;
-        globalRentEndTime = block.timestamp + billingsCount * billingPeriodDuration;
-        globalBillingsCount = billingsCount;
-        globalIsRented = true;
-
         // Verify sign
         bytes32 EIP712Domain = keccak256(
             abi.encode(
@@ -190,9 +181,18 @@ contract RentalAgreement {
         }
 
         landlordProfit += rentalRate;
+        // Save last settings to global scope
+        globalTenant = tenant;
+        globalRentalRate = rentalRate;
+        globalBillingPeriodDuration = billingPeriodDuration;
+        globalRentStartTime = block.timestamp;
+        globalRentEndTime = block.timestamp + billingsCount * billingPeriodDuration;
+        globalBillingsCount = billingsCount;
+        globalIsRented = true;
 
         // Complete transaction and pay for the renting
         payable(globalLandlord).transfer(rentalRate);
+
     }
 
     function getTenant() view public returns (address) {
@@ -270,11 +270,6 @@ contract RentalAgreement {
 
     function getCashiersList() view public returns (address[] memory) {
         return cashiers.keys;
-    }
-
-    function getIsRentActive() view public returns (bool) {
-        uint payedPeriodTime = globalRentStartTime + (landlordProfit / globalRentalRate)*globalBillingPeriodDuration;
-        return !(block.timestamp > globalRentEndTime || block.timestamp > payedPeriodTime);
     }
 
     function pay(
