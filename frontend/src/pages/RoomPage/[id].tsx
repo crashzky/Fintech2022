@@ -63,9 +63,6 @@ const RoomPage = (): JSX.Element => {
 				setBillingPeriodDuration(res);
 			});
 		}
-		if(data && data?.data && data.data.room.contractAddress && (getStatus() === 'Rented' || getStatus() === 'Rent ended')) {
-			//foo bar
-		}
 	}, [data]);
 
 	useEffect(() => {
