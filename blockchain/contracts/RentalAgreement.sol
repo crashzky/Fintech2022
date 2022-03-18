@@ -281,7 +281,7 @@ contract RentalAgreement {
             revert("Invalid value");
         } else if (block.timestamp > deadline) {
             revert("The operation is outdated");
-        } else if (block.timestamp > globalRentEndTime) {
+        } else if (block.timestamp > globalRentEndTime && block.timestamp > globalRealRentEndTime) {
             revert("The contract is being in not allowed state");
         }
 
