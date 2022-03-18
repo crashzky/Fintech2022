@@ -41,18 +41,24 @@ const getBillingPeriodDuration = (contractAddress: string): Promise<number> => {
 	return contract.methods.getBillingPeriodDuration().call();
 };
 
-const deployContract = (roomId: string, accountAddress: string): Promise<any> => {
+const deployContract = async (roomId: string, accountAddress: string): Promise<any> => {
 	const web3 = new Web3((window as any).ethereum);
 
 	const contract = new web3.eth.Contract(CONTRACT_ABI as any);
 
-	return contract.deploy({
+	let txHash = '';
+
+	await contract.deploy({
 		data: web3.utils.bytesToHex(CONTRACT_BYTECODE as any),
 		arguments: [web3.utils.hexToNumber('0x' + roomId)],
 	}).send({
 		from: accountAddress,
 		gas: 4700000,
-	}, (e, hash) => web3.eth.getTransactionReceipt(hash).then((result) => result.contractAddress));
+	}, (e, hash) => {
+		txHash = hash
+	});
+
+	return web3.eth.getTransactionReceipt(txHash).then((result) => result.contractAddress);
 };
 
 export {
