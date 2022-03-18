@@ -321,6 +321,7 @@ contract RentalAgreement {
         payable(globalTenant).transfer(value);
         emit PurchasePayment(value);
 
+        
         // Renew nonce
         uint newNonce = ++cashierIncrement;
         delete cashierNonce[nonce];
