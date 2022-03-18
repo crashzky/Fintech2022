@@ -240,8 +240,8 @@ class Mutation:
         return room
 
     @strawberry.mutation
-    def create_ticket(self, ticket: InputTicket) -> Ticket:
-        address = someone_auth()
+    def create_ticket(self, ticket: InputTicket, info: strawberry.types.Info) -> Ticket:
+        address = someone_auth(info)
         ticket_id = uuid.uuid4().hex
         room = Room.get_by_id(ticket.room)
         contract = get_contract(room.contract_address)
