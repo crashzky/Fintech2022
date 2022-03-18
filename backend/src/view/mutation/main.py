@@ -259,8 +259,8 @@ class Mutation:
                 raise BadRequest("The operation is outdated")
 
         nonce = contract.functions.getCashierNonce(address).call()
-        if nonce != ticket.nonce:
-            raise BadRequest("Invalid nonce")
+        # if nonce != ticket.nonce:
+        #     raise BadRequest("Invalid nonce")
         vrs = (
             ticket.cashier_signature.v,
             ticket.cashier_signature.r,
