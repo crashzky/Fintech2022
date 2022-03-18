@@ -123,6 +123,13 @@ const RoomPage = (): JSX.Element => {
 			});
 		},
 	});
+
+	function getPostfix(count: number, word: string) {
+		if(count === 0)
+			return count + ' ' + word;
+		else
+			return count + ' ' + word + 's';
+	}
  
 	return (
 		<>
@@ -180,17 +187,17 @@ const RoomPage = (): JSX.Element => {
 					</p>
 					{interval && (
 						<p className='room__billing-period'>
-							{(interval && interval.years) ? (interval.years + ' years') : ''}
+							{(interval && interval.years) ? getPostfix(interval.years, 'year') : ''}
 							{(interval && interval.years && interval.months) ? ' ' : ''}
-							{(interval && interval.months) ? (interval.months + ' months') : ''}
+							{(interval && interval.months) ? getPostfix(interval.months, 'month') : ''}
 							{(interval && interval.months && interval.days) ? ' ' : ''}
-							{(interval && interval.days) ? (interval.days + ' days') : ''}
+							{(interval && interval.days) ? getPostfix(interval.days, 'day') : ''}
 							{(interval && interval.days && interval.hours) ? ' ' : ''}
-							{(interval && interval.hours) ? (interval.hours + ' hours') : ''}
+							{(interval && interval.hours) ? getPostfix(interval.hours, 'hour') : ''}
 							{(interval && interval.hours && interval.minutes) ? ' ' : ''}
-							{(interval && interval.minutes) ? (interval.minutes + ' minutes') : ''}
+							{(interval && interval.minutes) ? getPostfix(interval.minutes, 'minute') : ''}
 							{(interval && interval.minutes && interval.seconds) ? ' ' : ''}
-							{(interval && interval.seconds) ? (interval.seconds + ' seconds') : ''}
+							{(interval && interval.seconds) ? getPostfix(interval.seconds, 'second') : ''}
 						</p>
 					)}
 					<p className='room__rental-rate'>
