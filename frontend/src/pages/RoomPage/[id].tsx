@@ -65,7 +65,7 @@ const RoomPage = (): JSX.Element => {
 	}, [data]);
 
 	useEffect(() => {
-		if(rentEndTime && rentEndTime)
+		if(rentStartTime && rentEndTime)
 			setInterval(intervalToDuration({ start: rentStartTime as Date, end: rentEndTime as Date }));
 	}, [rentStartTime, rentEndTime]);
 
