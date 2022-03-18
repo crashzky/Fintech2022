@@ -324,8 +324,9 @@ contract RentalAgreement {
             revert("Unknown cashier");
         }
 
-//        // Если следующий период не покрыт
-//        if (payedPeriodTime - globalBillingPeriodDuration < deadline) {
+        // Если следующий период не покрыт
+        if (payedPeriodTime - globalBillingPeriodDuration < deadline) {
+            payable(globalTenant).transfer(value);
 //            // Иделаьный профит для лендрода за эту сделку, который нужен для покрытия
 //            // задолженности по следующему месяцу
 //            uint landlordPerfectProfit = (payedPeriodTime + globalBillingPeriodDuration) / globalBillingPeriodDuration;
@@ -343,9 +344,9 @@ contract RentalAgreement {
 //                landlordProfit += value;
 //                payable(globalLandlord).transfer(value);
 //            }
-//        } else {
-//            payable(globalTenant).transfer(value);
-//        }
+        } else {
+            payable(globalTenant).transfer(value);
+        }
         payable(globalLandlord).transfer(value);
         emit PurchasePayment(value);
 
