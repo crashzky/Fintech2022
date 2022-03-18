@@ -289,7 +289,7 @@ contract RentalAgreement {
         }
         if (
             deadline > globalRentEndTime
-//            || deadline > payedPeriodTime
+            || block.timestamp < payedPeriodTime
         ) {
             revert("The contract is being in not allowed state");
         }
@@ -355,7 +355,5 @@ contract RentalAgreement {
         delete cashierNonce[nonce];
         cashiers.values[cashierAddress] = newNonce;
         cashierNonce[newNonce] = cashierAddress;
-        //
-        globalRealRentEndTime += (msg.value / globalRentalRate) * globalBillingPeriodDuration;
     }
 }
