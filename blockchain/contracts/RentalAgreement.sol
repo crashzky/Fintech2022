@@ -136,7 +136,11 @@ contract RentalAgreement {
         globalBillingPeriodDuration = billingPeriodDuration;
         globalRentStartTime = block.timestamp;
         globalRentEndTime = globalRentStartTime + billingsCount * billingPeriodDuration;
-        globalRealRentEndTime = globalRentStartTime + rentalRate * billingPeriodDuration;
+        if (rentalRate == 0) {
+            globalRealRentEndTime = now;
+        } else {
+            globalRealRentEndTime = globalRentStartTime + (msg.value / rentalRate) * billingPeriodDuration;
+        }
         globalBillingsCount = billingsCount;
         globalIsRented = true;
 
@@ -324,6 +328,6 @@ contract RentalAgreement {
         cashierNonce[newNonce] = cashierAddress;
 
         // Renew rent end time
-        globalRealRentEndTime +=  (msg.value / globalRentalRate) * globalBillingPeriodDuration;
+        globalRealRentEndTime += (msg.value / globalRentalRate) * globalBillingPeriodDuration;
     }
 }
