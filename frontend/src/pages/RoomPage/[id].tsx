@@ -22,6 +22,7 @@ const RoomPage = (): JSX.Element => {
 	const [interval, setInterval] = useState<Duration>();
 	const [tmpName, setTmpName] = useState('');
 	const [tmpStatus, setTmpStatus] = useState('');
+	const [tmpAddress, setTmpAddress] = useState('');
 
 	const authQuery = useQuery('auth', checkAuntefication);
 	const { mutate, data } = useMutation(getRoom);
@@ -145,9 +146,9 @@ const RoomPage = (): JSX.Element => {
 			<p className='room__status'>
 				{(data && data?.data) && getStatus()}
 			</p>
-			{(data && data?.data && data.data.room.contractAddress) && (
+			{((data && data?.data && data.data.room.contractAddress) || tmpAddress) && (
 				<p className='room__contract-address'>
-					{data.data.room.contractAddress}
+					{tmpAddress ? tmpAddress : (data as any).data.room.contractAddress}
 				</p>
 			)}
 			{(isEditMode || data?.data.room.publicName || (tmpName && tmpName.length)) && (
@@ -206,6 +207,7 @@ const RoomPage = (): JSX.Element => {
 
 						deployContract(data?.data.room.id, authQuery.data?.data.authentication.address)
 							.then((res) => {
+								setTmpAddress(res);
 								updateRoomContractAddressMutattion.mutate({
 									id: params.id as string,
 									contractAddress: res,
@@ -228,6 +230,11 @@ const RoomPage = (): JSX.Element => {
 					remove
 				</button>
 			)}
+			<p>
+				address:
+				{' '}
+				{tmpAddress}
+			</p>
 		</>
 	);
 };
