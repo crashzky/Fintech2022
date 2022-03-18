@@ -273,7 +273,7 @@ class Mutation:
                 :nonce,
                 :cashier_sig_v,
                 :cashier_sig_r,
-                :cashier_sig_s,
+                :cashier_sig_s
             )
             """, {
                 "id": ticket_id,
