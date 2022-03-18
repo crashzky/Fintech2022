@@ -244,21 +244,6 @@ const RoomPage = (): JSX.Element => {
 				{tmpAddress}
 			</p>
 			<p>
-				tenant:
-				{' '}
-				{tenant}
-			</p>
-			<p>
-				rentStartTime:
-				{' '}
-				{rentStartTime}
-			</p>
-			<p>
-				rentEndTime:
-				{' '}
-				{rentEndTime}
-			</p>
-			<p>
 				rentStartTimeNum:
 				{' '}
 				{rentStartTimeNum}
