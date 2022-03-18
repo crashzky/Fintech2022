@@ -230,8 +230,10 @@ class Mutation:
 
     @strawberry.mutation
     def create_ticket(self, ticket: InputTicket) -> Ticket:
+        address = someone_auth()
         ticket_id = uuid.uuid4().hex
         room = Room.get_by_id(ticket.room)
+        contract = get_contract(room.contract_address)
         # TODO: check address
         if not ticket.value.wei.isdigit():
             raise BadRequest("Value must be an integer")
@@ -245,6 +247,9 @@ class Mutation:
             if datetime.datetime.now() > deadline:
                 raise BadRequest("The operation is outdated")
 
+        cashier_address = contract.functions.getCashierNonce().call({"cashierAddr": address})
+        if cashier_address != address:
+            raise BadRequest("Invalid nonce")
         vrs = (
             ticket.cashier_signature.v,
             ticket.cashier_signature.r,
