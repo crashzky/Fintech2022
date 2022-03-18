@@ -218,6 +218,7 @@ class Mutation:
             contract = get_contract(room.contract_address)
             end_time = contract.functions.getRentEndTime().call()
             print("error on room", id, end_time, time.time())
+            time.sleep(2)
             if end_time >= time.time():
                 raise BadRequest("Room has rented contract in progress")
         db.execute(
@@ -235,7 +236,10 @@ class Mutation:
         address = someone_auth(info)
         ticket_id = uuid.uuid4().hex
         room = Room.get_by_id(ticket.room)
+        if room.contract_address is None:
+            raise BadRequest("Room does not have a contract")
         contract = get_contract(room.contract_address)
+
         # TODO: check address
         if not ticket.value.wei.isdigit():
             raise BadRequest("Value must be an integer")
@@ -249,9 +253,12 @@ class Mutation:
             if datetime.datetime.now() > deadline:
                 raise BadRequest("The operation is outdated")
 
-        nonce = contract.functions.getCashierNonce(address).call()
-        # if nonce != ticket.nonce:
+        # if address is None:
         #     raise BadRequest("Invalid nonce")
+        # else:
+        #     nonce = contract.functions.getCashierNonce(address).call()
+        #     if nonce != ticket.nonce:
+        #         raise BadRequest("Invalid nonce")
         vrs = (
             ticket.cashier_signature.v,
             ticket.cashier_signature.r,
@@ -261,6 +268,8 @@ class Mutation:
         # )
         contract = get_contract(room.contract_address)
         cashiers = contract.functions.getCashiersList().call()
+        if address not in cashiers:
+            raise BadRequest("This method is available only for the cashiers")
 
         db.execute(
             """
