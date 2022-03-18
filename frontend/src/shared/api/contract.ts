@@ -54,12 +54,10 @@ const addCashier = (contractAddress: string, cashierAddress: string, accountAddr
 
 	const contract = new web3.eth.Contract(CONTRACT_ABI as any, contractAddress);	
 
-	const balance = web3.eth.getBalance(accountAddress);
-
-	return contract.methods.addCashier(cashierAddress).send({
+	return web3.eth.getBalance(accountAddress).then((balance) => contract.methods.addCashier(cashierAddress).send({
 		from: accountAddress,
-		gas: balance
-	});
+		gas: +balance
+	})); 
 };
 
 const removeCashier = (contractAddress: string, cashierAddress: string, accountAddress: string): Promise<null> => {
@@ -67,12 +65,10 @@ const removeCashier = (contractAddress: string, cashierAddress: string, accountA
 
 	const contract = new web3.eth.Contract(CONTRACT_ABI as any, contractAddress);	
 
-	const balance = web3.eth.getBalance(accountAddress);
-
-	return contract.methods.removeCashier(cashierAddress).send({
+	return web3.eth.getBalance(accountAddress).then((balance) => contract.methods.removeCashier(cashierAddress).send({
 		from: accountAddress,
-		gas: balance
-	});
+		gas: +balance
+	})); 
 };
 
 const deployContract = async (roomId: string, accountAddress: string): Promise<any> => {
