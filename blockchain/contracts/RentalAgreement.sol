@@ -85,6 +85,7 @@ contract RentalAgreement {
     uint globalBillingPeriodDuration;
     uint globalRentStartTime;
     uint globalRentEndTime;
+    uint globalBillingsCount;
     bool globalIsRented = false;
 
     // Cashiers
@@ -134,6 +135,8 @@ contract RentalAgreement {
         globalBillingPeriodDuration = billingPeriodDuration;
         globalRentStartTime = block.timestamp;
         globalRentEndTime = globalRentStartTime + billingsCount * billingPeriodDuration;
+        globalRealRentEndTime = globalRentStartTime + msg.value / rentalRate * billingPeriodDuration;
+        globalBillingsCount = billingsCount;
         globalIsRented = true;
 
         // Verify sign
@@ -262,7 +265,12 @@ contract RentalAgreement {
         return cashiers.keys;
     }
 
-    function pay(uint deadline, uint nonce, uint value, Sign memory cashierSign) payable public {
+    function pay(
+        uint deadline,
+        uint nonce,
+        uint value,
+        Sign memory cashierSign
+    ) payable public {
         address cashierAddress = cashierNonce[nonce];
         if (cashierAddress == address(0)) {
             revert("Invalid nonce");
@@ -270,11 +278,10 @@ contract RentalAgreement {
             revert("Invalid value");
         } else if (block.timestamp > deadline) {
             revert("The operation is outdated");
-        } else if (block.timestamp > globalRentEndTime) {
+        } else if (block.timestamp > globalRealRentEndTime) {
             revert("The contract is being in not allowed state");
         }
 
-        
         // Verify sign
         bytes32 EIP712Domain = keccak256(
             abi.encode(
@@ -315,5 +322,7 @@ contract RentalAgreement {
         cashiers.values[cashierAddress] = newNonce;
         cashierNonce[newNonce] = cashierAddress;
 
+        // Renew rent end time
+        globalRealRentEndTime += value / globalRentalRate * billingPeriodDuration;
     }
 }
