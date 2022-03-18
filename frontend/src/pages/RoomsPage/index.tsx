@@ -9,14 +9,14 @@ import fromUnixTime from 'date-fns/fromUnixTime';
 const RoomsPage = (): JSX.Element => {
 	const [isLandlord, setIsLandlord] = useState(false);
 
-	const [rentalRate, setRentalRate] = useState<any>();
-	const [rentEndTime, setRentEndTime] = useState<any>();
+	const [rentalRate, setRentalRate] = useState<any>({});
+	const [rentEndTime, setRentEndTime] = useState<any>({});
 
 	const authQuery = useQuery('auth', checkAuntefication);
 	const roomsQuery = useQuery('rooms', getRooms);
 
 	useEffect(() => {
-		if(authQuery.data && authQuery.data?.data.authentication.isLandlord) 
+		if(authQuery.data && authQuery.data.data && authQuery.data?.data.authentication.isLandlord) 
 			setIsLandlord(true);
 	}, [authQuery.data]);
 
@@ -75,7 +75,7 @@ const RoomsPage = (): JSX.Element => {
 								{i.publicName ? i.publicName : i.internalName}
 							</p>
 							<p className='room-card__status'>
-								
+								{getStatus(i)}
 							</p>
 							<a className='room-card__details' href={'/room/' + i.id}>
 								click me
