@@ -15,6 +15,7 @@ from src.view.auth import Authentication
 from src.view.room import InputRoom, Room
 from src.view.signature import InputSignature
 from src.view.ticket import InputTicket, Ticket
+from src.view.utils import Wei
 
 used_signs = []
 counts = 0
@@ -268,7 +269,7 @@ class Mutation:
                 :cashier_sig_s,
             )
             """, {
-                "id": uuid.uuid4().hex,
+                "id": ticket_id,
                 "room": ticket.room,
                 "value": ticket.value.wei,
                 "deadline": ticket.deadline.datetime,
@@ -279,18 +280,4 @@ class Mutation:
             }
         )
         conn.commit()
-        db.execute(
-            """
-            SELECT 
-                id,
-                room,
-                value,
-                deadline,
-                nonce,
-                cashier_sig_v,
-                cashier_sig_r,
-                cashier_sig_s
-            WHERE id = ?
-            """, [ticket_id]
-        )
-        return db.fetchone()
+        return Ticket.get_by_id(ticket_id)
