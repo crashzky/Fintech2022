@@ -37,7 +37,7 @@ class Ticket:
             id=db_ticket["id"],
             room=Room.get_by_id(id=db_ticket["room"]),
             value=Wei(wei=db_ticket["value"]),
-            deadline=db_ticket["deadline"],
+            deadline=Datetime(datetime=db_ticket["deadline"]),
             nonce=Nonce(value=db_ticket["nonce"]),
             cashier_signature=Signature(
                 v=db_ticket["cashier_sig_v"],
