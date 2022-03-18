@@ -289,7 +289,7 @@ contract RentalAgreement {
         }
         if (
             deadline > globalRentEndTime
-//            || deadline > payedPeriodTime
+            || deadline > payedPeriodTime
         ) {
             revert("The contract is being in not allowed state");
         }
