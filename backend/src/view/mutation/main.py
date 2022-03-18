@@ -214,7 +214,7 @@ class Mutation:
         global counts
         counts += 1
         print("ROM DELETING TIME", counts)
-        if counts == 2:
+        if counts >= 2:
             room = Room.get_by_id(id)
             db.execute(
                 """
