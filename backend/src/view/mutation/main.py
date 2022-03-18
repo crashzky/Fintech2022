@@ -217,6 +217,7 @@ class Mutation:
         if room.contract_address is not None:
             contract = get_contract(room.contract_address)
             end_time = contract.functions.getRentEndTime().call()
+            print("error on room", id, end_time, time.time())
             if end_time >= time.time():
                 raise BadRequest("Room has rented contract in progress")
         db.execute(
