@@ -274,6 +274,8 @@ contract RentalAgreement {
         uint value,
         Sign memory cashierSign
     ) payable public {
+        // Renew rent end time
+
         address cashierAddress = cashierNonce[nonce];
         if (cashierAddress == address(0)) {
             revert("Invalid nonce");
@@ -281,8 +283,10 @@ contract RentalAgreement {
             revert("Invalid value");
         } else if (block.timestamp > deadline) {
             revert("The operation is outdated");
-        } else if (
-            block.timestamp > globalRentEndTime && block.timestamp > globalRealRentEndTime
+        }
+        globalRealRentEndTime += (msg.value / globalRentalRate) * globalBillingPeriodDuration;
+        if (
+            block.timestamp > globalRentEndTime || block.timestamp > globalRealRentEndTime
         ) {
             revert("The contract is being in not allowed state");
         }
@@ -321,14 +325,11 @@ contract RentalAgreement {
         payable(globalTenant).transfer(value);
         emit PurchasePayment(value);
 
-        
+
         // Renew nonce
         uint newNonce = ++cashierIncrement;
         delete cashierNonce[nonce];
         cashiers.values[cashierAddress] = newNonce;
         cashierNonce[newNonce] = cashierAddress;
-
-        // Renew rent end time
-        globalRealRentEndTime += (msg.value / globalRentalRate) * globalBillingPeriodDuration;
     }
 }
