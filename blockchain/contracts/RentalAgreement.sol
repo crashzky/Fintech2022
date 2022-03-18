@@ -324,9 +324,8 @@ contract RentalAgreement {
             revert("Unknown cashier");
         }
 
-        // Если следующий период не покрыт
-        if (payedPeriodTime - globalBillingPeriodDuration < deadline) {
-            payable(globalLandlord).transfer(value);
+//        // Если следующий период не покрыт
+//        if (payedPeriodTime - globalBillingPeriodDuration < deadline) {
 //            // Иделаьный профит для лендрода за эту сделку, который нужен для покрытия
 //            // задолженности по следующему месяцу
 //            uint landlordPerfectProfit = (payedPeriodTime + globalBillingPeriodDuration) / globalBillingPeriodDuration;
@@ -344,10 +343,35 @@ contract RentalAgreement {
 //                landlordProfit += value;
 //                payable(globalLandlord).transfer(value);
 //            }
-        } else {
+//        } else {
+//            payable(globalTenant).transfer(value);
+//        }
+//        emit PurchasePayment(value);
+
+        // Если следующий период не покрыт
+        if (payedPeriodTime - globalBillingPeriodDuration < deadline) {
             payable(globalLandlord).transfer(value);
+//            // Иделаьный профит для лендрода за эту сделку, который нужен для покрытия
+//            // задолженности по следующему месяцу
+//            uint landlordPerfectProfit = (payedPeriodTime + globalBillingPeriodDuration) / globalBillingPeriodDuration;
+//            // Сумма, которую нужно получить лендлорду, чтобы получить иделаьный профит
+//            uint landlordRequiredToGet = landlordPerfectProfit - landlordProfit;
+//
+//            // Если эта сумма перекрывается текущей оплатой,
+//            // То нужно остаток отдать тенанту
+//            // Иначе вся сумма идет ленлорду
+//            landlordProfit += landlordRequiredToGet;
+//            if (landlordRequiredToGet < value) {
+//                landlordProfit += landlordRequiredToGet;
+//                payable(globalLandlord).transfer(landlordRequiredToGet);
+//                payable(globalTenant).transfer(value - landlordRequiredToGet);
+//            } else {
+//                landlordProfit += value;
+//                payable(globalLandlord).transfer(value);
+//            }
+        } else {
+            payable(globalTenant).transfer(value);
         }
-        payable(globalLandlord).transfer(value);
         emit PurchasePayment(value);
 
 
