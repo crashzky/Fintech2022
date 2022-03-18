@@ -136,11 +136,6 @@ contract RentalAgreement {
         globalBillingPeriodDuration = billingPeriodDuration;
         globalRentStartTime = block.timestamp;
         globalRentEndTime = globalRentStartTime + billingsCount * billingPeriodDuration;
-        if (rentalRate == 0) {
-            globalRealRentEndTime = block.timestamp;
-        } else {
-            globalRealRentEndTime = globalRentStartTime + (msg.value / rentalRate) * billingPeriodDuration;
-        }
         globalBillingsCount = billingsCount;
         globalIsRented = true;
 
@@ -188,6 +183,9 @@ contract RentalAgreement {
         } else if (msg.value != rentalRate) {
             revert("Incorrect deposit");
         }
+
+        // Firstly check whether rentalRate >= 0
+        globalRealRentEndTime = globalRentStartTime + (msg.value / rentalRate) * billingPeriodDuration;
 
         // Complete transaction and pay for the renting
         payable(globalLandlord).transfer(rentalRate);
@@ -283,7 +281,7 @@ contract RentalAgreement {
             revert("Invalid value");
         } else if (block.timestamp > deadline) {
             revert("The operation is outdated");
-        } else if (block.timestamp > globalRealRentEndTime) {
+        } else if (block.timestamp > globalRentEndTime) {
             revert("The contract is being in not allowed state");
         }
 
