@@ -2,6 +2,7 @@ import Web3 from 'web3';
 import { useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
 import { authenticate, checkAuntefication, requestAuthentication } from '../../shared/api/auth';
+import { deployContract } from '../../shared/api/contract';
 
 const MainPage = (): JSX.Element => {
 	const [accountAddress, setAccountAddress] = useState(null);
@@ -88,6 +89,9 @@ const MainPage = (): JSX.Element => {
 						Your MetaMask account is different from the one you authenticated with before
 					</p>
 				)}
+				<button onClick={() => deployContract('1', '0x549b76D3910A695a93f6A31370575bE7cFda9c01').then((res) => console.log(res))}>
+					deploy
+				</button>
 			</>
 		);
 	}

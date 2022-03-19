@@ -6,8 +6,6 @@ const getRentStartTime = (contractAddress: string): Promise<number> => {
 
 	const contract = new web3.eth.Contract(CONTRACT_ABI as any, contractAddress);	
 
-	return new Promise(() => 0);
-
 	return contract.methods.getRentStartTime().call();
 };
 
@@ -15,8 +13,6 @@ const getRentEndTime = (contractAddress: string): Promise<number> => {
 	const web3 = new Web3((window as any).ethereum);
 
 	const contract = new web3.eth.Contract(CONTRACT_ABI as any, contractAddress);	
-
-	return new Promise(() => 0);
 
 	return contract.methods.getRentEndTime().call();
 };
@@ -26,8 +22,6 @@ const getRentalRate = (contractAddress: string): Promise<number> => {
 
 	const contract = new web3.eth.Contract(CONTRACT_ABI as any, contractAddress);	
 
-	return new Promise(() => 0);
-
 	return contract.methods.getRentalRate().call();
 };
 
@@ -35,8 +29,6 @@ const getTenant = (contractAddress: string): Promise<string> => {
 	const web3 = new Web3((window as any).ethereum);
 
 	const contract = new web3.eth.Contract(CONTRACT_ABI as any, contractAddress);
-	
-	return new Promise(() => 'ss');
 
 	return contract.methods.getTenant().call();
 };
@@ -45,23 +37,56 @@ const getBillingPeriodDuration = (contractAddress: string): Promise<number> => {
 	const web3 = new Web3((window as any).ethereum);
 
 	const contract = new web3.eth.Contract(CONTRACT_ABI as any, contractAddress);	
-	
-	return new Promise(() => 0);
 
 	return contract.methods.getBillingPeriodDuration().call();
 };
 
-const deployContract = (roomId: string, accountAddress: string): Promise<string> => {
+const getCashiersList = (contractAddress: string): Promise<string[]> => {
+	const web3 = new Web3((window as any).ethereum);
+
+	const contract = new web3.eth.Contract(CONTRACT_ABI as any, contractAddress);	
+
+	return contract.methods.getCashiersList().call();
+};
+
+const addCashier = (contractAddress: string, cashierAddress: string, accountAddress: string): Promise<null> => {
+	const web3 = new Web3((window as any).ethereum);
+
+	const contract = new web3.eth.Contract(CONTRACT_ABI as any, contractAddress);	
+
+	return contract.methods.addCashier(cashierAddress).send({
+		from: accountAddress,
+	});
+};
+
+const removeCashier = (contractAddress: string, cashierAddress: string, accountAddress: string): Promise<null> => {
+	const web3 = new Web3((window as any).ethereum);
+
+	const contract = new web3.eth.Contract(CONTRACT_ABI as any, contractAddress);	
+
+	return contract.methods.removeCashier(cashierAddress).send({
+		from: accountAddress,
+	});
+};
+
+const deployContract = async (roomId: string, accountAddress: string): Promise<any> => {
 	const web3 = new Web3((window as any).ethereum);
 
 	const contract = new web3.eth.Contract(CONTRACT_ABI as any);
 
-	return contract.deploy({
-		data: CONTRACT_BYTECODE,
-		arguments: [roomId],
+	let txHash = '';
+
+	await contract.deploy({
+		data: web3.utils.bytesToHex(CONTRACT_BYTECODE as any),
+		arguments: [web3.utils.hexToNumber('0x' + roomId)],
 	}).send({
 		from: accountAddress,
-	}).then((result) => result.options.address);
+		gas: 4200000
+	}, (e, hash) => {
+		txHash = hash
+	});
+
+	return web3.eth.getTransactionReceipt(txHash).then((result) => result.contractAddress);
 };
 
 export {
@@ -71,4 +96,7 @@ export {
 	getTenant,
 	getBillingPeriodDuration,
 	deployContract,
+	getCashiersList,
+	addCashier,
+	removeCashier,
 };
