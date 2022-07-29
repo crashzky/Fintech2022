@@ -1,16 +1,17 @@
-FROM deknowny/mall-dependencies
+# Dockerfile example
+FROM nikitat0/graphql_python_dapp
 
-# Copy source code
-COPY backend/src /app/src
-
-# Copy another needed files
-COPY backend/Makefile backend/poetry.toml backend/pyproject.toml backend/requirements.txt blockchain/contracts/RentalAgreement.sol /app/
-
-# Checkout to the workdir
 WORKDIR /app
+# RUN apk add gcc g++ make libffi-dev openssl-dev
 
-# Reserve the port
-EXPOSE 8000
+# COPY requirements.txt ./
+# RUN pip install -r requirements.txt
 
-# Run the server
-ENTRYPOINT ["python", "-m", "src"]
+# RUN apk add gcc g++ make libffi-dev openssl-dev
+
+COPY requirements.txt ./
+# RUN pip install -r requirements.txt
+
+COPY . .
+
+CMD ["strawberry", "server", "app", "-p", "4000"]

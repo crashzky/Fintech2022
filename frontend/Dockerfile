@@ -1,17 +1,19 @@
-FROM node:16
+FROM node:16-alpine as builder
+
+ENV NODE_ENV=production
+
+WORKDIR /app
 
 COPY package*.json ./
+RUN npm install --production
 
-WORKDIR /usr/src/app
-
-RUN npm install -g npm@8.5.4
-RUN npm install
+ARG REACT_APP_RPC_URL
 
 COPY . .
-
 RUN npm run build
-RUN npm i serve
 
-EXPOSE 3000
+FROM nginx:alpine
 
-CMD [ "npx", "serve", "-s", "build"]
+COPY nginx.conf /etc/nginx/nginx.conf
+RUN rm -rf /usr/share/nginx/html/*
+COPY --from=builder /app/build /usr/share/nginx/html

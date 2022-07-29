@@ -1,6 +1,0 @@
-fastapi==0.70.1
-strawberry-graphql @ https://github.com/deknowny/strawberry/archive/v0.94.0a1.zip
-uvicorn[standard]==0.15.0
-virtualenv==20.4.4
-eth_account==0.5.7
-web3==5.27.0
